@@ -1,0 +1,111 @@
+/* ========================================== */
+/* ANIMATIONS D'ÉJECTION TINDER COMPTAGE      */
+/* ========================================== */
+.swipe-right-animation {
+    transform: translateX(150vw) rotate(30deg) !important;
+    opacity: 0;
+}
+
+.swipe-left-animation {
+    transform: translateX(-150vw) rotate(-30deg) !important;
+    opacity: 0;
+}
+
+
+/* ========================================================================== */
+/* 📋 RELEVÉ DE PRÉSENCE — écran de lancement                                 */
+/* ========================================================================== */
+
+.cpt-statut {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--input-bg);
+    padding: 8px 16px; border-radius: 999px;
+    font-size: 12px; font-weight: 700; color: var(--text-gray);
+    margin-bottom: 22px;
+}
+.cpt-point {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success); flex-shrink: 0;
+    animation: pulseVertLive 1.8s ease-in-out infinite;
+}
+
+.cpt-carte {
+    width: 100%; max-width: 360px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 30px rgba(10, 22, 44, 0.05);
+    padding: 30px 24px 26px 24px;
+}
+
+.cpt-picto {
+    width: 62px; height: 62px;
+    margin: 0 auto 16px auto;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0, 85, 164, 0.07);
+    border-radius: 20px;
+    font-size: 30px;
+}
+.cpt-titre {
+    margin: 0 0 5px 0 !important;
+    font-weight: 800; font-size: 20px;
+    letter-spacing: -0.3px; color: var(--text-dark);
+}
+.cpt-sous {
+    color: var(--text-gray); font-size: 13px;
+    font-weight: 500; margin: 0 0 24px 0;
+}
+
+.cpt-label {
+    display: block;
+    font-size: 10.5px; font-weight: 800;
+    letter-spacing: 0.9px; text-transform: uppercase;
+    color: var(--text-gray);
+    margin: 0 0 8px 0; text-align: center;
+}
+.cpt-select {
+    width: 100%;
+    text-align: center; text-align-last: center;
+    font-size: 16px; margin: 0 0 20px 0;
+    padding: 16px 42px;
+    cursor: pointer;
+}
+
+.cpt-lancer {
+    width: 100%; padding: 17px;
+    font-size: 16px; font-weight: 700;
+    border-radius: 15px; border: none; color: #fff;
+    background: linear-gradient(135deg, #0055a4 0%, #003d75 100%);
+    box-shadow: 0 6px 18px rgba(0, 85, 164, 0.22);
+    transition: transform 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.cpt-lancer:active { transform: scale(0.97); }
+
+.cpt-dernier {
+    width: 100%; padding: 15px;
+    margin-top: 10px;
+    font-size: 14px; font-weight: 700;
+    border-radius: 15px;
+    background: rgba(0, 85, 164, 0.07) !important;
+    border: none;
+    color: var(--coallia-blue) !important;
+    transition: transform 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.cpt-dernier:active { transform: scale(0.97); }
+
+.cpt-aide {
+    max-width: 360px; width: 100%;
+    margin-top: 22px;
+    background: var(--input-bg);
+    border-radius: 16px;
+    padding: 15px 18px;
+    font-size: 12.5px; color: var(--text-gray);
+    line-height: 1.5; text-align: center;
+}
+.cpt-aide-titre {
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    font-weight: 800; color: var(--text-dark);
+    margin-bottom: 5px; font-size: 12.5px;
+}
+

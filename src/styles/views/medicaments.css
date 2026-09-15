@@ -1,0 +1,58 @@
+/* === STYLES FORMULAIRE MÉDICAMENTS === */
+.med-form-card { background: var(--card-color); padding: 25px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: background 0.3s; overflow-y: auto; }
+.form-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-gray); margin-bottom: 8px; text-align: center; text-transform: uppercase; }
+
+
+/* ========================================================================== */
+/* ⏱️ HORLOGE TEMPS RÉEL : capsule compacte, chiffres stables                  */
+/* ========================================================================== */
+
+#real-time-clock {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 9px;
+    width: auto !important;
+    max-width: none !important;
+
+    padding: 9px 20px 9px 16px !important;
+    border-radius: 999px !important;              /* capsule parfaite */
+
+    background: var(--card-color);
+    border: 1px solid rgba(0, 85, 164, 0.12);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+    color: var(--coallia-blue);
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+
+    /* 🎯 Chiffres à largeur fixe : la capsule ne tressaute plus à chaque seconde */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* 🔴 Pastille "en direct" qui respire */
+#real-time-clock::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--coallia-blue);
+    flex-shrink: 0;
+    animation: pulse-horloge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-horloge {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%      { opacity: 0.35; transform: scale(0.8); }
+}
+
+/* Retour tactile sur l'appui long (reset) */
+#real-time-clock:active {
+    transform: scale(0.96);
+    transition: transform 0.15s ease;
+}
+

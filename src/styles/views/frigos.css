@@ -1,0 +1,47 @@
+/* ========================================================================== */
+/* 👑 INFRASTRUCTURE DE SCROLL UNIFIÉ : MODULE FRIGOS (100% SCROLLABLE)       */
+/* ========================================================================== */
+
+/* 1. Tout l'onglet devient une seule colonne de défilement continue */
+#main-app #view-frigos:not(.hidden) {
+    display: block !important;
+    overflow-y: auto !important;   
+    height: 100% !important;
+    min-height: 0 !important;
+    padding-bottom: 140px !important; /* Laisse de la place pour le bouton d'historique en bas */
+    box-sizing: border-box !important;
+    -webkit-overflow-scrolling: touch !important; 
+}
+
+/* 2. La pastille repasse en flux normal (elle scrolle avec le reste) */
+#main-app #view-frigos .actions-header {
+    position: relative !important; /* 🎯 Devient scrollable naturellement */
+    background: transparent !important; 
+    margin: 0 !important;
+    padding-top: 15px !important;
+    padding-bottom: 25px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 3. Nettoyage de l'ancien bouchon virtuel (inutile en scroll normal) */
+#main-app #view-frigos .actions-header::before {
+    display: none !important;
+}
+
+/* 4. Libération complète de la grille interne */
+#main-app #list-frigos {
+    overflow: visible !important;  
+    flex: none !important;
+    padding-bottom: 20px !important;
+}
+
+/* 5. Sécurité anti-écrabouillage des cartes sur iPhone/Android */
+#list-frigos .item-card {
+    flex-shrink: 0 !important;
+    min-height: 240px !important;
+}
+

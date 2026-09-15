@@ -1,0 +1,35 @@
+/* ========================================================================== */
+/* 👑 HARMONISATION INTERFACE : ALIGNEMENT DES BOUTONS HISTORIQUE (MED/FRIGOS)*/
+/* ========================================================================== */
+
+/* 1. Standardisation des conteneurs parents */
+#view-frigos > div[style*="text-align: center"],
+#med-app .content > div[style*="text-align: center"] {
+    width: 100% !important;
+    padding: 0 !important;
+    margin-top: 30px !important;
+    margin-bottom: 25px !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Transformation des liens en boutons blocs parfaits (Largeur & Arrondis) */
+/*    ⚠️ #real-time-clock est exclu : c'est une horloge, pas un bouton d'action. */
+#view-frigos > div[style*="text-align: center"] .clock-badge:not(#real-time-clock),
+#med-app .content > div[style*="text-align: center"] .clock-badge:not(#real-time-clock) {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    
+    /* Recouvrement des styles d'origine pour matcher avec tes cartes pro */
+    padding: 16px 20px !important;   /* Hauteur identique aux gros boutons d'action */
+    border-radius: 14px !important;  /* Arrondi Apple-style raccord avec tes formulaires */
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0px !important;
+    white-space: normal !important;  /* Sécurité anti-débordement sur petits écrans */
+}
+

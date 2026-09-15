@@ -1,0 +1,315 @@
+/* ==========================================================================
+   🚀 PROJET : PERMIA - Gestion de la Permance
+   👨‍💻 AUTEUR : Sami Charles Hassen Harigua
+   📅 DATE DE CRÉATION : 2026
+   ⚖️ PROPRIÉTÉ INTELLECTUELLE :
+   Ce code est la propriété exclusive de son créateur. 
+   Toute copie, modification, distribution ou revente sans autorisation 
+   explicite est strictement interdite.
+   ========================================================================== */
+
+
+/* VARIABLES DE COULEURS (CLAIR & SOMBRE) */
+:root {
+    --coallia-blue: #0055a4; 
+    --bg-color: #f2f2f7; 
+    --card-color: #ffffff;
+    --text-dark: #1c1c1e; 
+    --text-gray: #8e8e93;
+    --input-bg: #e5e5ea;
+    --border-color: #f2f2f7;
+    --footer-bg: #fafafa;
+    --success: #34c759; 
+    --warning: #ff9500; 
+    --danger: #ff3b30;
+}
+
+body.dark-mode {
+    /* Bleu désaturé : lisible sans éblouir sur fond sombre */
+    --coallia-blue: #5590cc;
+    /* Gris légèrement bleutés : plus profonds à l'œil qu'un gris neutre,
+       et cohérents avec le bleu Coallia. */
+    --bg-color: #0f131a;
+    --card-color: #171d27;
+    --text-dark: #eef1f6;
+    --text-gray: #949eae;
+    --input-bg: #212936;
+    --border-color: #2a3241;
+    --footer-bg: #1b2230;
+}
+
+
+
+/* ========================================== */
+/* ANTI-SÉLECTION DE TEXTE (Effet App Native) */
+/* ========================================== */
+button, .btn, a, img, h1, h2, h3, span, .hub-btn, .pro-badge, .back-btn, .logout-link, .resident-title, .timeline-time, .timeline-tag {
+    -webkit-touch-callout: none; /* Désactive le menu contextuel sur iOS */
+    -webkit-user-select: none;   /* Safari & iOS */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Windows */
+    user-select: none;           /* Standard */
+}
+
+/* On s'assure que les zones de texte restent parfaitement utilisables */
+input, textarea, select {
+    -webkit-user-select: auto !important;
+    user-select: auto !important;
+}
+
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+button { touch-action: manipulation; }
+
+body, html { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-dark); height: 100%; overflow: hidden; transition: background 0.3s; }
+.view { height: 100vh; display: flex; flex-direction: column; padding: 20px; }
+.hidden { display: none !important; }
+
+/* ========================================================================== */
+/* 👑 MOTEUR DE REBOND APP NATIVE (Transitions Universelles iOS-Style)        */
+/* ========================================================================== */
+
+/* 1. Configuration de la souplesse de retour (Spring-baking effect) */
+button, 
+.hub-btn, 
+.back-btn, 
+.logout-link, 
+.pro-badge, 
+.filter-btn, 
+.btn-eval, 
+.scan-main-btn, 
+.qty-btn, 
+.qty-btn-large, 
+.theme-toggle-btn,
+.resident-title {
+    transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* 2. Micro-contraction instantanée à 96% lors de la pression tactile (Touch Down) */
+button:active, 
+.hub-btn:active, 
+.back-btn:active, 
+.logout-link:active, 
+.pro-badge:active, 
+.filter-btn:active, 
+.btn-eval:active, 
+.scan-main-btn:active, 
+.qty-btn:active, 
+.qty-btn-large:active, 
+.theme-toggle-btn:active,
+.resident-title:active {
+    transform: scale(0.96) !important;
+    opacity: 0.92;
+}
+
+/* ========================================== */
+/* 👑 CHASSE AUX SCROLLBARS (Effet App Native Total) */
+/* ========================================== */
+
+/* 1. Configuration des zones de défilement d'origine */
+.content { 
+    flex: 1; 
+    overflow: hidden; 
+    display: flex; 
+    flex-direction: column; 
+}
+.tab-content { 
+    flex: 1; 
+    overflow-y: auto; 
+    -webkit-overflow-scrolling: touch; 
+    padding-bottom: 180px !important; 
+}
+
+/* 2. Élimination radicale des barres visuelles sur Chrome, Safari, iOS et Android WebView */
+*::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* 3. Élimination sur Firefox et les architectures legacy (IE/Edge) */
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+
+/* ========================================== */
+/* ADAPTATION ORDINATEUR (RESPONSIVE CLASSIQUE) */
+/* ========================================== */
+@media screen and (min-width: 768px) {
+    /* 1. On libère l'espace pour scroller naturellement */
+    body, html { 
+        height: auto; 
+        overflow: auto; 
+    }
+    .view { 
+        height: auto; 
+        min-height: 100vh; 
+        padding: 40px; 
+    }
+    .content { 
+        overflow: visible; 
+    }
+
+    /* 2. Le Menu Principal s'aligne à l'horizontale */
+    .menu-grid {
+        flex-direction: row;
+        max-width: 1000px;
+        gap: 30px;
+    }
+    .hub-btn {
+        flex: 1;
+        padding: 50px 20px;
+    }
+
+    /* 3. Le matériel s'affiche en grille type Dashboard */
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        align-items: start;
+    }
+
+    /* 4. Les formulaires (Médicaments et Transmissions) sont centrés */
+    .med-form-card {
+        max-width: 600px;
+        margin: 0 auto 30px auto;
+        padding: 40px; 
+        overflow: visible;
+    }
+
+    /* 5. La Timeline est centrée et bien large pour le confort de lecture */
+    .timeline {
+        max-width: 700px;
+        margin: 0 auto;
+        padding-bottom: 60px;
+    }
+
+    /* 6. L'écran de connexion est centré élégamment */
+    .auth-card {
+        max-width: 450px;
+        padding: 50px 40px;
+        margin: 10vh auto; 
+    }
+    
+    /* 7. Les boutons "Voir la Timeline" et "Copier" s'alignent avec le formulaire */
+    #trans-app .content > div:first-of-type {
+        max-width: 600px;
+        margin: 0 auto 20px auto;
+    }
+
+    /* 8. Le bouton "Traçabilité" des médicaments prend la même largeur que le formulaire */
+    #med-app .content > button,
+    #med-app .content > div:not(.med-form-card) {
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+        display: block;
+    }
+}
+
+
+/* ==========================================
+   📱 ADAPTATION PETITS ÉCRANS (iPhone 12, Android)
+   ========================================== */
+@media screen and (max-width: 430px) {
+    /* 1. On donne un peu d'air aux fenêtres modales */
+    .modal-card {
+        padding: 18px !important; /* Au lieu de 25px ou 40px */
+        width: 92vw !important;   /* Prend 92% de l'écran maximum */
+        max-height: 85vh !important;
+    }
+
+    /* 2. On réduit légèrement la taille des titres */
+    .modal-card h3, .section-title {
+        font-size: 18px !important;
+    }
+
+    /* 3. On affine les champs de saisie, les listes et les boutons */
+    input, select, textarea, .btn-primary, .btn-secondary, .hub-btn, .tab-btn {
+        padding: 12px !important; /* Au lieu de 15px ou 18px */
+        font-size: 13px !important; /* Au lieu de 14px ou 16px */
+    }
+
+    /* 4. On ajuste les labels (ex: "1. Demandeur *") */
+    .form-label {
+        font-size: 10px !important;
+        margin-bottom: 5px !important;
+    }
+
+    /* 5. Ajustement de l'annuaire d'urgence (pour que les 3 boutons du haut rentrent bien) */
+    a[href^="tel:"] {
+        padding: 10px 5px !important;
+        font-size: 11px !important;
+    }
+    
+    /* 6. On réduit les gros emojis de succès/erreur */
+    .modal-card div[style*="font-size: 50px"], 
+    .modal-card div[style*="font-size: 60px"] {
+        font-size: 40px !important;
+    }
+}
+
+/* ========================================================================== */
+/* 👑 SYSTEME HORS-LIGNE ANDROID : Bulle de sécurité au-dessus du bouton Pain */
+/* ========================================================================== */
+
+/* 1. Quand la bulle s'affiche, on pousse toute la page de 45px vers le bas */
+body:has(.offline-badge:not(.hidden)) .view {
+    padding-top: 65px !important; /* Crée l'espace parfait tout en haut de l'écran */
+}
+
+/* 2. Transition fluide pour un glissement de page premium au changement de réseau */
+.view {
+    transition: padding-top 0.3s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.3s;
+}
+
+/* ========================================================================== */
+/* 🎬 TRANSITIONS DE NAVIGATION — entrée douce, sans latence perçue           */
+/* ========================================================================== */
+
+/* L'animation se déclenche à l'instant où la vue passe de display:none à flex.
+   Durée courte + courbe très sortante = le contenu est lisible dès le début. */
+@keyframes vueEntrante {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 8px, 0) scale(0.994);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+.view:not(.hidden) {
+    animation: vueEntrante 0.26s cubic-bezier(0.22, 0.9, 0.26, 1) both;
+    will-change: opacity, transform;
+}
+
+/* Le contenu principal suit avec un très léger décalage : l'œil perçoit une
+   profondeur, pas un délai. */
+@keyframes contenuEntrant {
+    from { opacity: 0; transform: translate3d(0, 10px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.view:not(.hidden) > .content {
+    animation: contenuEntrant 0.32s cubic-bezier(0.22, 0.9, 0.26, 1) 0.04s both;
+}
+
+/* La barre supérieure reste stable : elle ne bouge pas d'un écran à l'autre,
+   ce qui donne l'impression que seul le contenu change. */
+.view:not(.hidden) > .top-bar {
+    animation: none;
+}
+
+/* ♿ Respect des préférences système (iOS : Réduire les animations) */
+@media (prefers-reduced-motion: reduce) {
+    .view:not(.hidden),
+    .view:not(.hidden) > .content {
+        animation: none !important;
+    }
+}
+
+

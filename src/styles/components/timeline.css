@@ -1,0 +1,102 @@
+/* === STYLE TIMELINE TRANSMISSION === */
+.timeline {
+    position: relative;
+    padding-left: 20px;
+    margin-top: 10px;
+    padding-bottom: 50px;
+}
+
+/* La ligne verticale */
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Le point sur la ligne */
+.timeline-dot {
+    position: absolute;
+    left: -19px;
+    top: 15px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--coallia-blue);
+    border: 3px solid var(--card-color);
+    box-shadow: 0 0 0 1px var(--border-color);
+}
+
+/* La bulle de contenu */
+.timeline-content {
+    background: var(--card-color);
+    border-radius: 18px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    border: 1px solid var(--border-color);
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.timeline-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-gray);
+}
+
+.timeline-tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.timeline-desc {
+    font-size: 15px;
+    color: var(--text-dark);
+    line-height: 1.5;
+    white-space: pre-wrap; /* Garde les retours à la ligne */
+}
+
+.timeline-author {
+    font-size: 11px;
+    color: var(--text-gray);
+    margin-top: 8px;
+    font-style: italic;
+    text-align: right;
+}
+
+/* COULEURS DES TAGS */
+.tag-info { background: #e5f1ff; color: #0055a4; }
+.tag-passage { background: #e0f8e0; color: #2e7d32; }
+.tag-tel { background: #f3e5f5; color: #7b1fa2; }
+.tag-consommation { background: #fff3e0; color: #ef6c00; }
+.tag-nuisance { background: #fff8e1; color: #fbc02d; }
+.tag-incident { background: #ffebee; color: #c62828; }
+.tag-intrusion { background: #37474f; color: #eceff1; }
+.tag-urgence { background: #d32f2f; color: white; animation: pulseRed 2s infinite; }
+
+@keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(211, 47, 47, 0); } 100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); } }
+
+@keyframes pulseVertLive {
+    0% { opacity: 0.3; transform: scale(0.9); filter: drop-shadow(0 0 0 rgba(52, 199, 89, 0)); }
+    50% { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 4px rgba(52, 199, 89, 0.6)); }
+    100% { opacity: 0.3; transform: scale(0.9); filter: drop-shadow(0 0 0 rgba(52, 199, 89, 0)); }
+}
+

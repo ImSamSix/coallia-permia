@@ -1,0 +1,236 @@
+/* AUTH */
+#login-screen { justify-content: center; align-items: center; }
+.auth-card { width: 100%; max-width: 360px; background: var(--card-color); padding: 40px 25px; border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; }
+.logo-container { width: 100%; margin-bottom: 20px; display: flex; justify-content: center; }
+.logo-coallia { height: 80px; width: auto; object-fit: contain; }
+body.dark-mode .logo-container { background: white; padding: 15px 25px; border-radius: 16px; width: fit-content; margin: 0 auto 20px auto; }
+
+h1 { font-size: 24px; margin: 10px 0 0 0; font-weight: 700; color: var(--coallia-blue); }
+.subtitle { color: var(--text-gray); margin-bottom: 25px; font-size: 15px; }
+
+/* INPUTS ET SELECTS */
+input, select { width: 100%; border: 1px solid transparent; background: var(--input-bg); color: var(--text-dark); padding: 16px; border-radius: 14px; margin-bottom: 15px; font-size: 16px; outline: none; font-family: 'Inter', sans-serif; appearance: none; -webkit-appearance: none; }
+/* 🎯 FOCUS UNIFIÉ : même rendu dans toute l'app (fond clair + halo bleu).
+   Les !important sont nécessaires pour passer devant les styles en ligne. */
+input, select, textarea {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
+    background-color: var(--card-color) !important;
+    border-color: var(--coallia-blue) !important;
+    box-shadow: 0 0 0 3.5px rgba(0, 85, 164, 0.10) !important;
+}
+input.input-error, select.input-error, textarea.input-error, .input-error { border-color: var(--danger) !important; background-color: rgba(255,59,48,0.1) !important; }
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear { display: none; }
+select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 15px center; background-size: 15px; padding-right: 40px; }
+
+#error-bubble { background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; opacity: 0; transform: translateY(-5px); transition: all 0.3s ease; }
+#error-bubble.show { opacity: 1; transform: translateY(0); }
+#btn-login { width: 100%; border: none; background: var(--coallia-blue); color: white; padding: 18px; border-radius: 14px; font-weight: 600; font-size: 16px; cursor: pointer; }
+
+
+/* MENTION LÉGALE LOGIN */
+
+.copyright-text {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    margin-bottom: 0;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+/* Animation de pulsation pour la synchro */
+.pulse-orange {
+    animation: pulseSync 1.5s infinite;
+}
+
+@keyframes pulseSync {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+
+
+/* 👑 ENTRÉE PREMIUM : Glissement et fondu enchaîné de la carte d'authentification */
+.auth-card-entrance {
+    animation: smoothEntrance 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes smoothEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================================================== */
+/* 👑 MOTION ENGINE : Animations de transition Haute Définition (Cinématique) */
+/* ========================================================================== */
+
+/* Structure de base de ton splash pour un effacement ultra-lisse */
+#splash-screen {
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), 
+                visibility 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* État initial de sécurité de la carte d'authentification (Invisible + abaissée + floutée) */
+.auth-card {
+    opacity: 0 !important;
+    transform: translateY(40px) scale(0.96) !important;
+    filter: blur(8px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                filter 0.8s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    will-change: transform, opacity, filter; /* Dit au processeur du téléphone de se tenir prêt */
+}
+
+/* 🚀 L'ENVOLÉE CINÉTIQUE : Transition active vers l'état parfait */
+.auth-card.auth-card-entrance {
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+    filter: blur(0) !important;
+}
+
+
+/* ========================================================================== */
+/* 🔐 ÉCRAN DE CONNEXION — champs sobres, focus lisible                       */
+/* ========================================================================== */
+
+.champ-label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    color: var(--text-gray);
+    margin: 0 0 7px 4px;
+}
+
+.champ-auth {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: 15px;
+    padding: 0 18px;
+    margin-bottom: 20px;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease, background-color 0.22s ease;
+}
+
+.champ-auth svg {
+    color: var(--text-gray);
+    opacity: 0.65;
+    flex-shrink: 0;
+    transition: color 0.22s ease, opacity 0.22s ease;
+}
+
+.champ-auth input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 16px 0;
+    margin: 0;
+    font-size: 16.5px;   /* ≥16px : empêche le zoom automatique sur iOS */
+    font-weight: 600;
+    color: var(--text-dark);
+    outline: none;
+    box-shadow: none;
+    min-width: 0;
+}
+
+/* 🎯 Focus géré en CSS pur (plus fiable que onfocusin/onfocusout sur iOS) */
+.champ-auth:focus-within {
+    border-color: var(--coallia-blue);
+    background: var(--card-color);
+    box-shadow: 0 0 0 3.5px rgba(0, 85, 164, 0.10);
+}
+.champ-auth:focus-within svg {
+    color: var(--coallia-blue);
+    opacity: 1;
+}
+
+/* 🚫 Pas de halo interne : seul le conteneur .champ-auth porte le focus */
+.champ-auth input:focus,
+body.dark-mode .champ-auth input:focus {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+#toggle-password {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.15rem;
+    opacity: 0.55;
+    user-select: none;
+    -webkit-user-select: none;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+#toggle-password:active { opacity: 1; }
+
+
+/* ==========================================
+   🔴 SIGNAL D'ERREUR — ÉCRAN DE CONNEXION
+   ========================================== */
+
+/* 💬 La bulle : simple glissement vers le bas, en fondu */
+.bulle-alerte {
+    animation: bulle-alerte-anim 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes bulle-alerte-anim {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Transition permanente sur les champs : garantit un retour au normal en fondu */
+#pass-pro, #prenom-pro {
+transition: background-color 0.35s ease, border-color 0.35s ease;
+}
+
+.champ-erreur {
+    border-color: rgba(255, 59, 48, 0.85) !important;
+    background-color: rgba(255, 59, 48, 0.08) !important;
+    animation: tremblement-erreur 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+body.dark-mode .champ-erreur {
+    background-color: rgba(255, 69, 58, 0.16) !important;
+}
+
+@keyframes tremblement-erreur {
+     0%, 100% { transform: translateX(0); }
+    18%       { transform: translateX(-5px); }
+    38%       { transform: translateX(4px); }
+    58%       { transform: translateX(-2.5px); }
+    78%       { transform: translateX(1px); }
+}
+
+/* Le champ garde sa teinte même sélectionné — sans ajouter de second halo */
+.champ-erreur:focus {
+    border-color: rgba(255, 59, 48, 0.85) !important;
+    background-color: rgba(255, 59, 48, 0.08) !important;
+}
+
+body.dark-mode .champ-erreur:focus {
+    background-color: rgba(255, 69, 58, 0.16) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bulle-alerte, .champ-erreur { animation: none; }
+}

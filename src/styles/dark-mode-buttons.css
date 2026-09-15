@@ -1,0 +1,56 @@
+/* ========================================================================== */
+/* 🌙 BOUTONS EN MODE SOMBRE — aplats profonds, sans halo lumineux            */
+/* ========================================================================== */
+
+body.dark-mode .btn-primary,
+body.dark-mode #btn-login,
+body.dark-mode .ecran-btn-plein,
+body.dark-mode .modal-buttons .btn-primary {
+    background: linear-gradient(180deg, #3d75ac 0%, #33638f 100%) !important;
+    color: #eef4fb !important;
+    /* Ombre neutre : un halo bleu sur fond sombre fatigue les yeux */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.38) !important;
+}
+body.dark-mode .btn-primary:active,
+body.dark-mode #btn-login:active {
+    background: linear-gradient(180deg, #35688f 0%, #2c5679 100%) !important;
+}
+
+/* Boutons secondaires bleutés (scanner, traçabilité, éclairage) */
+body.dark-mode .scan-main-btn,
+body.dark-mode .scan-torche,
+body.dark-mode .ecran-btn {
+    background: rgba(85, 144, 204, 0.10) !important;
+    border-color: rgba(85, 144, 204, 0.28) !important;
+    color: #8fb6e0 !important;
+    box-shadow: none !important;
+}
+
+/* Halo de focus : plus discret */
+body.dark-mode input:focus,
+body.dark-mode select:focus,
+body.dark-mode textarea:focus {
+    box-shadow: 0 0 0 3.5px rgba(85, 144, 204, 0.18) !important;
+}
+
+/* Pastilles et badges bleus */
+body.dark-mode .cgu-badge {
+    background: #3d75ac;
+    color: #eef4fb;
+}
+
+/* Onglet actif : un bleu clair mais doux, sur fond sombre */
+body.dark-mode .tab-btn.active { color: #8fb6e0 !important; }
+
+/* Tuiles de secours de l'annuaire : moins lumineuses */
+body.dark-mode .ann-rouge {
+    background: rgba(198, 40, 40, 0.14);
+    border-color: rgba(255, 138, 128, 0.22);
+    color: #e59a94;
+}
+body.dark-mode .ann-bleu {
+    background: rgba(85, 144, 204, 0.12);
+    border-color: rgba(143, 182, 224, 0.24);
+    color: #8fb6e0;
+}
+

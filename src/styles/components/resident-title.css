@@ -1,0 +1,4 @@
+/* TITRE JEUNE */
+.resident-title { background: var(--coallia-blue); color: white; padding: 12px 15px; border-radius: 12px; font-size: 15px; font-weight: 700; margin: 25px 0 12px 0; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0,85,164,0.2); display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+.resident-title:first-child { margin-top: 5px; }
+

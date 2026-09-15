@@ -1,0 +1,104 @@
+/* ========================================================================== */
+/* 👑 ALIGNEMENT BORDURES : Libération du plein écran (Multimédia)           */
+/* ========================================================================== */
+#media-app {
+    padding: 0 !important;
+}
+
+
+/* ========================================================================== */
+/* 🎮 PRÊTS MULTIMÉDIA — cartes lisibles, état signalé par une pastille       */
+/* ========================================================================== */
+
+.media-carte {
+    margin-bottom: 14px;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--success);
+    box-shadow: 0 4px 14px rgba(10, 22, 44, 0.05);
+}
+.media-carte-prete { border-left-color: var(--warning); }
+
+.media-corps { padding: 18px 20px; }
+
+.media-entete {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 16px;
+}
+.media-nom {
+    margin: 0; font-size: 16.5px; font-weight: 800;
+    letter-spacing: -0.2px; color: var(--text-dark);
+    text-align: left; line-height: 1.25;
+}
+.media-etat {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 800;
+    letter-spacing: 0.6px; text-transform: uppercase;
+    color: var(--success); white-space: nowrap; flex-shrink: 0;
+}
+.media-carte-prete .media-etat { color: var(--warning); }
+.media-point {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: currentColor; flex-shrink: 0;
+}
+.media-carte-prete .media-point { animation: pulseAttente 1.8s ease-in-out infinite; }
+
+/* Boutons */
+.media-btn {
+    width: 100%; padding: 14px;
+    font-size: 14.5px; font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    border: none; border-radius: 13px; cursor: pointer;
+    transition: transform 0.16s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.media-btn:active { transform: scale(0.97); }
+.media-btn-preter { background: var(--coallia-blue); color: #fff; }
+.media-btn-retour { background: rgba(255, 149, 0, 0.12); color: #B26A00; }
+body.dark-mode .media-btn-retour { background: rgba(255,149,0,0.16); color: #ffb74d; }
+
+/* Pied de carte */
+.media-pied {
+    background: var(--footer-bg);
+    border-top: 1px solid var(--border-color);
+    padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+}
+.media-pied-actif { flex-direction: column; align-items: stretch; gap: 8px; }
+.media-pied-ligne { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.media-pied-lbl {
+    font-size: 9.5px; font-weight: 800;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--text-gray); flex-shrink: 0;
+}
+.media-pied-val {
+    font-size: 12.5px; font-weight: 700;
+    color: var(--text-dark); text-align: right;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Signature : présentée comme une pièce justificative, centrée et encadrée */
+.media-signature {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px;
+    margin-top: 10px; padding-top: 12px;
+    border-top: 1px dashed var(--border-color);
+}
+.media-signature .media-pied-lbl {
+    text-align: center;
+}
+.media-signature img {
+    display: block;
+    width: 100%;
+    max-width: 210px;
+    height: 62px;
+    object-fit: contain;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 6px 10px;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 3px rgba(10, 22, 44, 0.05);
+}
+

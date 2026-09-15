@@ -1,0 +1,104 @@
+/* ========================================== */
+/* ANIMATIONS ÉCRAN MAINTENANCE               */
+/* ========================================== */
+@keyframes spinSmooth {
+    100% { transform: rotate(360deg); }
+}
+@keyframes spinReverse {
+    100% { transform: rotate(-360deg); }
+}
+@keyframes scanBar {
+    0% { left: -30%; width: 30%; }
+    50% { width: 50%; }
+    100% { left: 100%; width: 30%; }
+}
+
+
+/* 🛠️ ÉCRANS D'ÉTAT (maintenance, 404) — même ADN que la connexion            */
+/* ========================================================================== */
+
+.ecran-picto {
+    position: relative;
+    width: 68px; height: 68px;
+    margin: 0 auto 22px auto;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0, 85, 164, 0.07);
+    border-radius: 22px;
+}
+/* Piste complète : le cercle reste entier, rien ne semble manquer */
+/* 🌊 ONDE : un seul cercle s'écarte du bouclier et se dissipe. */
+.ecran-picto-anneau {
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    border: 1.5px solid var(--coallia-blue);
+    opacity: 0;
+    animation: ondePicto 3s cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+    pointer-events: none;
+}
+
+@keyframes ondePicto {
+    0%   { transform: scale(1);   opacity: 0.35; border-radius: 22px; }
+    100% { transform: scale(1.7); opacity: 0;    border-radius: 36px; }
+}
+.ecran-picto-statique { background: rgba(168, 23, 90, 0.07); }
+.ecran-picto-statique svg { color: #A8175A !important; }
+
+.ecran-kicker {
+    font-size: 9.5px; font-weight: 800;
+    letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--coallia-blue);
+    margin-bottom: 8px;
+}
+
+.ecran-jauge {
+    width: 100%; height: 4px;
+    background: var(--input-bg);
+    border-radius: 4px;
+    margin-bottom: 26px;
+    overflow: hidden; position: relative;
+}
+.ecran-jauge span {
+    position: absolute; top: 0; left: 0; height: 100%; width: 100%;
+    background: linear-gradient(90deg, transparent, var(--coallia-blue), transparent);
+    border-radius: 4px;
+    animation: scanBar 2s ease-in-out infinite;
+}
+
+.ecran-btn {
+    width: 100%; border: none;
+    background: rgba(0, 85, 164, 0.07);
+    color: var(--coallia-blue);
+    padding: 16px; border-radius: 16px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    display: flex; justify-content: center; align-items: center; gap: 9px;
+    transition: transform 0.18s ease, background-color 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.ecran-btn:active { transform: scale(0.97); }
+.ecran-btn-plein {
+    background: linear-gradient(135deg, #0055a4 0%, #00417d 100%);
+    color: #fff;
+    box-shadow: 0 8px 22px rgba(0, 85, 164, 0.26);
+}
+
+.ecran-pied {
+    background: var(--bg-color);
+    border-top: 1px solid var(--border-color);
+    padding: 16px 26px 18px 26px;
+    text-align: center;
+}
+.ecran-pied-l1 {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; color: var(--text-gray); font-weight: 600;
+    margin-bottom: 7px; line-height: 1.4;
+}
+.ecran-pied-l2 { font-size: 11.5px; color: var(--text-gray); font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) {
+    .ecran-picto-anneau,
+    .ecran-picto-anneau::after,
+    .ecran-picto svg,
+    .ecran-jauge span { animation: none !important; }
+}
+

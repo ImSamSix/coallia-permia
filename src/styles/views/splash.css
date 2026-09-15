@@ -1,0 +1,107 @@
+/* ========================================================================== */
+/* 🚀 ÉCRAN DE DÉMARRAGE — émergence du logo puis remplissage tricolore       */
+/* ========================================================================== */
+
+#splash-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s;
+}
+
+.splash-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 👁️ Centre optique : ~8 % au-dessus du centre géométrique.
+       Un bloc mathématiquement centré paraît toujours trop bas à l'œil. */
+    transform: translateY(-8vh);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 1. Le logo émerge : net, stable, sans clignotement */
+.splash-logo {
+    height: 116px;
+    width: auto;
+    /* Marge négative : compense les marges blanches intégrées au PNG */
+    margin-bottom: -6px;
+    opacity: 0;
+    animation: splashLogo 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+@keyframes splashLogo {
+    from { opacity: 0; transform: scale(0.93) translateY(12px); filter: blur(7px); }
+    to   { opacity: 1; transform: scale(1) translateY(0);       filter: blur(0); }
+}
+
+/* 2. Le titre suit, décalé */
+.splash-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-gray);
+    letter-spacing: 4.5px;
+    /* Compense l'espace créé à droite par l'interlettrage */
+    text-indent: 4.5px;
+    opacity: 0;
+    animation: splashApparition 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
+}
+@keyframes splashApparition {
+    from { opacity: 0;    transform: translateY(8px); }
+    to   { opacity: 0.75; transform: translateY(0); }
+}
+
+/* 3. La jauge tricolore se remplit : progression + signature de marque */
+.splash-jauge {
+    width: 170px;
+    height: 3px;
+    border-radius: 3px;
+    margin-top: 20px;
+    overflow: hidden;
+    background: rgba(0, 85, 164, 0.10);
+    opacity: 0;
+    animation: splashApparition 0.5s ease 0.6s forwards;
+}
+.splash-jauge span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    border-radius: 3px;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background: linear-gradient(
+        90deg,
+        #6B3FA0 0%,   #6B3FA0 30%,
+        #0055a4 30%,  #0055a4 74%,
+        #A8175A 74%,  #A8175A 100%
+    );
+    animation: splashRemplir 0.95s cubic-bezier(0.4, 0, 0.2, 1) 0.65s forwards;
+}
+@keyframes splashRemplir {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+/* 4. Sortie : l'ensemble s'éloigne légèrement en s'effaçant */
+#splash-screen.hidden-splash {
+    opacity: 0;
+    visibility: hidden;
+}
+#splash-screen.hidden-splash .splash-content {
+    transform: translateY(-8vh) scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .splash-logo, .splash-title, .splash-jauge { animation: none !important; opacity: 1; transform: none; }
+    .splash-jauge span { animation: none !important; transform: scaleX(1); }
+}
+
+#splash-screen.hidden-splash {
+    opacity: 0;
+    visibility: hidden;
+}
+

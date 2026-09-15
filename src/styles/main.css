@@ -1,0 +1,48 @@
+/* ==========================================================================
+   PERMIA — Feuille de style agrégée
+   Ordre d'import volontaire : base -> composants -> vues -> thème.
+   Le thème (transitions + mode sombre) reste importé EN DERNIER : la règle
+   de transition partagée (theme-transitions.css) et les surcharges
+   `body.dark-mode` doivent rester après tous les composants/vues pour
+   reproduire exactement la cascade de l'ancien style.css monolithique.
+   ========================================================================== */
+
+@import "./base.css";
+
+@import "./components/menu-hub.css";
+@import "./components/header-tabs.css";
+@import "./components/tabs.css";
+@import "./components/panier.css";
+@import "./components/accordion.css";
+@import "./components/resident-title.css";
+@import "./components/item-card.css";
+@import "./components/quantity.css";
+@import "./components/clock-badge.css";
+@import "./components/modals.css";
+@import "./components/easter-egg.css";
+@import "./components/timeline.css";
+@import "./components/btn-eval.css";
+@import "./components/filters.css";
+@import "./components/hub-badge.css";
+@import "./components/skeleton.css";
+@import "./components/offline-badge.css";
+@import "./components/error-bubbles.css";
+@import "./components/history-links.css";
+@import "./components/logout-modal.css";
+@import "./components/scanner.css";
+@import "./components/annuaire.css";
+@import "./components/pending-badge.css";
+
+@import "./views/login.css";
+@import "./views/splash.css";
+@import "./views/materiel.css";
+@import "./views/frigos.css";
+@import "./views/media.css";
+@import "./views/cgu.css";
+@import "./views/system-screens.css";
+@import "./views/comptage.css";
+@import "./views/medicaments.css";
+
+@import "./theme-transitions.css";
+@import "./dark-mode.css";
+@import "./dark-mode-buttons.css";

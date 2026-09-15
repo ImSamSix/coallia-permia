@@ -1,0 +1,31 @@
+/* ========================================== */
+/* BADGES DU DASHBOARD DYNAMIQUE              */
+/* ========================================== */
+.hub-badge {
+    display: inline-block;
+    background: var(--danger);
+    color: white;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border: 2px solid var(--card-color); /* Contour couleur carte pour l'élégance */
+    z-index: 10;
+    animation: popBadge 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hub-badge.info { 
+    background: var(--coallia-blue); /* Bleu pour les simples infos */
+}
+
+@keyframes popBadge {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.hub-badge.warning { 
+    background: var(--warning); 
+    color: white;
+}
+

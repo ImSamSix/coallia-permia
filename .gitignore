@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# Cloudflare Worker
+worker/node_modules
+worker/.wrangler
+worker/.dev.vars

@@ -1,0 +1,22 @@
+/* CARTES MATÉRIEL */
+.items-grid { display: flex; flex-direction: column; gap: 12px; }
+.item-card { background: var(--card-color); border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); cursor: pointer; border: 2px solid transparent; transition: background 0.3s; }
+.item-card.selected-panier { border-color: var(--coallia-blue); background-color: rgba(0, 85, 164, 0.1); }
+.status-line { height: 6px; width: 100%; }
+.card-body { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+.info h3 { margin: 0 0 5px 0; font-size: 16px; color: var(--text-dark); }
+.status-text { margin: 0; font-size: 13px; font-weight: 600; }
+.dot-indicator { width: 12px; height: 12px; border-radius: 50%; }
+.card-footer { border-top: 1px solid var(--border-color); padding: 12px 20px; font-size: 12px; background: var(--footer-bg); transition: background 0.3s; }
+.row { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--text-gray); }
+.row b { color: var(--text-dark); }
+
+.available .status-line, .available .dot-indicator { background: var(--success); }
+.available .status-text { color: var(--success); }
+.borrowed .status-line, .borrowed .dot-indicator { background: var(--warning); }
+.borrowed .status-text { color: var(--warning); }
+.overdue .status-line, .overdue .dot-indicator { background: var(--danger); }
+.overdue .status-text, .overdue .info h3 { color: var(--danger); }
+.generic .status-line, .generic .dot-indicator { background: var(--coallia-blue); }
+.generic .status-text { color: var(--coallia-blue); }
+

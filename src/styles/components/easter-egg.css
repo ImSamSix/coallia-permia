@@ -1,0 +1,31 @@
+/* ========================================== */
+/* ANIMATION PLUIE DE COEURS (EASTER EGG) */
+/* ========================================== */
+.coeur-tombant {
+    position: fixed;
+    top: -10%;
+    z-index: 9999;
+    pointer-events: none; /* Pour ne pas gêner les clics */
+    animation: fall linear forwards;
+    user-select: none;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(360deg);
+    }
+}
+
+
+/* ==========================================
+   ❤️ EASTER EGG : BANNIÈRE ANIMÉE
+   ========================================== */
+@keyframes slideDownBanner {
+    from { top: -50px; opacity: 0; }
+    to { top: 20px; opacity: 1; }
+}
+@keyframes slideUpBanner {
+    from { top: 20px; opacity: 1; }
+    to { top: -50px; opacity: 0; }
+}
+

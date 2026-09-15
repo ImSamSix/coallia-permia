@@ -1,0 +1,14 @@
+/* ========================================== */
+/* CENTRAGE PARFAIT DE TOUTES LES BULLES      */
+/* ========================================== */
+#error-bubble,
+#med-error-bubble,
+#trans-error-bubble,
+#frigo-error-bubble,
+#sig-error-bubble {
+    display: flex;
+    align-items: center;        
+    justify-content: center;    
+    text-align: center;
+}
+

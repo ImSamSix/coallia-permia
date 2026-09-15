@@ -1,0 +1,115 @@
+/* ========================================================================== */
+/* 👑 RENDERER PREMIUM : SÉLECTEUR DICTÉ iOS (GLASSMORPHISM & SPRING-EFFECT)  */
+/* ========================================================================== */
+
+/* 1. Le conteneur passe en mode Verre Sablé iOS (Glassmorphism étanche) */
+.tabs-nav {
+    position: relative;
+    display: flex;
+    background: rgba(229, 229, 234, 0.5) !important; /* Fond translucide blanc natif */
+    -webkit-backdrop-filter: blur(20px) !important;  /* Safari / iOS */
+    backdrop-filter: blur(20px) !important;          /* L'effet givré */
+    border: 1px solid rgba(255, 255, 255, 0.4) !important; /* Micro-reflet de lumière sur la bordure */
+    padding: 3px !important;
+    border-radius: 16px !important;
+    margin-bottom: 20px !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02), 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+    transition: background 0.3s, border-color 0.3s;
+    z-index: 100;
+}
+
+/* Adaptation du verre givré pour le Mode Sombre Apple */
+body.dark-mode .tabs-nav {
+    background: rgba(28, 28, 30, 0.4) !important; /* Fond translucide sombre */
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* ========================================================================== */
+/* 👑 INDICATEUR ULTRA-FLUIDE : EFFET CHEWING-GUM APPLE MUSIC (ASYNCHRONE)     */
+/* ========================================================================== */
+
+.tab-indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    background: var(--card-color) !important;
+    border-radius: 13px !important;
+    z-index: 0;
+    /* Ombre plus douce et mieux étalée : la pastille flotte au lieu d'être posée */
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04),
+                0 4px 10px rgba(10, 22, 44, 0.10) !important;
+    border: 0.5px solid rgba(255, 255, 255, 0.7);
+
+    /* 🛡️ NEUTRALISATION : On bloque l'ancien système JS pour basculer sur left/right */
+    width: auto !important;
+    transform: none !important;
+    will-change: left, right;
+}
+
+body.dark-mode .tab-indicator {
+    background: rgba(72, 72, 74, 0.9) !important;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* ➡️ MOUVEMENT VERS LA DROITE : Le bord droit fonce, le bord gauche traîne */
+.tab-indicator.move-right {
+    transition: right 0.33s cubic-bezier(0.16, 1, 0.3, 1), 
+                left 0.42s cubic-bezier(0.5, 0, 0.1, 1) !important;
+}
+
+/* ⬅️ MOUVEMENT VERS LA GAUCHE : Le bord gauche fonce, le bord droit traîne */
+.tab-indicator.move-left {
+    transition: left 0.33s cubic-bezier(0.16, 1, 0.3, 1), 
+                right 0.42s cubic-bezier(0.5, 0, 0.1, 1) !important;
+}
+
+/* 3. Standardisation des boutons de navigation */
+.tab-btn {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    border: none;
+    padding: 12px 5px !important;   /* zone tactile confortable */
+    border-radius: 13px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    letter-spacing: -0.1px;
+    cursor: pointer;
+    background: transparent !important;
+    color: var(--text-gray) !important;
+    -webkit-tap-highlight-color: transparent;
+
+    transition: color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.18s cubic-bezier(0.25, 1, 0.5, 1) !important;
+}
+
+/* 📏 Séparateurs fins entre les options inactives (repère iOS) */
+.tab-btn + .tab-btn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 22%;
+    bottom: 22%;
+    width: 1px;
+    background: var(--text-gray);
+    opacity: 0.22;
+    transition: opacity 0.25s ease;
+}
+
+/* Le séparateur s'efface autour de l'onglet actif */
+.tab-btn.active::before,
+.tab-btn.active + .tab-btn::before { opacity: 0; }
+
+/* Retour tactile : l'onglet s'enfonce légèrement */
+.tab-btn:active { transform: scale(0.95); }
+
+/* Changement d'état du bouton sélectionné */
+.tab-btn.active {
+    color: var(--coallia-blue) !important;
+    font-weight: 800 !important;
+}
+.tab-btn.active:active { transform: scale(1); }
+
+.scan-main-btn { width: 100%; background: var(--card-color); color: var(--coallia-blue); border: 2px solid var(--coallia-blue); padding: 16px; border-radius: 16px; font-weight: 700; font-size: 16px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.3s; }
+

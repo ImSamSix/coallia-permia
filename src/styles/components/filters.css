@@ -1,0 +1,35 @@
+/* ========================================== */
+/* BARRE DE FILTRES TIMELINE                  */
+/* ========================================== */
+.filter-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 5px 20px 15px 20px;
+    margin-left: -20px; /* Pour toucher les bords de l'écran */
+    margin-right: -20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Cache la scrollbar sur Firefox */
+}
+.filter-scroll-container::-webkit-scrollbar {
+    display: none; /* Cache la scrollbar sur Chrome/Safari/iOS */
+}
+.filter-btn {
+    background: var(--input-bg);
+    color: var(--text-gray);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap; /* Empêche le texte de passer à la ligne */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.filter-btn.active {
+    background: var(--coallia-blue);
+    color: white;
+    border-color: var(--coallia-blue);
+    box-shadow: 0 4px 10px rgba(0,85,164,0.2);
+}
+

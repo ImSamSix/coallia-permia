@@ -1,0 +1,24 @@
+/* === STYLES BOUTONS QCM FRIGOS === */
+.btn-eval {
+    flex: 1;
+    background: var(--input-bg);
+    color: var(--text-dark);
+    border: 2px solid transparent;
+    padding: 12px 5px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.btn-eval.selected {
+    background: rgba(0, 85, 164, 0.1); /* Fond bleuté léger */
+    border-color: var(--coallia-blue);
+    color: var(--coallia-blue);
+    transform: scale(0.95);
+}
+.btn-eval:active {
+    transform: scale(0.9);
+}
+
