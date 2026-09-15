@@ -11,18 +11,15 @@
     <meta name="robots" content="noindex, nofollow">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://relais-permia.imsamsix.workers.dev https://relais-habita.imsamsix.workers.dev; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none';">
     
-    <link rel="manifest" href="manifest.json">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Permia">
-    
-    <link rel="apple-touch-icon" href="img/app-icon.png">
+
+    <link rel="apple-touch-icon" href="/img/app-icon.png">
 
     <!-- 🔐 VITAL : hébergé en local. Aucune dépendance réseau pour déverrouiller le coffre. -->
-    <script src="js/crypto-js.min.js"></script>
-    <link rel="stylesheet" href="css/style.css">
+    <script src="/vendor/crypto-js.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -40,7 +37,7 @@
 
 <div id="splash-screen">
     <div class="splash-content">
-        <img src="img/logo-coallia.png" alt="Coallia" class="splash-logo">
+        <img src="/img/logo-coallia.png" alt="Coallia" class="splash-logo">
         <div class="splash-title">ESPACE PERMANENCE</div>
         <div class="splash-jauge"><span></span></div>
     </div>
@@ -271,7 +268,7 @@
             <div style="padding: 38px 30px 30px 30px;">
 
                 <div style="text-align: center; margin-bottom: 30px;">
-                    <img src="img/logo-coallia.png" alt="Coallia" class="logo-coallia" style="height: 62px; margin-bottom: 22px;">
+                    <img src="/img/logo-coallia.png" alt="Coallia" class="logo-coallia" style="height: 62px; margin-bottom: 22px;">
                     <h1 style="font-size: 25px; font-weight: 800; letter-spacing: -0.6px; margin: 0 0 8px 0; color: var(--text-dark);">Espace Permanence</h1>
                     <p class="subtitle" style="font-size: 14px; font-weight: 500; margin: 0; line-height: 1.5; color: var(--text-gray);">
                         Identifiez-vous pour ouvrir votre session
@@ -1014,10 +1011,6 @@
             <span style="font-size: 20px;">📞</span> Annuaire d'urgence
         </button>
         
-        <button class="btn-secondary" style="width: 100%; margin-bottom: 15px; font-size: 15px; padding: 16px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; color: var(--text-dark); background: var(--input-bg); border: 1px solid var(--border-color);" onclick="ouvrirDemandeIntervention()">
-            <span style="font-size: 20px;">🔧</span> Demande d'intervention
-        </button>
-
         <button class="btn-secondary" style="width: 100%; margin-bottom: 25px; font-size: 15px; padding: 16px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; color: var(--text-dark); background: var(--input-bg); border: 1px solid var(--border-color); outline: none;" onclick="toggleThemeAnimated()">
             <span id="theme-icon" style="font-size: 22px; display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">🌙</span>
             <span id="theme-text">Passer au Mode Sombre</span>
@@ -1136,89 +1129,6 @@
         <div class="modal-buttons">
             <button class="btn-secondary" onclick="document.getElementById('edit-contact-modal').classList.add('hidden'); document.getElementById('annuaire-modal').classList.remove('hidden');">Annuler</button>
             <button class="btn-primary" onclick="validerEditContact()">Enregistrer</button>
-        </div>
-    </div>
-</div>
-
-
-<div id="di-modal" class="modal-overlay hidden">
-    <div class="modal-card di-card">
-
-        <div class="di-filet">
-            <span style="flex:30; background:#6B3FA0;"></span>
-            <span style="flex:44; background:var(--coallia-blue);"></span>
-            <span style="flex:26; background:#A8175A;"></span>
-        </div>
-
-        <div class="di-entete">
-            <div>
-                <div class="di-kicker">Formulaire technique</div>
-                <h3 class="di-titre">Demande d'intervention</h3>
-            </div>
-            <div class="di-fermer" onclick="document.getElementById('di-modal').classList.add('hidden')" role="button" aria-label="Fermer le formulaire">✕</div>
-        </div>
-
-        <div class="di-corps">
-
-            <section class="di-bloc">
-                <div class="di-etape"><span class="di-num">1</span> Demandeur</div>
-                <div class="di-duo">
-                    <input type="text" id="di-nom" placeholder="Nom" class="di-champ">
-                    <input type="text" id="di-prenom" placeholder="Prénom" class="di-champ">
-                </div>
-                <input type="tel" id="di-tel" placeholder="Téléphone professionnel" class="di-champ">
-            </section>
-
-            <section class="di-bloc">
-                <div class="di-etape"><span class="di-num">2</span> Localisation</div>
-                <div class="di-duo di-duo-2-1">
-                    <input type="text" id="di-bat" placeholder="Bâtiment" class="di-champ">
-                    <input type="text" id="di-etage" placeholder="Étage" class="di-champ">
-                </div>
-                <input type="text" id="di-apt" placeholder="N° appartement et chambre" class="di-champ">
-            </section>
-
-            <section class="di-bloc">
-                <div class="di-etape"><span class="di-num">3</span> Nature du problème</div>
-
-                <select id="di-metier" class="di-champ di-select">
-                    <option value="" disabled selected>Corps de métier...</option>
-                    <option>1 Eléctricité ⚡</option><option>2 Plomberie 🧑🏻‍🔧</option><option>3 Menuiserie 🪚</option>
-                    <option>4 Serrurerie 🔑</option><option>5 Petite Maçonnerie 👷🏻</option><option>6 Manutention 📦</option>
-                    <option>7 Chauffage ♨️</option><option>8 VMC 🌀</option><option>9 Sécurité 🔐</option>
-                </select>
-
-                <div class="di-zone-desc">
-                    <textarea id="di-desc" placeholder="Décrivez le problème..." oninput="autoResize(this)" rows="1" class="di-champ di-textarea"></textarea>
-                    <button onclick="document.getElementById('di-desc').value=''; document.getElementById('di-desc').style.height='58px';" class="di-effacer" aria-label="Effacer la description">🗑️</button>
-                </div>
-
-                <div class="di-duo">
-                    <select id="di-ori" class="di-champ di-select">
-                        <option value="" disabled selected>Origine...</option>
-                        <option>VAD</option><option>VADT</option><option>Jeune</option><option>Autre</option>
-                    </select>
-                    <select id="di-cau" class="di-champ di-select">
-                        <option value="" disabled selected>Cause...</option>
-                        <option>1 Cause Accidentelle</option><option>2 Mauvaise Utilisation</option><option>3 Sinistre</option>
-                        <option>4 Utilisation Intensive</option><option>5 Vandalisme</option><option>6 Usure Normale</option>
-                    </select>
-                </div>
-            </section>
-
-            <section class="di-bloc di-bloc-dernier">
-                <div class="di-etape"><span class="di-num">4</span> Autorisation du jeune</div>
-                <select id="di-autorisation" class="di-champ di-select" onchange="if(this.value === 'OUI'){document.getElementById('di-num-res').classList.remove('hidden');}else{document.getElementById('di-num-res').classList.add('hidden'); document.getElementById('di-num-res').value = '';}">
-                    <option value="" disabled selected>Intervention autorisée en son absence ?</option>
-                    <option value="OUI">OUI ✅</option>
-                    <option value="NON">NON ❌</option>
-                </select>
-                <input type="tel" id="di-num-res" class="hidden di-champ" placeholder="Téléphone du jeune">
-            </section>
-        </div>
-
-        <div class="di-pied">
-            <button id="btn-envoyer-di" class="btn-primary di-envoyer" onclick="envoyerDI()">Envoyer la demande</button>
         </div>
     </div>
 </div>
@@ -1396,6 +1306,6 @@
     </div>
 </div>
 
-<script src="js/script.js"></script>
+<script type="module" src="/src/main.ts"></script>
 </body>
 </html>
