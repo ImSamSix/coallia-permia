@@ -245,7 +245,7 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
     return tache.outputPdf("datauristring");
   }
 
-  return tache.save().then(() => {
+  const resultat: Promise<void> = tache.save().then(() => {
     // Succès !
     if (btn) {
       btn.innerText = "✅ PDF Téléchargé";
@@ -265,4 +265,5 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
       }
     }, 3000);
   });
+  return resultat;
 }
