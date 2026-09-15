@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+    <title>Coallia - Espace Permanence</title>
+    <meta name="author" content="Sami Charles Hassen Harigua - Créateur de Permia">
+    <meta name="copyright" content="© 2026 Permia - Propriété intellectuelle de Sami Charles Hassen Harigua">
+    <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://relais-permia.imsamsix.workers.dev https://relais-habita.imsamsix.workers.dev; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none';">
+    
+    <link rel="manifest" href="manifest.json">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Permia">
+    
+    <link rel="apple-touch-icon" href="img/app-icon.png">
+
+    <!-- 🔐 VITAL : hébergé en local. Aucune dépendance réseau pour déverrouiller le coffre. -->
+    <script src="js/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+<div id="offline-badge" class="offline-badge hidden" role="status" aria-live="polite">
+    <span>☁️</span>  Hors-ligne
+</div>
+
+<div id="pending-badge" class="pending-badge hidden" role="status" aria-live="polite">
+    <span class="pending-point"></span>
+    <span id="pending-texte">0 en attente</span>
+</div>
+
+<div id="splash-screen">
+    <div class="splash-content">
+        <img src="img/logo-coallia.png" alt="Coallia" class="splash-logo">
+        <div class="splash-title">ESPACE PERMANENCE</div>
+        <div class="splash-jauge"><span></span></div>
+    </div>
+</div>
+
+<section id="maintenance-app" class="view hidden" style="height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; box-sizing: border-box; background: var(--bg-color); position: fixed; top: 0; left: 0; z-index: 99999; overflow: hidden;">
+
+    <div style="background: var(--card-color); border: 1px solid var(--border-color); border-radius: 28px; box-shadow: 0 18px 48px rgba(10, 22, 44, 0.10); max-width: 380px; width: 100%; position: relative; z-index: 10; overflow: hidden;">
+
+        <!-- Filet tricolore : même signature que la connexion et les rapports -->
+        <div style="display: flex; height: 4px; width: 100%;">
+            <div style="flex: 30; background: #6B3FA0;"></div>
+            <div style="flex: 44; background: var(--coallia-blue);"></div>
+            <div style="flex: 26; background: #A8175A;"></div>
+        </div>
+
+        <div style="padding: 40px 30px 32px 30px; text-align: center;">
+
+            <div class="ecran-picto">
+                <div class="ecran-picto-anneau"></div>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--coallia-blue); position: relative; z-index: 2;">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+            </div>
+
+            <div class="ecran-kicker">Intervention en cours</div>
+            <h1 style="font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 10px 0; color: var(--text-dark);">Mise à jour système</h1>
+            <p style="font-size: 14px; color: var(--text-gray); font-weight: 500; line-height: 1.55; margin: 0 0 26px 0;">
+                Les serveurs Permia sont en cours d'optimisation. Vos données restent verrouillées et sécurisées.
+            </p>
+
+            <div class="ecran-jauge"><span></span></div>
+
+            <button onclick="window.location.reload()" class="ecran-btn">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                Vérifier le statut
+            </button>
+        </div>
+
+        <div class="ecran-pied">
+            <div class="ecran-pied-l1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Aucune donnée n'est perdue pendant l'intervention
+            </div>
+            <div class="ecran-pied-l2">© 2026 Coallia Permia</div>
+        </div>
+    </div>
+</section>
+
+<section id="notfound-app" class="view hidden" style="height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; box-sizing: border-box; background: var(--bg-color); position: fixed; top: 0; left: 0; z-index: 99998; overflow: hidden;">
+
+    <div style="background: var(--card-color); border: 1px solid var(--border-color); border-radius: 28px; box-shadow: 0 18px 48px rgba(10, 22, 44, 0.10); max-width: 380px; width: 100%; position: relative; z-index: 10; overflow: hidden;">
+
+        <div style="display: flex; height: 4px; width: 100%;">
+            <div style="flex: 30; background: #6B3FA0;"></div>
+            <div style="flex: 44; background: var(--coallia-blue);"></div>
+            <div style="flex: 26; background: #A8175A;"></div>
+        </div>
+
+        <div style="padding: 40px 30px 32px 30px; text-align: center;">
+
+            <div class="ecran-picto ecran-picto-statique">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--coallia-blue); position: relative; z-index: 2;">
+                    <circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path>
+                </svg>
+            </div>
+
+            <div class="ecran-kicker" style="color: #A8175A;">Erreur 404</div>
+            <h1 style="font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 10px 0; color: var(--text-dark);">Page introuvable</h1>
+            <p style="font-size: 14px; color: var(--text-gray); font-weight: 500; line-height: 1.55; margin: 0 0 26px 0;">
+                Cette page n'existe pas ou a été déplacée. Revenez à l'accueil pour reprendre votre permanence.
+            </p>
+
+            <button onclick="retourAccueilDepuis404()" class="ecran-btn ecran-btn-plein">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M9 22V12h6v10"></path></svg>
+                Retour à l'accueil
+            </button>
+        </div>
+
+        <div class="ecran-pied">
+            <div class="ecran-pied-l2">© 2026 Coallia Permia</div>
+        </div>
+    </div>
+</section>
+
+    <section id="cgu-view" class="view hidden" style="background: var(--bg-color); padding: 0;">
+        <header id="cgu-header" style="background: var(--card-color); position: sticky; top: 0; z-index: 100;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 14px 20px;">
+                <button class="back-btn" onclick="fermerCGU()">← Retour</button>
+                <div style="font-weight: 800; font-size: 15px; color: var(--text-dark);">Mentions légales</div>
+                <div style="width: 76px;"></div>
+            </div>
+            <div class="cgu-filet">
+                <span style="flex: 30; background: #6B3FA0;"></span>
+                <span style="flex: 44; background: var(--coallia-blue);"></span>
+                <span style="flex: 26; background: #A8175A;"></span>
+            </div>
+        </header>
+
+    <main id="cgu-main" style="overflow-y: auto; flex: 1; color: var(--text-dark);">
+
+    <div class="cgu-hero">
+        <div class="cgu-hero-top">
+            <span class="cgu-kicker">Document contractuel</span>
+            <span class="cgu-badge">v5.0</span>
+        </div>
+        <h1>Conditions générales d'utilisation</h1>
+        <p class="cgu-hero-sub">Charte de responsabilité institutionnelle de l'application Permia</p>
+        <div class="cgu-meta">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1M9 13h1m4 0h1M9 17h1m4 0h1"></path></svg>
+            <span>Coallia Guillaudot</span>
+            <span class="cgu-point">·</span>
+            <span>Mise à jour du 14/08/2026</span>
+        </div>
+    </div>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 1 : Objet, Périmètre et Force Probante</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">Permia est la solution numérique exclusive de gestion de permanence mise à la disposition des professionnels habilités de Coallia. Elle dématérialise et centralise le registre des médicaments, l'inventaire matériel, les transmissions professionnelles, le suivi des prêts multimédias (ordinateurs, manettes), le contrôle de présence réglementaire des résidents (MECS), l'évaluation sanitaire des réfrigérateurs ainsi que l'état des stocks d'urgence (pain). Toutes les saisies horodatées, signatures numériques collectées et rapports de contrôle générés dans l'application font foi, constituent des documents institutionnels opposables. Elles engagent la responsabilité professionnelle de l'agent identifié comme leur auteur déclaré, sous réserve du caractère déclaratif de l'identification décrit à l'article 2.</p>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 2 : Accès, Confidentialité et Secret Professionnel Strict</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">L'accès à Permia s'effectue au moyen d'un code de service mutualisé, sur l'appareil de permanence mis à disposition par la structure. Ce code est confidentiel et incessible : il ne doit être communiqué à aucune personne extérieure au service. L'identification du professionnel est <b>déclarative</b> : chaque utilisateur s'engage à renseigner son propre prénom à la connexion et demeure responsable de l'exactitude des saisies effectuées durant son créneau de permanence. Conformément aux dispositions du Code pénal relatives au <b>secret professionnel</b>, l'utilisateur a l'obligation absolue de ne divulguer, copier ou exporter aucune donnée nominative, médicale, comportementale ou relative à la localisation des jeunes (chambres, bâtiments) en dehors du strict cadre opérationnel de la continuité de service de la structure.</p>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 3 : Responsabilité Clinique (Registre Médication)</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">Permia agit exclusivement comme un outil de traçabilité et une aide cognitive de sécurité (alerte automatique du délai de garde de 6 heures pour le Paracétamol). <b>L'application ne se substitue en aucun cas à une prescription médicale valide ni au jugement clinique du professionnel de terrain.</b> La responsabilité civile, pénale et disciplinaire liée à l'administration d'un traitement incombe au professionnel ayant effectivement procédé à l'administration, la saisie dans Permia constituant une trace déclarative et non une preuve d'identité au sens technique.</p>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 4 : Loyauté des Saisies, Signatures et Protocoles d'Urgence</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">L'utilisateur s'engage et garantit l'exactitude absolue, la sincérité et la réalité en temps réel des événements consignés. Cette obligation s'applique sans réserve : 
+    <br>• Aux <b>relevés de présence (MECS)</b>, où le choix des motifs d'absence et le déclenchement d'une alerte "Fugue" engagent la responsabilité de l'éducateur dans le déclenchement des protocoles légaux.
+    <br>• Aux <b>prêts multimédias</b>, pour lesquels le recueil de la signature numérique du jeune est obligatoire pour valider la garde juridique du matériel.
+    <br>• Aux <b>contrôles des frigos et signalements photos</b>, qui doivent refléter fidèlement l'état de salubrité constaté. Toute omission volontaire, falsification ou déclaration abusive constitue une faute professionnelle grave.</p>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 5 : Protection des Données (RGPD), Signatures et Chiffrement de Bout en Bout</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">Conformément au Règlement Général sur la Protection des Données (RGPD), l'application applique un chiffrement AES-256 des données d'activité, dont la clé est dérivée du code de service par une fonction lente (PBKDF2) et n'existe que sur l'appareil. Les journaux sauvegardés sur le serveur de synchronisation y sont stockés sous forme chiffrée et illisible par l'hébergeur. Le code de service ne transite jamais en clair sur le réseau. Les signatures numériques de prêt et les photographies de signalement technique sont acheminées via un canal sécurisé vers l'environnement Microsoft 365 de la structure (Power Automate / Excel), le relais technique étant assuré par Cloudflare (Union européenne). Dans une démarche de minimisation (Privacy by Design), <b>l'ensemble des journaux d'activité conservés sur l'appareil (transmissions, médication, contrôles sanitaires, prêts, relevés de présence) est purgé automatiquement au-delà de 96 heures</b>, la conservation de long terme étant assurée par les registres institutionnels de la structure.</p>
+    
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 6 : Droits des Personnes Concernées et Responsable de Traitement</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">Le responsable de traitement au sens du RGPD est <b>l'établissement Coallia</b>, qui définit seul les finalités et les moyens du traitement. Permia constitue un outil technique mis à sa disposition. Les traitements réalisés ont pour finalité la continuité de l'accompagnement socio-éducatif, la traçabilité réglementaire de la médication et la sécurité des personnes hébergées ; ils reposent sur l'exécution des missions d'intérêt public confiées à la structure. Les personnes concernées, ou leurs représentants légaux, disposent d'un droit d'accès, de rectification, de limitation et d'opposition sur les données les concernant. Ces demandes doivent être adressées à la direction de l'établissement ou à son délégué à la protection des données, selon les modalités affichées au sein de la structure.</p>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 7 : Continuité des Flux, Tâches de Fond et Responsabilité Technique</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">Le concepteur met en œuvre les moyens techniques nécessaires pour assurer la mise en file d'attente locale et la synchronisation automatique en tâche de fond des logs historiques vers les tableaux de suivi d'entreprise. Cependant, en cas d'indisponibilité du réseau ou de blocage technique des services tiers (Microsoft Power Automate, Cloudflare Workers), le professionnel doit veiller au maintien des cahiers de rapport alternatifs de la structure pour pallier toute rupture de traçabilité. Le concepteur décline toute responsabilité quant aux conséquences d'une panne réseau empêchant la mise à jour immédiate des registres de suivi distants.</p>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 8 : Propriété Intellectuelle Exclusive</h3>
+    <p style="margin-top: 0; margin-bottom: 20px;">L'architecture système, la charte graphique et ergonomique (UI/UX), le code source d'infrastructure (moteurs cinématiques, algorithmes de chiffrement, scripts de routage) ainsi que le nom de domaine de l'application "Permia" sont la <b>propriété intellectuelle exclusive de leur concepteur, Sami Charles Hassen Harigua</b>. L'utilisation par l'établissement est concédée à titre de mise à disposition fonctionnelle strictement limitée à l'exercice de ses missions d'accompagnement social. Toute reproduction, ingénierie inverse, extraction de base de données ou revente du code est formellement interdite sous peine de poursuites.</p>
+
+    <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 9 : Évolution, Consentement et Loi Applicable</h3>
+    <p style="margin-top: 0; margin-bottom: 30px;">Le concepteur se réserve le droit de faire évoluer les présentes conditions pour s'adapter aux déploiements de nouvelles fonctionnalités ou aux exigences réglementaires de l'institution. L'authentification et l'utilisation de l'outil Permia valent acceptation pleine, entière et sans réserve des CGU en vigueur. Tout litige relatif à l'interprétation ou à l'exécution de la présente charte relève exclusivement de la législation française.</p>
+</main>
+
+    </section>
+
+   <style>
+        /* 🛑 Cache le header principal de l'app UNIQUEMENT quand l'écran de login est affiché */
+        body:has(#login-screen:not(.hidden)) .header {
+            display: none !important;
+        }
+
+        /* ==========================================
+           👑 GESTION DU MODE SOMBRE PREMIUM (LOGIN UNIQUEMENT)
+           ========================================== */
+
+        /* 🌑 La carte "Glassmorphism" s'assombrit pour l'effet glacé */
+        body.dark-mode .auth-card {
+            background: rgba(0, 0, 0, 0.4) !important;
+            backdrop-filter: blur(25px) !important;
+            -webkit-backdrop-filter: blur(25px) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        /* 👑 CORRECTION CHIRURGICALE : Enlever la fenêtre blanche derrière le logo transparent */
+        body.dark-mode #login-screen .logo-container,
+        body.dark-mode #login-screen img.logo-coallia {
+            background-color: transparent !important; /* Force la transparence du fond */
+            box-shadow: none !important;            /* Enlève toute ombre résiduelle */
+            border: none !important;                 /* Enlève toute bordure résiduelle */
+            padding: 0 !important;                  /* Évite les espaces blancs internes */
+        }
+
+        /* Titre en Blanc pour un pop premium */
+        body.dark-mode #login-screen h1 {
+            color: #ffffff !important;
+        }
+
+        /* Sous-titre et Copyright en gris clair lisible */
+        body.dark-mode #login-screen .subtitle,
+        body.dark-mode #login-screen .copyright-text,
+        body.dark-mode #login-screen .form-label {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
+        /* Les Icônes SVG et le singe s'éclaircissent */
+        body.dark-mode #login-screen svg,
+        body.dark-mode #login-screen #toggle-password {
+            stroke: rgba(255, 255, 255, 0.5) !important;
+            color: rgba(255, 255, 255, 0.5) !important;
+        }
+
+        /* 🛑 IMPORTANT : FORCE les inputs en fond sombre, 
+           malgré les inline-styles (onfocusin/out) */
+        body.dark-mode #login-screen .form div[style*="onfocusin"] {
+            color: #ffffff !important; 
+            background-color: rgba(255, 255, 255, 0.05) !important; 
+            border-color: rgba(255, 255, 255, 0.1) !important; 
+        }
+
+        /* Focus en dark mode : bordure et lueur bleues */
+        body.dark-mode #login-screen .form div[style*="onfocusin"]:focus-within {
+            background-color: #121212 !important; 
+            border-color: var(--coallia-blue) !important; 
+            box-shadow: 0 0 12px rgba(0, 85, 164, 0.3) !important; 
+        }
+        
+        /* La couleur du texte tapé dans les inputs */
+        body.dark-mode #login-screen .form input {
+            color: #ffffff !important;
+        }
+
+        /* 👑 RESTAURATION DU BOUTON PREMIUM */
+        body.dark-mode #btn-login {
+            background: linear-gradient(135deg, #0055a4 0%, #003d75 100%) !important;
+            box-shadow: 0 8px 25px rgba(0, 85, 164, 0.3) !important;
+        }
+    </style>
+
+    <section id="login-screen" class="view hidden" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-color); padding: 24px;">
+
+        <div class="auth-card" style="padding: 0; border-radius: 28px; position: relative; overflow: hidden; background: var(--card-color); border: 1px solid var(--border-color); box-shadow: 0 18px 48px rgba(10, 22, 44, 0.10); width: 100%; max-width: 380px;">
+
+            <div style="padding: 38px 30px 30px 30px;">
+
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <img src="img/logo-coallia.png" alt="Coallia" class="logo-coallia" style="height: 62px; margin-bottom: 22px;">
+                    <h1 style="font-size: 25px; font-weight: 800; letter-spacing: -0.6px; margin: 0 0 8px 0; color: var(--text-dark);">Espace Permanence</h1>
+                    <p class="subtitle" style="font-size: 14px; font-weight: 500; margin: 0; line-height: 1.5; color: var(--text-gray);">
+                        Identifiez-vous pour ouvrir votre session
+                    </p>
+                </div>
+
+                <div class="form">
+                    <div id="error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 13px; border-radius: 14px; font-size: 13px; font-weight: 700; margin-bottom: 18px; box-shadow: 0 6px 15px rgba(255,59,48,0.18); text-align: center;">⚠️ Veuillez remplir tous les champs</div>
+
+                    <label for="prenom-pro" class="champ-label">Prénom</label>
+                    <div class="champ-auth">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <input type="text" id="prenom-pro" placeholder="Votre prénom" autocomplete="off"
+                               autocapitalize="words" enterkeyhint="next"
+                               onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('pass-pro').focus();}">
+                    </div>
+
+                    <label for="pass-pro" class="champ-label">Code de service</label>
+                    <div class="champ-auth">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <input type="password" id="pass-pro" placeholder="••••••••" autocomplete="off"
+                               enterkeyhint="go"
+                               onkeydown="if(event.key==='Enter'){event.preventDefault();validerConnexionSecurisee();}">
+                        <span id="toggle-password" onclick="togglePasswordVisibility()" role="button" tabindex="0" aria-label="Afficher ou masquer le code de service">🙈</span>
+                    </div>
+
+                    <button id="btn-login" onclick="validerConnexionSecurisee()" style="width: 100%; border: none; background: linear-gradient(135deg, #0055a4 0%, #00417d 100%); color: white; padding: 18px; border-radius: 16px; font-weight: 700; font-size: 16.5px; cursor: pointer; box-shadow: 0 8px 22px rgba(0, 85, 164, 0.28); transition: transform 0.18s cubic-bezier(0.4,0,0.2,1), box-shadow 0.18s ease; margin-top: 28px; -webkit-tap-highlight-color: transparent;"
+                            onmousedown="this.style.transform='scale(0.97)'; this.style.boxShadow='0 4px 12px rgba(0, 85, 164, 0.2)';"
+                            onmouseup="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 22px rgba(0, 85, 164, 0.28)';"
+                            ontouchstart="this.style.transform='scale(0.97)';"
+                            ontouchend="this.style.transform='scale(1)';">
+                        Déverrouiller la session
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pied de carte : mention légale sur fond légèrement teinté -->
+            <div style="background: var(--bg-color); border-top: 1px solid var(--border-color); padding: 18px 30px 20px 30px; text-align: center;">
+                <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-gray); font-weight: 600; margin-bottom: 9px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    Accès réservé aux professionnels habilités
+                </div>
+                <div style="margin-bottom: 9px;">
+                    <span onclick="ouvrirCGU()" style="font-size: 11.5px; color: var(--coallia-blue); cursor: pointer; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; -webkit-tap-highlight-color: transparent;">Conditions d'utilisation</span>
+                </div>
+                <div style="font-size: 11.5px; color: var(--text-gray); font-weight: 500;">
+                    © 2026 Coallia Permia
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="home-menu" class="view hidden">
+        <header class="top-bar">
+            <div class="pro-badge" 
+              onclick="ouvrirMenuPro()" 
+              style="cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
+             <span id="display-pro-menu"></span>
+            </div>
+            
+            <button class="theme-toggle-btn" onclick="ouvrirPainModal()" style="font-size: 24px; justify-self: center;">🥖</button>
+            
+            <button class="logout-link" onclick="ouvrirLogout()">Déconnexion</button>
+        </header>
+
+        <main class="content" style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: calc(100vh - 75px); overflow-y: auto; padding-top: 25px; padding-bottom: 60px; box-sizing: border-box;">
+           <h2 id="welcome-message" onclick="clicEasterEggAccueil()" style="font-size: 22px; margin-bottom: 30px; text-align: center; font-weight: 800; line-height: 1.4; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">Que voulez-vous gérer ?</h2>            
+            <div class="menu-grid">
+                
+                <button class="hub-btn" onclick="openMateriel()" style="position: relative;">
+                    <div style="position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                        <span id="badge-materiel" class="hub-badge hidden">0</span>
+                        <span id="badge-frigo" class="hub-badge warning hidden">0</span>
+                    </div>
+                    
+                    <span class="hub-btn-icon">🍳</span>
+                    <span class="hub-btn-title">Gestion du Matériel</span>
+                    <span class="hub-btn-desc">Prêts & Frigos</span>
+                </button>
+
+                <button class="hub-btn" onclick="openMedicaments()" style="position: relative;">
+                    <span class="hub-btn-icon">💊</span>
+                    <span class="hub-btn-title">Traçabilité Médicaments</span>
+                    <span class="hub-btn-desc">Saisie & Enregistrement</span>
+                </button>
+
+                <button class="hub-btn" onclick="openComptageMenu()">
+                    <span class="hub-btn-icon">📋</span>
+                    <span class="hub-btn-title">Relevé de présence</span>
+                    <span class="hub-btn-desc">Suivi Matin & Soir</span>
+                </button>
+
+                <button class="hub-btn" onclick="openMediaApp()">
+                    <span class="hub-btn-icon">🎮</span>
+                    <span class="hub-btn-title">Prêts Multimédia</span>
+                    <span class="hub-btn-desc">Manettes Xbox & Télécommandes</span>
+                </button>
+                
+            </div>
+        </main>
+    </section>
+
+    <section id="main-app" class="view hidden">
+        <header class="top-bar">
+            <button class="back-btn" onclick="openMenu()">← Accueil</button>
+            
+            <div></div>
+                        
+            <div></div>
+        </header>
+
+        <nav class="tabs-nav" role="tablist" aria-label="Sections du matériel" style="position: relative;">
+            <div id="tab-indicator" class="tab-indicator"></div>
+            
+            <button id="tab-btn-dispo" class="tab-btn active" role="tab" aria-selected="true" onclick="switchTab('dispo')">Disponibles</button>
+            <button id="tab-btn-emprunt" class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('emprunt')">Empruntés</button>
+            <button id="tab-btn-frigos" class="tab-btn" role="tab" aria-selected="false" onclick="switchTab('frigos')">Frigos</button>
+        </nav>
+
+        <button id="main-scan-btn" class="scan-main-btn" onclick="ouvrirScanner()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; flex-shrink: 0;">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <path d="M14 14h3m3 0h.01M14 17h.01M17 17h3M14 20h.01M17 20h3"></path>
+            </svg>
+            Scanner un QR Code
+        </button>
+
+<button id="main-photo-btn" class="scan-main-btn hidden" onclick="declencherCamera()">
+    <span class="icon">🚨</span> Signaler un problème (Photo)
+</button>
+
+<input type="file" id="input-camera-cache" accept="image/*" capture="environment" style="display: none;">
+
+        <main class="content">
+            <div id="view-dispo" class="tab-content">
+    <div class="actions-header" style="position: sticky; top: 0; z-index: 100; background: var(--bg-color); padding-top: 5px; padding-bottom: 15px; margin-bottom: 5px;">
+        <button id="btn-mode-panier" class="btn-panier" onclick="toggleModePanier()">🛒 Mode Emprunt Groupé</button>
+    </div>
+    <div id="list-dispo"></div>
+</div>
+
+            <div id="view-emprunt" class="tab-content hidden">
+    <div class="actions-header" style="position: sticky; top: 0; z-index: 100; background: var(--bg-color); padding-top: 5px; padding-bottom: 15px; margin-bottom: 5px; display: flex; gap: 10px; justify-content: flex-end;">
+        <button id="btn-bilan" class="btn-panier" onclick="genererRecap()">📄 Exporter le bilan</button>
+        <button id="btn-mode-panier-retour" class="btn-panier" onclick="toggleModePanierRetour()">📦 Mode Retour Groupé</button>
+    </div>
+    
+    <input type="text" id="search-emprunt" aria-label="Rechercher un jeune parmi les emprunts" placeholder="🔍 Rechercher un jeune..." autocomplete="off" oninput="renderItems()" style="width: 100%; margin-bottom: 20px; text-align: center;">
+    
+    <div id="list-emprunt"></div>
+</div>
+
+            <div id="view-frigos" class="tab-content hidden">
+               <div class="actions-header" style="justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+                <span id="badge-etat-frigos" class="pro-badge" 
+                      style="background: var(--card-color); font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;"
+                      onmousedown="startResetFrigoEvalTimer()" 
+                      onmouseup="stopResetFrigoEvalTimer()" 
+                      onmouseleave="stopResetFrigoEvalTimer()"
+                      ontouchstart="startResetFrigoEvalTimer()" 
+                      ontouchend="stopResetFrigoEvalTimer()">
+                    📊 État actuel des frigos
+                </span>
+               </div>
+                
+                <div id="list-frigos" class="items-grid">
+                    </div>
+
+                <div style="text-align: center; margin-top: 30px; margin-bottom: 20px;">
+                    <a href="#" onclick="window.open(atob('aHR0cHM6Ly9jb2FsbGlhb3JnLnNoYXJlcG9pbnQuY29tLzp4Oi9zL0NvYWxsaWFfUGVybWlhL0lRQ2FJNHZ4V21oeFJMMlEwcGZTRklqNUFVM0NfSDBQYXZEU2xEdWZuWnowVVhvP2U9MTVXcmlT'), '_blank'); return false;" class="clock-badge" style="text-decoration: none; font-size: 14px; padding: 12px 20px; display: inline-block; background: var(--card-color); border: 2px solid var(--coallia-blue); color: var(--coallia-blue); transition: 0.3s;">
+                        📊 Consulter l'historique des frigos
+                    </a>
+                </div>
+            </div>
+        </main>
+    </section>
+
+    <section id="med-app" class="view hidden">
+        <header class="top-bar">
+            <button class="back-btn" onclick="openMenu()">← Accueil</button>
+            
+            <div></div>
+
+            <div></div>
+        </header>
+
+        <main class="content" style="padding-bottom: 40px;">
+            <h2 class="section-title" style="margin-top: 0; margin-bottom: 10px; font-size: 20px; text-align: center;">📋 Suivi Médication</h2>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span id="real-time-clock" class="clock-badge"
+                      onmousedown="startResetTimer()" 
+                      onmouseup="stopResetTimer()" 
+                      onmouseleave="stopResetTimer()"
+                      ontouchstart="startResetTimer()" 
+                      ontouchend="stopResetTimer()"
+                      style="cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
+                    --:--:--
+                </span>
+            </div>
+            
+            <div class="med-form-card">
+                <div id="med-error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Veuillez remplir tous les champs obligatoires</div>
+                
+                <label class="form-label">👤 Identité du jeune *</label>
+                <input type="text" id="med-nom-jeune" placeholder="Prénom et Nom" autocomplete="off" style="text-align: center;">
+
+                <label class="form-label">💊 Médicament donné *</label>
+                <select id="med-type" onchange="checkMedAutre()" style="text-align: center; text-align-last: center;">
+                    <option value="" disabled selected>Sélectionner le médicament...</option>
+                    <option value="Doliprane">Doliprane</option>
+                    <option value="Traitement régulier">Traitement régulier (Ordonnance)</option>
+                    <option value="Autre">Autre</option>
+                </select>
+                <div id="med-type-autre-container" class="hidden" style="position: relative; width: 100%; margin-bottom: 15px;">
+    <textarea id="med-type-autre" placeholder="Précisez le médicament..." oninput="autoResize(this)" rows="1" style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 16px; min-height: 54px; box-sizing: border-box; overflow: hidden; display: block; margin: 0;"></textarea>
+    <button onclick="effacerMedAutre()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--card-color); border: 2px solid white; border-radius: 12px; font-size: 18px; cursor: pointer; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10;">🗑️</button>
+</div>
+
+                <label class="form-label">🩺 Symptôme(s) *</label>
+                <select id="med-motif" onchange="checkMotifAutre()" style="text-align: center; text-align-last: center;">
+                    <option value="" disabled selected>Sélectionner le ou les symptôme(s)...</option>
+                    <option value="Prise de traitement">Prise de traitement quotidien</option>
+                    <option value="Mal de tête">Mal de tête</option>
+                    <option value="Mal de ventre">Mal de ventre</option>
+                    <option value="Fièvre">Fièvre</option>
+                    <option value="Blessure légère">Blessure légère</option>
+                    <option value="Autre">Autre</option>
+                </select>
+                <div id="med-motif-autre-container" class="hidden" style="position: relative; width: 100%; margin-bottom: 15px;">
+    <textarea id="med-motif-autre" placeholder="Précisez le ou les symptôme(s)..." oninput="autoResize(this)" rows="1" style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 16px; min-height: 54px; box-sizing: border-box; overflow: hidden; display: block; margin: 0;"></textarea>
+    <button onclick="effacerMotifAutre()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--card-color); border: 2px solid white; border-radius: 12px; font-size: 18px; cursor: pointer; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10;">🗑️</button>
+</div>
+
+                <button class="btn-primary" style="width: 100%; margin-top: 15px; padding: 18px; font-size: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer;" onclick="validerMedicament()">Enregistrer la prise</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="https://coalliaorg.sharepoint.com/:x:/s/Coallia_Permia/IQCekSNunnMNR5-p7kKClQFnAaIXjbKrAjZCsPXys0RjjHY?e=I0hPHc" target="_blank" class="clock-badge" style="text-decoration: none; font-size: 14px; padding: 12px 20px; display: inline-block; background: var(--card-color); border: 2px solid var(--coallia-blue); color: var(--coallia-blue); transition: 0.3s;">
+                    📊 Consulter la traçabilité des médicaments
+                </a>
+            </div>
+
+        </main>
+    </section>
+
+<section id="comptage-app" class="view hidden" style="padding: 15px; height: 100vh; overflow: hidden;">
+    <header class="top-bar">
+        <button class="back-btn" id="comptage-back-btn" onclick="verifierAnnulationComptage()">← Retour</button>
+        <div></div>
+        <div></div>
+    </header>
+
+    <!-- ÉCRAN 1 : Configuration et Lancement -->
+    <div id="comptage-setup-screen" class="content" style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding-top: 6px; box-sizing: border-box;">
+
+        <h2 class="section-title" style="margin-top: 0; margin-bottom: 14px; font-size: 20px; text-align: center;">📋 Relevé de présence</h2>
+
+        <div class="cpt-statut">
+            <span class="cpt-point"></span> Registre U2A MNA Guillaudot chiffré
+        </div>
+
+        <div class="med-form-card cpt-carte">
+
+            <div class="cpt-picto">📋</div>
+            <h3 class="cpt-titre">Nouveau relevé</h3>
+            <p class="cpt-sous">Tournée de présence réglementaire</p>
+
+            <div id="comptage-error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 11px 15px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 16px; text-align: center;">⚠️ Veuillez sélectionner un type de passage</div>
+
+            <label class="form-label cpt-label">Type de passage *</label>
+            <select id="comptage-type-select" class="cpt-select">
+                <option value="" disabled selected>Sélectionner un passage...</option>
+                <option value="Comptage du matin">Matin</option>
+                <option value="Comptage du soir">Soir</option>
+            </select>
+
+            <button class="btn-primary cpt-lancer" onclick="lancerComptageMecs()">
+                Lancer la tournée
+            </button>
+
+            <button class="btn-secondary cpt-dernier" onclick="voirDernierComptage()">
+                📊 Voir le dernier relevé
+            </button>
+        </div>
+
+        <div class="cpt-aide">
+            <div class="cpt-aide-titre">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                Parcours intelligent des chambres
+            </div>
+            L'ordre d'affichage respecte la topographie des chambres. Glissez à droite pour présent, à gauche pour absent.
+        </div>
+    </div>
+
+    <!-- ÉCRAN 2 : Le Workspace Actif (Tournée des chambres) -->
+    <div id="comptage-workspace" class="content hidden" style="flex: 1; display: flex; flex-direction: column; position: relative;">
+        
+        <!-- Dashboard temps réel (Fixe en haut) -->
+        <div style="background: var(--card-color); padding: 12px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); margin-bottom: 0; border: 1px solid var(--border-color); flex-shrink: 0; position: relative; z-index: 10;">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; gap: 5px; margin-bottom: 10px;">
+                <div><div style="font-size: 16px; font-weight: 800; color: var(--coallia-blue);" id="dash-verifies">0</div><div style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: var(--text-gray);">Vérifiés</div></div>
+                <div><div style="font-size: 16px; font-weight: 800; color: var(--text-gray);" id="dash-restants">74</div><div style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: var(--text-gray);">Restants</div></div>
+                <div><div style="font-size: 16px; font-weight: 800; color: var(--success);" id="dash-presents">0</div><div style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: var(--text-gray);">Présents</div></div>
+                <div><div style="font-size: 16px; font-weight: 800; color: var(--danger);" id="dash-absents">0</div><div style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: var(--text-gray);">Absents</div></div>
+            </div>
+            <div style="display: flex; justify-content: space-around; font-size: 11px; border-top: 1px solid var(--border-color); padding-top: 8px; font-weight: 600; color: var(--text-gray);">
+                <div>👶 Mineurs : <span id="dash-min-p" style="color:var(--success)">0</span> / <span id="dash-min-a" style="color:var(--danger)">0</span></div>
+                <div>🧑 Majeurs : <span id="dash-maj-p" style="color:var(--success)">0</span> / <span id="dash-maj-a" style="color:var(--danger)">0</span></div>
+            </div>
+        </div>
+
+        <!-- 👑 ZONE INTERMÉDIAIRE : La carte reprend sa place naturelle (flex: 1) et l'avancement est centré de façon indépendante -->
+        <div style="flex: 1; display: flex; justify-content: center; align-items: center; position: relative; margin-bottom: 10px;">
+            
+            <!-- 👑 L'avancement flotte de manière autonome au centre absolu de l'espace supérieur -->
+            <div id="comptage-progression-text" style="position: absolute; top: 12%; left: 50%; transform: translateX(-50%); font-size: 17px; font-weight: 800; color: var(--text-dark); text-align: center; white-space: nowrap; z-index: 5; letter-spacing: 0.3px;">
+                Avancement : 0 / 74
+            </div>
+
+            <!-- Le réceptacle de la carte (Parfaitement positionné au centre comme avant) -->
+            <div id="comptage-card-holder" style="width: 100%; max-width: 340px; height: 100%; min-height: 340px; display: flex; justify-content: center; align-items: center; position: relative; z-index: 2;">
+                <!-- Injecté dynamiquement par JS -->
+            </div>
+        </div>
+
+        <!-- Commandes tactiles (Bas) -->
+        <div style="display: flex; justify-content: space-between; width: 100%; max-width: 310px; margin: 0 auto 25px auto; flex-shrink: 0; position: relative; z-index: 10;">
+            <!-- Bouton Croix (Gauche) -->
+            <button class="btn-danger" style="padding: 0; border-radius: 50%; width: 75px; height: 75px; font-size: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(255,59,48,0.22); border: none; cursor: pointer; transition: transform 0.1s;" 
+                    onmousedown="this.style.transform='scale(0.92)'" 
+                    onmouseup="this.style.transform='scale(1)'" 
+                    onclick="animerEtValiderBouton(false)">✕</button>
+            
+            <!-- Bouton Valider (Droite) -->
+            <button class="btn-primary" style="padding: 0; border-radius: 50%; width: 75px; height: 75px; font-size: 26px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(34,199,89,0.22); border: none; background: var(--success); cursor: pointer; transition: transform 0.1s;" 
+                    onmousedown="this.style.transform='scale(0.92)'" 
+                    onmouseup="this.style.transform='scale(1)'" 
+                    onclick="animerEtValiderBouton(true)">✓</button>
+        </div>
+    </div>
+
+    <!-- ÉCRAN 3 : Rapport et Bilan Final -->
+    <div id="comptage-report-screen" class="content hidden" style="overflow-y: auto; padding-bottom: 30px;">
+        <div class="med-form-card" style="width: 100%; max-width: 450px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 40px; margin-bottom: 5px;">📄</div>
+                <h3 style="margin: 0; font-weight: 800; color: var(--coallia-blue);">RAPPORT DE TOURNÉE</h3>
+                <p id="report-meta" style="color: var(--text-gray); font-size: 12px; font-weight: 600; margin: 5px 0 0 0;"></p>
+            </div>
+
+            <div id="report-stats-html" style="background: var(--input-bg); padding: 15px; border-radius: 16px; margin-bottom: 20px;">
+                <!-- Statistiques injectées par le JS -->
+            </div>
+
+            <h4 class="section-title" style="margin: 25px auto 15px auto; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+    🚨 Jeunes absents lors de ce contrôle
+            </h4>
+            <div id="report-absents-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+                <!-- Liste des absents injectée par le JS -->
+            </div>
+
+            <button class="btn-primary" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;" onclick="cloreComptageMecs()">Terminer et Enregistrer</button>
+        </div>
+    </div>
+
+   <!-- ÉCRAN 4 : Visualisation complète du Dernier Passage (Prise de service) -->
+    <!-- 👑 NOUVEAU DESIGNE FLEX : L'écran principal ne scrolle plus et s'adapte à la hauteur du téléphone -->
+    <div id="comptage-last-view" class="content hidden" style="height: calc(100vh - 100px); display: flex; flex-direction: column; overflow: hidden; padding-bottom: 5px; box-sizing: border-box;">
+        
+        <!-- 👑 ZONE DE SCROLL INTERNE : Seule la bulle blanche défile si la liste des absents est longue -->
+        <div class="med-form-card" style="width: 100%; max-width: 450px; margin: 0 auto; border: 1px solid var(--border-color); box-shadow: 0 15px 40px rgba(0,0,0,0.04); overflow-y: auto; flex: 1; margin-bottom: 15px; padding: 25px 20px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="font-size: 40px; margin-bottom: 5px;">📋</div>
+                <h3 style="margin: 0; font-weight: 800; color: var(--coallia-blue);">DERNIER COMPTAGE ENREGISTRÉ</h3>
+                <p id="last-view-meta" style="color: var(--text-gray); font-size: 12px; font-weight: 600; margin: 5px 0 0 0; text-align: center;"></p>
+            </div>
+
+            <div id="last-view-stats-html" style="background: var(--input-bg); padding: 15px; border-radius: 16px; margin-bottom: 20px;">
+                <!-- Rempli dynamiquement par JS -->
+            </div>
+
+            <h4 class="section-title" style="margin: 25px auto 15px auto; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                🚨 Jeunes absents lors du dernier relevé
+            </h4>
+            
+            <div id="last-view-absents-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 5px;">
+                <!-- Rempli dynamiquement par JS -->
+            </div>
+        </div>
+
+        <!-- 👑 ACTION SOUDÉE EN BAS : Le bouton sort de la carte et reste 100% fixe au bas de l'écran -->
+        <button class="btn-primary" 
+        id="btn-pdf-comptage" 
+        onclick="telechargerPDF('comptage')" 
+        style="width: 100%; max-width: 450px; padding: 16px; font-size: 15px; border-radius: 14px; font-weight: 700; background: var(--coallia-blue); color: white; border: none; box-shadow: 0 4px 15px rgba(0, 85, 164, 0.2); cursor: pointer; margin: 10px auto 20px auto; outline: none; flex-shrink: 0; -webkit-tap-highlight-color: transparent;">
+    Générer la feuille d'appel en PDF
+</button>
+    </div>
+</section>
+    
+    <div id="floating-panier" class="floating-bar hidden">
+        <span id="panier-count">0 sélectionné(s)</span>
+        <button class="btn-primary" onclick="ouvrirModalPanier()">Valider</button>
+    </div>
+
+    <div id="scanner-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 380px; overflow: hidden;">
+
+            <div style="padding: 26px 22px 22px 22px;">
+
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div class="scan-kicker">Lecture optique</div>
+                    <h3 style="font-size: 19px; font-weight: 800; letter-spacing: -0.3px; margin: 0 0 6px 0; color: var(--text-dark);">Scanner l'équipement</h3>
+                    <p style="font-size: 13.5px; color: var(--text-gray); font-weight: 500; margin: 0; line-height: 1.5;">
+                        Cadrez le QR code collé sur le matériel
+                    </p>
+                </div>
+
+                <div class="scan-zone">
+                    <div id="reader"></div>
+                    <div class="scan-viseur" aria-hidden="true">
+                        <span class="coin hg"></span><span class="coin hd"></span>
+                        <span class="coin bg"></span><span class="coin bd"></span>
+                        <div class="scan-ligne"></div>
+                    </div>
+                </div>
+
+                <button id="btn-torche" onclick="basculerTorche()" class="scan-torche hidden" aria-label="Activer ou désactiver l'éclairage">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"></path></svg>
+                    <span id="btn-torche-label">Éclairage</span>
+                </button>
+
+                <div class="scan-astuce">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    La lecture se fait automatiquement
+                </div>
+
+                <button onclick="fermerModals()" class="scan-fermer">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="action-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 id="modal-title">Action</h3>
+            <p id="modal-desc" class="modal-subtitle">Détails de l'action</p>
+            <div id="input-container" class="hidden">
+                <input type="text" id="nom-jeune" placeholder="Prénom et Nom du jeune" autocomplete="off" style="text-align: center;">
+                <div id="action-error" class="error-text hidden">Veuillez renseigner ce champ.</div>
+                <div id="qty-container" class="hidden" style="margin-top: 15px;">
+                    <label style="font-size: 14px; color: var(--text-gray); font-weight: 600;">Quantité :</label>
+                    <div class="qty-controls-large">
+                        <button type="button" class="qty-btn-large" onclick="changeModalQty(-1)">-</button>
+                        <span id="modal-qty-display">1</span>
+                        <button type="button" class="qty-btn-large" onclick="changeModalQty(1)">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="fermerModals()">Annuler</button>
+                <button id="btn-confirm-action" class="btn-primary" onclick="validerAction()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 360px; overflow: hidden;">
+
+            <div style="padding: 32px 26px 24px 26px; text-align: center;">
+                <div class="logout-picto">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+
+                <h3 id="confirm-titre" style="font-size: 19px; font-weight: 800; letter-spacing: -0.3px; margin: 0 0 8px 0; color: var(--text-dark);">Confirmation</h3>
+                <p id="confirm-texte" style="font-size: 13.5px; color: var(--text-gray); font-weight: 500; line-height: 1.55; margin: 0; white-space: pre-line;"></p>
+
+                <div class="modal-buttons" style="margin-top: 26px;">
+                    <button class="btn-secondary" onclick="annulerConfirmation()">Annuler</button>
+                    <button class="btn-danger" onclick="validerConfirmation()">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="logout-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 360px; overflow: hidden;">
+
+        <div style="padding: 32px 26px 24px 26px; text-align: center;">
+
+            <div class="logout-picto">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </div>
+
+            <h3 style="font-size: 19px; font-weight: 800; letter-spacing: -0.3px; margin: 0 0 8px 0; color: var(--text-dark);">Fermer la session ?</h3>
+            <p style="font-size: 13.5px; color: var(--text-gray); font-weight: 500; line-height: 1.55; margin: 0 0 6px 0;">
+                Vos saisies sont enregistrées et synchronisées. Le code de service sera redemandé à la prochaine ouverture.
+            </p>
+
+            <div class="logout-note">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Aucune donnée ne sera perdue
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 26px;">
+                <button class="btn-secondary" onclick="fermerModals()">Rester connecté</button>
+                <button class="btn-danger" onclick="confirmerDeconnexion()">Me déconnecter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div id="med-success-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="padding: 40px 20px;">
+            <div style="font-size: 50px; margin-bottom: 5px;">✅</div>
+            <div id="modal-recorded-time" style="font-size: 18px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px;"></div>
+            <h3 style="color: var(--success); margin-bottom: 10px;">Enregistré</h3>
+            <p class="modal-subtitle">La prise a bien été sécurisée dans le registre.</p>
+        </div>
+    </div>
+
+    <div id="med-alert-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="padding: 40px 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px;">🛑</div>
+            <h3 style="color: var(--danger); margin-bottom: 15px;">Délai de 6h non respecté</h3>
+            <p class="modal-subtitle" id="med-alert-text" style="font-size: 15px; color: var(--text-dark);"></p>
+            <button class="btn-secondary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px;" onclick="fermerModals()">J'ai compris</button>
+        </div>
+    </div>
+
+<div id="qr-error-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="padding: 40px 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px;">❌</div>
+            <h3 style="color: var(--danger); margin-bottom: 15px;">QR Code inconnu</h3>
+            <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">
+                Cet équipement n'est pas reconnu dans l'inventaire de la permanence.<br><br>
+                <span style="font-size: 13px; color: var(--text-gray);">Code lu : <b id="qr-error-text"></b></span>
+            </p>
+            <button class="btn-secondary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer;" onclick="fermerModals()">J'ai compris</button>
+        </div>
+    </div>
+
+<div id="recap-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 400px;">
+        <div id="recap-content" style="text-align: left; background: var(--bg-color); padding: 10px; border-radius: 12px; max-height: 350px; overflow-y: auto; overflow-x: hidden; margin-bottom: 20px; border: 1px solid var(--border-color);">
+        </div>
+        <div class="modal-buttons" style="flex-direction: column; gap: 10px;">
+            <button class="btn-primary" onclick="telechargerPDF('materiel')" id="btn-pdf-mat" style="background: var(--coallia-blue); box-shadow: 0 4px 15px rgba(0, 85, 164, 0.2);">Générer le bilan en PDF</button>
+            <button class="btn-secondary" onclick="fermerModals()" style="width: 100%;">Fermer</button>
+        </div>
+    </div> 
+</div> 
+        <div id="recap-empty-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="padding: 40px 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px;">✨</div>
+            <h3 style="color: var(--success); margin-bottom: 15px;">Tout est en ordre</h3>
+            <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">
+                Bonne nouvelle : Aucun matériel n'est actuellement emprunté.<br><br>
+                <span style="font-size: 13px; color: var(--text-gray);">L'inventaire de la permanence est complet.</span>
+            </p>
+            <button class="btn-secondary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer;" onclick="fermerModals()">Parfait</button>
+        </div>
+    </div>
+
+<div id="delete-trans-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3 style="color: var(--danger); margin-bottom: 10px;">Supprimer l'événement ?</h3>
+            <p class="modal-subtitle">Cette action est irréversible. La transmission sera effacée du registre.</p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="fermerModals()">Annuler</button>
+                <button class="btn-danger" onclick="confirmerSuppressionTransmission()">Oui, supprimer</button>
+            </div>
+        </div>
+    </div>
+
+<div id="trans-recap-empty-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="padding: 40px 20px;">
+            <div style="font-size: 50px; margin-bottom: 10px;">📭</div>
+            <h3 style="color: var(--coallia-blue); margin-bottom: 15px;">R.A.S</h3>
+            <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">
+               Aucune transmission n'a été rédigée pour le moment sur ce cycle.<br><br>
+                <span style="font-size: 13px; color: var(--text-gray);">Tout est calme.</span>
+            </p>
+            <button class="btn-secondary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer;" onclick="fermerModals()">J'ai compris</button>
+        </div>
+    </div>
+
+<div id="eval-frigo-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 380px;">
+        <h3 id="eval-frigo-title" style="color: var(--coallia-blue); margin-bottom: 5px;">Évaluer le Frigo</h3>
+        <p class="modal-subtitle" style="margin-bottom: 20px;">Relevé rapide de l'état</p>
+
+        <div id="frigo-error-bubble" class="hidden" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Veuillez évaluer les 3 critères obligatoires</div>
+
+        <label class="form-label" style="text-align: center;">🔒 État du cadenas *</label>
+        <div id="cad-container" style="display: flex; gap: 8px; margin-bottom: 15px; padding: 4px; border-radius: 14px; border: 1px solid transparent; transition: 0.3s;">
+            <button class="btn-eval" id="cad-ok" onclick="selectEval('cad', 'ok')">🔒 Présent</button>
+            <button class="btn-eval" id="cad-open" onclick="selectEval('cad', 'open')">🔓 Ouvert</button>
+            <button class="btn-eval" id="cad-lost" onclick="selectEval('cad', 'lost')">❌ Cassé</button>
+        </div>
+
+        <label class="form-label" style="text-align: center;">✨ Hygiène globale *</label>
+        <div id="hyg-container" style="display: flex; gap: 8px; margin-bottom: 15px; padding: 4px; border-radius: 14px; border: 1px solid transparent; transition: 0.3s;">
+            <button class="btn-eval" id="hyg-clean" onclick="selectEval('hyg', 'clean')">✨ Propre</button>
+            <button class="btn-eval" id="hyg-med" onclick="selectEval('hyg', 'med')">⚠️ Moyen</button>
+            <button class="btn-eval" id="hyg-dirty" onclick="selectEval('hyg', 'dirty')">☣️ Sale</button>
+        </div>
+
+        <label class="form-label" style="text-align: center;">📦 Contenu des bacs *</label>
+        <div id="cont-container" style="display: flex; gap: 8px; margin-bottom: 20px; padding: 4px; border-radius: 14px; border: 1px solid transparent; transition: 0.3s;">
+            <button class="btn-eval" id="cont-ok" onclick="selectEval('cont', 'ok')">✅ R.A.S</button>
+            <button class="btn-eval" id="cont-sort" onclick="selectEval('cont', 'sort')">🏷️ Tri à faire</button>
+        </div>
+
+        <label class="form-label" style="text-align: center; margin-top: 5px;">💬 Observations (Optionnel)</label>
+        <div style="position: relative; width: 100%; margin-bottom: 20px;">
+            <textarea id="eval-frigo-obs" placeholder="Un détail à signaler sur ce frigo ?" oninput="autoResize(this)" rows="1" style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 14px; min-height: 54px; box-sizing: border-box; overflow: hidden; display: block; margin: 0;"></textarea>
+            
+            <button onclick="effacerObsFrigo()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--card-color); border: 2px solid white; border-radius: 12px; font-size: 16px; cursor: pointer; padding: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10;">🗑️</button>
+        </div>
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="fermerModals()">Annuler</button>
+            <button class="btn-primary" onclick="validerEvalFrigo()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<div id="jeunes-frigo-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <h3 id="jeunes-frigo-title" style="color: var(--coallia-blue); margin-bottom: 15px;">Jeunes</h3>
+        <div id="liste-jeunes-frigo" style="text-align: left; background: var(--input-bg); padding: 15px; border-radius: 12px; max-height: 250px; overflow-y: auto; color: var(--text-dark); margin-bottom: 20px; font-weight: 600; font-size: 14px; line-height: 1.8;">
+            </div>
+        <button onclick="fermerModals()" style="width: 100%; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--danger); background: rgba(255, 59, 48, 0.1); border: none; cursor: pointer; outline: none; transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">Fermer</button>
+    </div>
+</div>
+
+
+<div id="signalement-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 380px;">
+        <h3 style="color: var(--danger); margin-bottom: 5px;">🚨 Signaler un problème</h3>
+        <p class="modal-subtitle" style="margin-bottom: 20px;">Joindre une preuve visuelle</p>
+        
+        <div id="sig-error-bubble" class="hidden" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Veuillez remplir tous les champs</div>
+
+        <label class="form-label">📸 Preuve visuelle *</label>
+        <div id="sig-photo-container" style="position: relative; width: 100%; height: 180px; margin-bottom: 15px; border-radius: 14px; overflow: hidden; border: 2px dashed var(--coallia-blue); display: flex; align-items: center; justify-content: center; background: var(--input-bg); transition: 0.3s;">
+            <div id="photo-preview" style="width: 100%; height: 100%; background-size: cover; background-position: center; display: none;"></div>
+            
+            <button id="btn-reprendre-photo" onclick="reprendrePhotoSig()" style="background: transparent; border: none; font-size: 50px; cursor: pointer; display: none; transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'">📷</button>
+            
+            <button id="btn-effacer-photo" onclick="effacerPhotoSig()" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(2px);">✕</button>
+        </div>
+
+        <label class="form-label">❄️ Frigo concerné *</label>
+        <div style="position: relative; width: 100%; margin-bottom: 15px;">
+            <select id="sig-frigo-select" style="margin: 0; cursor: pointer; text-align: center; text-align-last: center;">
+                <option value="" disabled selected>Sélectionner le frigo...</option>
+                <option value="Frigo 1">Frigo 1</option>
+                <option value="Frigo 2">Frigo 2</option>
+                <option value="Frigo 3">Frigo 3</option>
+                <option value="Frigo 4">Frigo 4</option>
+                <option value="Frigo 5">Frigo 5</option>
+                <option value="Frigo 6">Frigo 6</option>
+            </select>
+        </div>
+        
+        <label class="form-label">✍️ Description *</label>
+        <div style="position: relative; width: 100%; margin-bottom: 25px;">
+            <textarea id="sig-desc" placeholder="Détaillez le problème rencontré..." oninput="autoResize(this)" style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 14px; min-height: 80px; box-sizing: border-box; overflow: hidden; display: block; margin: 0; outline: none;"></textarea>
+            
+            <button onclick="effacerDescSig()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--card-color); border: 2px solid white; border-radius: 12px; font-size: 16px; cursor: pointer; padding: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10;">🗑️</button>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="fermerModals()">Annuler</button>
+            <button id="btn-envoyer-sig" class="btn-primary" onclick="envoyerSignalement()">Envoyer</button>
+        </div>
+    </div>
+</div>
+
+<div id="sig-success-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="padding: 40px 20px;">
+        <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
+        <h3 style="color: var(--success); margin-bottom: 10px;">Signalement transmis</h3>
+        <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">La photo et les détails ont bien été envoyés dans le dossier sécurisé de l'équipe.</p>
+    </div>
+</div>
+
+
+<div id="admin-frigo-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 380px;">
+        <h3 style="color: var(--coallia-blue); margin-bottom: 5px;">Gestion Jeunes</h3>
+        <p class="modal-subtitle" style="margin-bottom: 25px;">Qui utilise quel frigo ?</p>
+
+        <label class="form-label" style="text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Choisir le frigo à gérer *</label>
+        <div style="position: relative; width: 100%; margin-bottom: 20px;">
+            <select id="admin-frigo-select" onchange="renderAdminList()" style="margin: 0; cursor: pointer; text-align: center; text-align-last: center;">
+                <option value="" disabled selected>Sélectionner un frigo...</option>
+                <option value="1">Frigo 1</option>
+                <option value="2">Frigo 2</option>
+                <option value="3">Frigo 3</option>
+                <option value="4">Frigo 4</option>
+                <option value="5">Frigo 5</option>
+                <option value="6">Frigo 6</option>
+            </select>
+        </div>
+
+        <label class="form-label" style="text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Ajouter à ce frigo</label>
+        <div style="position: relative; width: 100%; margin-bottom: 25px;">
+            <textarea id="new-resident-name" placeholder="Nom du jeune..." oninput="autoResize(this)" rows="1" style="width: 100%; padding: 16px 55px 16px 16px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; font-size: 16px; resize: none; color: var(--text-dark); min-height: 56px; box-sizing: border-box; overflow: hidden; display: block; margin: 0; outline: none; text-align: center;"></textarea>
+            
+            <button onclick="ajouterResidentAdmin()" aria-label="Ajouter ce jeune au frigo sélectionné" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--coallia-blue); color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,85,164,0.3); padding: 0 0 2px 0;">+</button>
+        </div>
+
+        <div id="admin-resident-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; min-height: 50px; max-height: 200px; overflow-y: auto; justify-content: center; padding-right: 5px;">
+        </div>
+
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="fermerModals()">Annuler</button>
+            <button class="btn-primary" onclick="fermerModals()">Terminer</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="pro-menu-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 320px;">
+        <h3 style="color: var(--coallia-blue); margin-bottom: 25px;">👤 Mon Espace</h3>
+        
+        <button class="btn-primary" style="width: 100%; margin-bottom: 15px; font-size: 16px; font-weight: 700; padding: 18px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,85,164,0.2);" onclick="ouvrirAnnuaire()">
+            <span style="font-size: 20px;">📞</span> Annuaire d'urgence
+        </button>
+        
+        <button class="btn-secondary" style="width: 100%; margin-bottom: 15px; font-size: 15px; padding: 16px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; color: var(--text-dark); background: var(--input-bg); border: 1px solid var(--border-color);" onclick="ouvrirDemandeIntervention()">
+            <span style="font-size: 20px;">🔧</span> Demande d'intervention
+        </button>
+
+        <button class="btn-secondary" style="width: 100%; margin-bottom: 25px; font-size: 15px; padding: 16px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; color: var(--text-dark); background: var(--input-bg); border: 1px solid var(--border-color); outline: none;" onclick="toggleThemeAnimated()">
+            <span id="theme-icon" style="font-size: 22px; display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">🌙</span>
+            <span id="theme-text">Passer au Mode Sombre</span>
+        </button>
+
+        <button onclick="fermerModals()" style="width: 100%; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--danger); background: rgba(255, 59, 48, 0.1); border: none; cursor: pointer; outline: none; transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">
+            Fermer
+        </button>
+    </div>
+</div>
+
+<div id="annuaire-modal" class="modal-overlay hidden">
+    <div class="modal-card ann-card">
+
+        <div class="ann-filet">
+            <span style="flex:30; background:#6B3FA0;"></span>
+            <span style="flex:44; background:var(--coallia-blue);"></span>
+            <span style="flex:26; background:#A8175A;"></span>
+        </div>
+
+        <div class="ann-entete">
+            <div class="ann-kicker">Contacts de permanence</div>
+            <h3 class="ann-titre">Annuaire d'urgence</h3>
+            <div class="ann-fermer" onclick="document.getElementById('annuaire-modal').classList.add('hidden')" role="button" aria-label="Fermer l'annuaire">✕</div>
+        </div>
+
+        <div class="ann-corps">
+
+            <div class="ann-etape">Secours</div>
+            <div class="ann-grille-3">
+                <a href="tel:15" class="ann-secours ann-rouge">
+                    <span class="ann-emoji">🚑</span>
+                    <span class="ann-nom">SAMU</span>
+                    <span class="ann-num">15</span>
+                </a>
+                <a href="tel:18" class="ann-secours ann-rouge">
+                    <span class="ann-emoji">🚒</span>
+                    <span class="ann-nom">Pompiers</span>
+                    <span class="ann-num">18</span>
+                </a>
+                <a href="tel:17" class="ann-secours ann-bleu">
+                    <span class="ann-emoji">🚓</span>
+                    <span class="ann-nom">Police</span>
+                    <span class="ann-num">17</span>
+                </a>
+            </div>
+
+            <div class="ann-etape">Astreinte</div>
+            <div class="ann-grille-2">
+                <div class="ann-contact ann-prio-1"
+                     onmousedown="startContactTimer('astreinte1')" onmouseup="cancelContactTimer()" onmouseleave="cancelContactTimer()"
+                     ontouchstart="startContactTimer('astreinte1')" ontouchend="cancelContactTimer()"
+                     onclick="appelerContact('astreinte1')">
+                    <span class="ann-emoji">📱</span>
+                    <span class="ann-nom">1<sup>er</sup> contact</span>
+                </div>
+                <div class="ann-contact ann-prio-2"
+                     onmousedown="startContactTimer('astreinte2')" onmouseup="cancelContactTimer()" onmouseleave="cancelContactTimer()"
+                     ontouchstart="startContactTimer('astreinte2')" ontouchend="cancelContactTimer()"
+                     onclick="appelerContact('astreinte2')">
+                    <span class="ann-emoji">📲</span>
+                    <span class="ann-nom">2<sup>e</sup> contact</span>
+                </div>
+            </div>
+
+            <div class="ann-etape">Encadrement</div>
+            <div class="ann-grille-2">
+                <div class="ann-contact"
+                     onmousedown="startContactTimer('coordF')" onmouseup="cancelContactTimer()" onmouseleave="cancelContactTimer()"
+                     ontouchstart="startContactTimer('coordF')" ontouchend="cancelContactTimer()"
+                     onclick="appelerContact('coordF')">
+                    <span class="ann-emoji">👩🏽‍💼</span>
+                    <span class="ann-nom">Coordinatrice</span>
+                </div>
+                <div class="ann-contact"
+                     onmousedown="startContactTimer('coordM')" onmouseup="cancelContactTimer()" onmouseleave="cancelContactTimer()"
+                     ontouchstart="startContactTimer('coordM')" ontouchend="cancelContactTimer()"
+                     onclick="appelerContact('coordM')">
+                    <span class="ann-emoji">👨🏽‍💼</span>
+                    <span class="ann-nom">Coordinateur</span>
+                </div>
+            </div>
+
+            <div class="ann-grille-2">
+                <div class="ann-contact"
+                     onmousedown="startContactTimer('chef')" onmouseup="cancelContactTimer()" onmouseleave="cancelContactTimer()"
+                     ontouchstart="startContactTimer('chef')" ontouchend="cancelContactTimer()"
+                     onclick="appelerContact('chef')">
+                    <span class="ann-emoji">💼</span>
+                    <span class="ann-nom">Chef de service</span>
+                </div>
+                <div class="ann-contact"
+                     onmousedown="startContactTimer('tech')" onmouseup="cancelContactTimer()" onmouseleave="cancelContactTimer()"
+                     ontouchstart="startContactTimer('tech')" ontouchend="cancelContactTimer()"
+                     onclick="appelerContact('tech')">
+                    <span class="ann-emoji">🔧</span>
+                    <span class="ann-nom">Agent technique</span>
+                </div>
+            </div>
+
+            <div class="ann-astuce">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                Appui long sur un contact pour modifier son numéro
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="edit-contact-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 320px;">
+        <h3 id="edit-contact-title" style="color: var(--coallia-blue); margin-bottom: 15px;">Modifier le numéro</h3>
+        
+        <label class="form-label" style="text-align: center; display: block;">Nouveau numéro de téléphone :</label>
+        <input type="tel" id="edit-contact-input" placeholder="Ex: 06 12 34 56 78" style="width: 100%; padding: 15px; border-radius: 14px; border: 1px solid var(--border-color); background: var(--input-bg); font-family: 'Inter', sans-serif; font-weight: 600; font-size: 16px; margin-bottom: 25px; text-align: center; color: var(--text-dark); outline: none;">
+        
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="document.getElementById('edit-contact-modal').classList.add('hidden'); document.getElementById('annuaire-modal').classList.remove('hidden');">Annuler</button>
+            <button class="btn-primary" onclick="validerEditContact()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+
+<div id="di-modal" class="modal-overlay hidden">
+    <div class="modal-card di-card">
+
+        <div class="di-filet">
+            <span style="flex:30; background:#6B3FA0;"></span>
+            <span style="flex:44; background:var(--coallia-blue);"></span>
+            <span style="flex:26; background:#A8175A;"></span>
+        </div>
+
+        <div class="di-entete">
+            <div>
+                <div class="di-kicker">Formulaire technique</div>
+                <h3 class="di-titre">Demande d'intervention</h3>
+            </div>
+            <div class="di-fermer" onclick="document.getElementById('di-modal').classList.add('hidden')" role="button" aria-label="Fermer le formulaire">✕</div>
+        </div>
+
+        <div class="di-corps">
+
+            <section class="di-bloc">
+                <div class="di-etape"><span class="di-num">1</span> Demandeur</div>
+                <div class="di-duo">
+                    <input type="text" id="di-nom" placeholder="Nom" class="di-champ">
+                    <input type="text" id="di-prenom" placeholder="Prénom" class="di-champ">
+                </div>
+                <input type="tel" id="di-tel" placeholder="Téléphone professionnel" class="di-champ">
+            </section>
+
+            <section class="di-bloc">
+                <div class="di-etape"><span class="di-num">2</span> Localisation</div>
+                <div class="di-duo di-duo-2-1">
+                    <input type="text" id="di-bat" placeholder="Bâtiment" class="di-champ">
+                    <input type="text" id="di-etage" placeholder="Étage" class="di-champ">
+                </div>
+                <input type="text" id="di-apt" placeholder="N° appartement et chambre" class="di-champ">
+            </section>
+
+            <section class="di-bloc">
+                <div class="di-etape"><span class="di-num">3</span> Nature du problème</div>
+
+                <select id="di-metier" class="di-champ di-select">
+                    <option value="" disabled selected>Corps de métier...</option>
+                    <option>1 Eléctricité ⚡</option><option>2 Plomberie 🧑🏻‍🔧</option><option>3 Menuiserie 🪚</option>
+                    <option>4 Serrurerie 🔑</option><option>5 Petite Maçonnerie 👷🏻</option><option>6 Manutention 📦</option>
+                    <option>7 Chauffage ♨️</option><option>8 VMC 🌀</option><option>9 Sécurité 🔐</option>
+                </select>
+
+                <div class="di-zone-desc">
+                    <textarea id="di-desc" placeholder="Décrivez le problème..." oninput="autoResize(this)" rows="1" class="di-champ di-textarea"></textarea>
+                    <button onclick="document.getElementById('di-desc').value=''; document.getElementById('di-desc').style.height='58px';" class="di-effacer" aria-label="Effacer la description">🗑️</button>
+                </div>
+
+                <div class="di-duo">
+                    <select id="di-ori" class="di-champ di-select">
+                        <option value="" disabled selected>Origine...</option>
+                        <option>VAD</option><option>VADT</option><option>Jeune</option><option>Autre</option>
+                    </select>
+                    <select id="di-cau" class="di-champ di-select">
+                        <option value="" disabled selected>Cause...</option>
+                        <option>1 Cause Accidentelle</option><option>2 Mauvaise Utilisation</option><option>3 Sinistre</option>
+                        <option>4 Utilisation Intensive</option><option>5 Vandalisme</option><option>6 Usure Normale</option>
+                    </select>
+                </div>
+            </section>
+
+            <section class="di-bloc di-bloc-dernier">
+                <div class="di-etape"><span class="di-num">4</span> Autorisation du jeune</div>
+                <select id="di-autorisation" class="di-champ di-select" onchange="if(this.value === 'OUI'){document.getElementById('di-num-res').classList.remove('hidden');}else{document.getElementById('di-num-res').classList.add('hidden'); document.getElementById('di-num-res').value = '';}">
+                    <option value="" disabled selected>Intervention autorisée en son absence ?</option>
+                    <option value="OUI">OUI ✅</option>
+                    <option value="NON">NON ❌</option>
+                </select>
+                <input type="tel" id="di-num-res" class="hidden di-champ" placeholder="Téléphone du jeune">
+            </section>
+        </div>
+
+        <div class="di-pied">
+            <button id="btn-envoyer-di" class="btn-primary di-envoyer" onclick="envoyerDI()">Envoyer la demande</button>
+        </div>
+    </div>
+</div>
+
+<div id="pain-modal" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 340px;">
+        <h3>🥖 Suivi du Pain</h3>
+        <p class="modal-subtitle">Quantité restante en fin de service</p>
+        
+        <!-- Les boutons + et - configurés pour l'appui long contrôlé -->
+        <div class="qty-controls-large" style="margin: 25px 0; display: flex; align-items: center; justify-content: center; gap: 20px;">
+            
+            <!-- Bouton Moins -->
+            <button type="button" class="qty-btn-large" 
+                    onmousedown="startPainInterval(-1)" 
+                    onmouseup="stopPainInterval()" 
+                    onmouseleave="stopPainInterval()"
+                    ontouchstart="event.preventDefault(); startPainInterval(-1)" 
+                    ontouchend="stopPainInterval()">-</button>
+            
+            <span id="pain-qty-display" style="font-weight: 800; font-size: 32px; width: 65px; text-align: center; border-radius: 14px; padding: 5px 10px; transition: background 0.3s; color: white; background-color: var(--success);">0</span>
+            
+            <!-- Bouton Plus -->
+            <button type="button" class="qty-btn-large" 
+                    onmousedown="startPainInterval(1)" 
+                    onmouseup="stopPainInterval()" 
+                    onmouseleave="stopPainInterval()"
+                    ontouchstart="event.preventDefault(); startPainInterval(1)" 
+                    ontouchend="stopPainInterval()">+</button>
+        </div>
+
+        <label class="form-label" style="text-align: center; margin-top: 5px;">💬 Observations (Optionnel)</label>
+        <div style="position: relative; width: 100%; margin-bottom: 20px;">
+            <textarea id="pain-obs" placeholder="Une remarque sur le stock ?" oninput="autoResize(this)" rows="1" style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 14px; min-height: 54px; box-sizing: border-box; overflow: hidden; display: block; margin: 0; outline: none; text-align: center;"></textarea>
+            <button onclick="effacerObsPain()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--card-color); border: 2px solid white; border-radius: 12px; font-size: 16px; cursor: pointer; padding: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10;">🗑️</button>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="fermerModals()">Annuler</button>
+            <button class="btn-primary" onclick="validerPain()">Confirmer</button>
+        </div>
+    </div>
+</div>
+
+<div id="comptage-cancel-modal" class="modal-overlay hidden" style="z-index: 3500;">
+    <div class="modal-card" style="max-width: 340px; padding: 30px 20px;">
+        <div style="font-size: 50px; margin-bottom: 10px;">⚠️</div>
+        <h3 style="color: var(--danger); font-weight: 800;">Abandonner la tournée ?</h3>
+        <p class="modal-subtitle" style="font-size: 14px; color: var(--text-gray); line-height: 1.5; margin-bottom: 20px;">
+            Attention, si vous quittez maintenant, toutes les présences déjà pointées sur ce contrôle seront définitivement perdues.
+        </p>
+        <div class="modal-buttons">
+            <button class="btn-secondary" style="font-weight: 700;" onclick="fermerModals()">Reprendre</button>
+            <button class="btn-danger" style="font-weight: 700; background-color: var(--danger); color: white;" onclick="confirmerAbandonTournee()">Oui, abandonner</button>
+        </div>
+    </div>
+</div>
+
+<div id="comptage-empty-modal" class="modal-overlay hidden" style="z-index: 3600;">
+    <div class="modal-card" style="max-width: 340px; padding: 40px 20px;">
+        <div style="font-size: 50px; margin-bottom: 10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));">📭</div>
+        <h3 style="color: var(--coallia-blue); margin-bottom: 12px; font-weight: 800; font-size: 20px;">Aucun historique</h3>
+        <p class="modal-subtitle" style="font-size: 14px; color: var(--text-gray); line-height: 1.5; margin-bottom: 25px;">
+            Aucun contrôle de présence n'a été enregistré ou validé sur cet appareil pour le moment.
+        </p>
+<button class="btn-secondary" 
+        style="width: 100%; padding: 15px; font-size: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer; background: var(--input-bg); color: var(--text-dark);" 
+        onclick="fermerModals()">
+    J'ai compris
+</button>    
+</div>
+</div>
+
+<!-- 📋 MODALE DES MOTIFS D'ABSENCE RESTRUCTURÉE (VERSION PREMIUM ÉLARGIE) -->
+<div id="comptage-absence-modal" class="modal-overlay hidden" style="z-index: 3000;">
+    <!-- 👑 TAILLE AGRANDIE À 400PX ET POSITION RELATIVE POUR LE BOUTON RETOUR -->
+    <div class="modal-card" style="width: 92%; max-width: 400px; padding: 30px 25px; border-radius: 26px; position: relative;">
+        
+        <!-- 👑 LE VRAI BOUTON RETOUR OFFICIEL APPIGNÉ EN HAUT À GAUCHE -->
+<!-- 👑 PASTILLE CROIX PREMIUM : Alignée à droite et ultra-réactive -->
+<div id="absence-modal-back-btn" 
+     onpointerdown="annulerAbsenceMecs()" 
+     style="position: absolute; top: 20px; right: 20px; background: var(--input-bg); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; color: var(--text-gray); font-weight: 800; transition: 0.2s; user-select: none; -webkit-user-select: none;">
+    ✕
+</div>        
+        <!-- Titre et sous-titre ajustés pour laisser la place au bouton retour -->
+        <h3 style="color: var(--danger); font-weight: 800; font-size: 21px; margin: 10px 0 5px 0; text-align: center;">Motif de l'absence</h3>
+        <p class="modal-subtitle" id="absence-modal-subtitle" style="margin-bottom: 25px; font-size: 13.5px; text-align: center;"></p>
+        
+        <!-- Grille en 2 colonnes avec boutons agrandis (padding 15px) pour éviter les erreurs de saisie -->
+        <div id="absence-grid-container" style="display: flex; flex-direction: column; width: 100%;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="validerMotifAbsenceMecs('Absence autorisée')">🚶‍♂️ Autorisée</button>
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="validerMotifAbsenceMecs('Formation')">📝 Formation</button>
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="validerMotifAbsenceMecs('Stage')">💼 Stage</button>
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="validerMotifAbsenceMecs('Travail')">👔 Travail</button>
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="validerMotifAbsenceMecs('Sport')">🏃‍♂️ Sport</button>
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="validerMotifAbsenceMecs('Hospitalisation')">🏥 Hôpital</button>
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="validerMotifAbsenceMecs('Absent')">❌ Absent</button>
+                <button class="btn-secondary" style="padding: 15px 5px; font-size: 14px; font-weight: 700; border-radius: 14px;" onpointerdown="ouvrirAbsenceAutreSaisie()">💬 Autre...</button>
+            </div>
+            
+            <!-- Bouton Fugue pleine largeur -->
+            <button class="btn-primary" style="width: 100%; padding: 16px; font-size: 15px; font-weight: 700; border-radius: 14px; background-color: var(--danger); color: white; border: none; box-shadow: 0 6px 15px rgba(255,59,48,0.22);" onpointerdown="validerMotifAbsenceMecs('Fugue')">🚨 Déclarer en Fugue</button>
+        </div>
+
+        <!-- Zone de saisie personnalisée (Autre) -->
+        <div id="absence-autre-container" class="hidden" style="width: 100%;">
+            <div id="absence-error-bubble" class="hidden" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; text-align: center;">⚠️ Veuillez préciser la raison de l'absence</div>
+            <div style="position: relative; width: 100%; margin-bottom: 20px;">
+                <textarea id="absence-autre-obs" placeholder="Précisez la raison ici..." oninput="autoResize(this)" rows="1" style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 14px; min-height: 54px; box-sizing: border-box; text-align: center; outline: none;"></textarea>
+                <button onclick="document.getElementById('absence-autre-obs').value=''; document.getElementById('absence-autre-obs').focus();" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--card-color); border: 2px solid white; border-radius: 12px; font-size: 16px; cursor: pointer; padding: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; z-index: 10;">🗑️</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onpointerdown="fermerAbsenceAutreSaisie()">Retour</button>
+                <button class="btn-primary" onpointerdown="validerAbsenceAutreMecs()">Confirmer</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- 🎮 MODULE 5 : INTERFACE PRÊTS MULTIMÉDIA   -->
+<!-- ========================================== -->
+<section id="media-app" class="view hidden" style="display: flex; flex-direction: column; height: 100vh; overflow: hidden;">
+    
+    <!-- A. BARRE SUPERIEURE FIXE (Avec ses 20px de marges d'origine) -->
+    <header class="top-bar" style="padding: 20px 20px 5px 20px; margin-bottom: 0; flex-shrink: 0;">
+        <button class="back-btn" onclick="openMenu()">← Accueil</button>
+        <div></div>
+        <div></div>
+    </header>
+
+    <!-- B. TITRE FIGÉ PLEINE LARGEUR (Immobile au sommet du fond gris) -->
+    <div style="background: var(--bg-color); padding: 10px 20px 15px 20px; flex-shrink: 0; width: 100%; text-align: center; z-index: 100;">
+        <h2 class="section-title" style="margin: 0; font-size: 20px; font-weight: 800; color: var(--text-dark);">🎮 Prêts Multimédia</h2>
+    </div>
+    
+    <!-- C. ZONE DE SCROLL EN BLOC (Pas de flex ici, les cartes ne peuvent plus s'écraser !) -->
+    <div style="flex: 1; overflow-y: auto !important; -webkit-overflow-scrolling: touch; padding: 5px 20px 100px 20px;">
+        
+        <!-- D. LA GRILLE DE CARTES (Installée à l'intérieur du scroll comme pour l'onglet Frigos) -->
+        <div id="media-list" class="items-grid">
+        </div>
+        
+    </div>
+
+</section>
+
+<!-- 📋 MODALE DE SIGNATURE MULTIMÉDIA -->
+<div id="media-modal" class="modal-overlay hidden" style="z-index: 4000;">
+    <div class="modal-card" style="width: 92%; max-width: 380px; padding: 25px 20px;">
+        <h3 id="media-modal-title" style="color: var(--coallia-blue); margin-bottom: 4px; font-weight: 800;">Prêt Équipement</h3>
+        <p id="media-modal-desc" class="modal-subtitle" style="margin-bottom: 20px;"></p>
+        
+        <div id="media-error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Nom du jeune et signature obligatoires</div>
+        
+        <label class="form-label">👤 Identité du jeune *</label>
+        <input type="text" id="media-jeune-name" placeholder="Prénom et Nom" autocomplete="off" style="text-align: center; margin-bottom: 15px;">
+        
+        <label class="form-label">✍️ Signature numérique du jeune *</label>
+        <div id="media-signature-container" style="background: var(--input-bg); border-radius: 14px; overflow: hidden; border: 1px solid var(--border-color); position: relative; margin-bottom: 12px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.05); height: 150px; width: 100%; transition: border-color 0.2s, background-color 0.2s;">
+            <canvas id="signature-pad" width="340" height="150" style="display: block; width: 100%; height: 100%; cursor: crosshair; background: transparent;"></canvas>
+        </div>
+        
+        <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+            <button onclick="clearSignatureCanvas()" style="background: rgba(255, 59, 48, 0.1); border: none; padding: 8px 24px; border-radius: 10px; font-size: 13px; font-weight: 700; color: var(--danger); cursor: pointer; transition: transform 0.2s;" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">Effacer</button>
+        </div>
+        
+        <div class="modal-buttons">
+            <button class="btn-secondary" onclick="fermerModals()">Annuler</button>
+            <button class="btn-primary" onclick="validerPretMedia()">Confirmer le prêt</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
