@@ -1,0 +1,12 @@
+name = "relais-permia"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+# KV : coffre chiffré ("master_vault" + historique) et catalogue MECS ("mecs_database")
+[[kv_namespaces]]
+binding = "PERMIA_DB"
+id = "REMPLACER_PAR_L_ID_DU_NAMESPACE_KV"
+
+# Secrets (NE JAMAIS les mettre ici en clair) — à définir via :
+#   wrangler secret put MOT_DE_PASSE_PERMIA
+#   wrangler secret put URL_POWER_AUTOMATE
