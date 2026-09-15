@@ -9,6 +9,10 @@
 import type CryptoJSStatic from "crypto-js";
 
 declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+
   const CryptoJS: typeof CryptoJSStatic;
 
   class Html5Qrcode {
