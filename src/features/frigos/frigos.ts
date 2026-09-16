@@ -135,7 +135,8 @@ export function ouvrirEvalFrigo(id: number): void {
 export function selectEval(cat: "cad" | "hyg" | "cont", val: CadenasState | HygieneState | ContenuState): void {
   (evalTemp as Record<"cad" | "hyg" | "cont", string | null>)[cat] = val;
   // Mettre en surbrillance le bouton cliqué et éteindre les autres de la même catégorie
-  document.querySelectorAll(`[id^="${cat}-"]`).forEach((b) => b.classList.remove("selected"));
+  // (ne cible que les vrais boutons : [id^="cad-"] matcherait aussi #cad-container)
+  document.querySelectorAll(`.btn-eval[id^="${cat}-"]`).forEach((b) => b.classList.remove("selected"));
   document.getElementById(`${cat}-${val}`)?.classList.add("selected");
 }
 
@@ -440,11 +441,16 @@ export function initFrigoTabLongPress(): void {
 
 /** Câble les modales frigos (évaluation + mode admin). */
 export function initFrigoModalListeners(): void {
-  (["cad", "hyg", "cont"] as const).forEach((cat) => {
-    document.querySelectorAll<HTMLElement>(`[id^="${cat}-"]`).forEach((btn) => {
-      const val = btn.id.slice(cat.length + 1) as CadenasState | HygieneState | ContenuState;
-      btn.addEventListener("click", () => selectEval(cat, val));
-    });
+  // ⚠️ On cible .btn-eval (pas [id^="cad-"] etc.) : les conteneurs
+  // #cad-container/#hyg-container/#cont-container correspondaient aussi à
+  // ce préfixe, et leur écouteur se déclenchait en plus par bulle à chaque
+  // clic sur un bouton, écrasant aussitôt la sélection qui venait d'être faite.
+  document.querySelectorAll<HTMLButtonElement>(".btn-eval").forEach((btn) => {
+    const separateur = btn.id.indexOf("-");
+    if (separateur === -1) return;
+    const cat = btn.id.slice(0, separateur) as "cad" | "hyg" | "cont";
+    const val = btn.id.slice(separateur + 1) as CadenasState | HygieneState | ContenuState;
+    btn.addEventListener("click", () => selectEval(cat, val));
   });
   document.getElementById("eval-frigo-obs-effacer")?.addEventListener("click", effacerObsFrigo);
   document.getElementById("btn-valider-eval-frigo")?.addEventListener("click", validerEvalFrigo);
