@@ -1,7 +1,14 @@
 import { state } from "@/state/store";
 import { chiffrer, getCleAuth, getCleMaitresse, tenterDechiffrement } from "./crypto";
-import { pushCloudSync } from "./permia-relay";
+import { pushCloudSync, pushEtatOperationnel } from "./permia-relay";
 import type { VaultData } from "@/types/vault";
+import type { MediaKey } from "@/types/media";
+
+function versIso(valeur: string | number | Date | null): string | null {
+  if (!valeur) return null;
+  const d = new Date(valeur);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
 
 const VAULT_STORAGE_KEY = "coallia_secure_vault";
 
@@ -68,6 +75,42 @@ export function sauvegarderToutesLesDonnees(): void {
     const cleAuth = getCleAuth();
     if (cleAuth) {
       pushCloudSync(cleAuth, donneesCryptees).catch(() => console.log("Sauvegarde Cloud reportée (Hors-ligne)"));
+
+      // 📋 Miroir lisible (hors coffre) : matériel/frigos/média, pour ne pas
+      // perdre le suivi opérationnel en cas de souci avec le téléphone unique.
+      pushEtatOperationnel(cleAuth, {
+        materiel: state.inventory.map((i) => ({
+          id: i.id,
+          category: i.category,
+          name: i.name,
+          status: i.status,
+          jeune: i.jeune,
+          pro: i.pro,
+          time: versIso(i.time)
+        })),
+        frigos: state.frigosData.map((f) => ({
+          id: f.id,
+          name: f.name,
+          cadenas: f.cad,
+          hygiene: f.hyg,
+          contenu: f.cont,
+          time: versIso(f.time),
+          pro: f.pro
+        })),
+        media: (Object.keys(state.mediaData) as MediaKey[]).map((key) => {
+          const m = state.mediaData[key];
+          return {
+            id: key,
+            name: m.name,
+            status: m.status,
+            jeune: m.jeune,
+            pro: m.pro,
+            time: versIso(m.time),
+            last_jeune: m.lastJeune,
+            last_time: m.lastTime
+          };
+        })
+      }).catch(() => console.log("Miroir Supabase reporté (Hors-ligne)"));
     }
   }
 

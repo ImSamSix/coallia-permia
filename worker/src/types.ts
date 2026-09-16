@@ -4,8 +4,10 @@ export interface Env {
   URL_POWER_AUTOMATE: string;
   /** URL du projet Supabase partagé avec Habita (non sensible, en clair dans wrangler.toml [vars]). */
   SUPABASE_URL: string;
-  /** Clé anon Supabase — définie via `wrangler secret put SUPABASE_ANON_KEY`. */
+  /** Clé anon Supabase (lecture du catalogue MECS) — `wrangler secret put SUPABASE_ANON_KEY`. */
   SUPABASE_ANON_KEY: string;
+  /** Clé service_role Supabase (écriture des tables permia_*) — `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`. */
+  SUPABASE_SERVICE_ROLE_KEY: string;
 }
 
 /**
@@ -46,10 +48,51 @@ export interface CloudSyncRequestBody {
   vaultData: string;
 }
 
+/** Ligne d'inventaire fixe (matériel), telle qu'envoyée par le client pour le miroir Supabase. */
+export interface EtatMaterielLigne {
+  id: number;
+  category: string;
+  name: string;
+  status: string;
+  jeune: string;
+  pro: string;
+  time: string | null;
+}
+
+/** État courant d'un frigo, tel qu'envoyé par le client pour le miroir Supabase. */
+export interface EtatFrigoLigne {
+  id: number;
+  name: string;
+  cadenas: string | null;
+  hygiene: string | null;
+  contenu: string | null;
+  time: string | null;
+  pro: string | null;
+}
+
+/** État courant d'un équipement multimédia, tel qu'envoyé par le client pour le miroir Supabase. */
+export interface EtatMediaLigne {
+  id: string;
+  name: string;
+  status: string;
+  jeune: string;
+  pro: string;
+  time: string | null;
+  last_jeune: string;
+  last_time: string;
+}
+
+export interface EtatOperationnelRequestBody {
+  type: "etat_operationnel";
+  materiel: EtatMaterielLigne[];
+  frigos: EtatFrigoLigne[];
+  media: EtatMediaLigne[];
+}
+
 /** Tout autre payload (medicament, frigo_eval, pain, comptage_mecs, multimedia_log, frigo_signalement). */
 export interface RelayRequestBody {
   type: string;
   [key: string]: unknown;
 }
 
-export type PermiaRequestBody = LoginRequestBody | CloudSyncRequestBody | RelayRequestBody;
+export type PermiaRequestBody = LoginRequestBody | CloudSyncRequestBody | EtatOperationnelRequestBody | RelayRequestBody;

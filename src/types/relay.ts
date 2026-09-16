@@ -23,6 +23,47 @@ export interface CloudSyncRequest {
   vaultData: string;
 }
 
+/** Ligne d'inventaire fixe (matériel), pour le miroir Supabase lisible hors coffre. */
+export interface EtatMaterielLigne {
+  id: number;
+  category: string;
+  name: string;
+  status: string;
+  jeune: string;
+  pro: string;
+  time: string | null;
+}
+
+/** État courant d'un frigo, pour le miroir Supabase lisible hors coffre. */
+export interface EtatFrigoLigne {
+  id: number;
+  name: string;
+  cadenas: string | null;
+  hygiene: string | null;
+  contenu: string | null;
+  time: string | null;
+  pro: string | null;
+}
+
+/** État courant d'un équipement multimédia, pour le miroir Supabase lisible hors coffre. */
+export interface EtatMediaLigne {
+  id: string;
+  name: string;
+  status: string;
+  jeune: string;
+  pro: string;
+  time: string | null;
+  last_jeune: string;
+  last_time: string;
+}
+
+export interface EtatOperationnelRequest {
+  type: "etat_operationnel";
+  materiel: EtatMaterielLigne[];
+  frigos: EtatFrigoLigne[];
+  media: EtatMediaLigne[];
+}
+
 export interface FrigoEvalPayload {
   type: "frigo_eval";
   date: string;

@@ -17,3 +17,4 @@ SUPABASE_URL = "https://jgfwnatspdjvnxmbsgls.supabase.co"
 #   wrangler secret put MOT_DE_PASSE_PERMIA
 #   wrangler secret put URL_POWER_AUTOMATE
 #   wrangler secret put SUPABASE_ANON_KEY
+#   wrangler secret put SUPABASE_SERVICE_ROLE_KEY

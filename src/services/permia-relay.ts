@@ -1,4 +1,4 @@
-import type { CloudSyncRequest, GetVaultResponse, LoginRequest, PowerAutomatePayload } from "@/types/relay";
+import type { CloudSyncRequest, EtatOperationnelRequest, GetVaultResponse, LoginRequest, PowerAutomatePayload } from "@/types/relay";
 
 /**
  * Client HTTP du Worker Cloudflare "relais-permia" — seul point de contact
@@ -32,6 +32,17 @@ export async function fetchVault(cleAuth: string): Promise<GetVaultResponse> {
 /** PUSH du coffre chiffré vers KV (sauvegarde cloud, tir-et-oublie côté appelant). */
 export function pushCloudSync(cleAuth: string, vaultData: string): Promise<Response> {
   const body: CloudSyncRequest = { type: "cloud_sync", vaultData };
+  return fetch(URL_RELAIS, { method: "POST", headers: headersJson(cleAuth), body: JSON.stringify(body) });
+}
+
+/**
+ * Miroir lisible (hors coffre chiffré) de l'état opérationnel courant :
+ * matériel disponible/emprunté, état des frigos, prêts multimédia rendus ou
+ * non. Permet de retrouver le suivi en cas de souci avec le téléphone,
+ * sans avoir besoin du code de service pour déchiffrer le coffre.
+ */
+export function pushEtatOperationnel(cleAuth: string, payload: Omit<EtatOperationnelRequest, "type">): Promise<Response> {
+  const body: EtatOperationnelRequest = { type: "etat_operationnel", ...payload };
   return fetch(URL_RELAIS, { method: "POST", headers: headersJson(cleAuth), body: JSON.stringify(body) });
 }
 

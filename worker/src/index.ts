@@ -1,5 +1,6 @@
 import { compilerCatalogueJeunes } from "./mecs-catalog";
-import type { CloudSyncRequestBody, Env, PermiaRequestBody } from "./types";
+import { sauvegarderEtatOperationnel } from "./supabase-backup";
+import type { CloudSyncRequestBody, Env, EtatOperationnelRequestBody, PermiaRequestBody } from "./types";
 
 // Fonction cryptographique pour générer la clé côté serveur
 async function genererCleServeur(motDePasse: string): Promise<string> {
@@ -11,6 +12,10 @@ async function genererCleServeur(motDePasse: string): Promise<string> {
 
 function isCloudSync(body: PermiaRequestBody): body is CloudSyncRequestBody {
   return body.type === "cloud_sync";
+}
+
+function isEtatOperationnel(body: PermiaRequestBody): body is EtatOperationnelRequestBody {
+  return body.type === "etat_operationnel";
 }
 
 export default {
@@ -122,6 +127,20 @@ export default {
             status: 200,
             headers: { ...corsHeaders, "Content-Type": "application/json" }
           });
+        }
+
+        // 📋 MIROIR LISIBLE (hors coffre) : matériel / frigos / média, pour ne pas
+        // perdre le suivi opérationnel en cas de souci avec le téléphone unique.
+        if (isEtatOperationnel(body)) {
+          try {
+            await sauvegarderEtatOperationnel(env, body.materiel, body.frigos, body.media);
+            return new Response(JSON.stringify({ success: true }), {
+              status: 200,
+              headers: { ...corsHeaders, "Content-Type": "application/json" }
+            });
+          } catch (err) {
+            return new Response("Erreur miroir Supabase : " + (err instanceof Error ? err.message : String(err)), { status: 500, headers: corsHeaders });
+          }
         }
 
         // Relais Power Automate
