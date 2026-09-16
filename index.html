@@ -187,130 +187,40 @@
 
     </section>
 
-   <style>
-        /* 🛑 Cache le header principal de l'app UNIQUEMENT quand l'écran de login est affiché */
-        body:has(#login-screen:not(.hidden)) .header {
-            display: none !important;
-        }
+    <section id="login-screen" class="view hidden">
+        <div class="auth-card">
+            <div class="logo-container">
+                <img src="/img/app-icon-transparent.png" alt="Coallia" class="logo-coallia">
+            </div>
+            <h1 class="auth-titre">Espace Permanence</h1>
+            <p class="auth-sous">Identifiez-vous pour ouvrir votre session</p>
 
-        /* ==========================================
-           👑 GESTION DU MODE SOMBRE PREMIUM (LOGIN UNIQUEMENT)
-           ========================================== */
+            <div id="error-bubble" class="auth-erreur hidden" role="alert" aria-live="assertive">⚠️ Veuillez remplir tous les champs</div>
 
-        /* 🌑 La carte "Glassmorphism" s'assombrit pour l'effet glacé */
-        body.dark-mode .auth-card {
-            background: rgba(0, 0, 0, 0.4) !important;
-            backdrop-filter: blur(25px) !important;
-            -webkit-backdrop-filter: blur(25px) !important;
-            border-color: rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25) !important;
-        }
-
-        /* 👑 CORRECTION CHIRURGICALE : Enlever la fenêtre blanche derrière le logo transparent */
-        body.dark-mode #login-screen .logo-container,
-        body.dark-mode #login-screen img.logo-coallia {
-            background-color: transparent !important; /* Force la transparence du fond */
-            box-shadow: none !important;            /* Enlève toute ombre résiduelle */
-            border: none !important;                 /* Enlève toute bordure résiduelle */
-            padding: 0 !important;                  /* Évite les espaces blancs internes */
-        }
-
-        /* Titre en Blanc pour un pop premium */
-        body.dark-mode #login-screen h1 {
-            color: #ffffff !important;
-        }
-
-        /* Sous-titre et Copyright en gris clair lisible */
-        body.dark-mode #login-screen .subtitle,
-        body.dark-mode #login-screen .copyright-text,
-        body.dark-mode #login-screen .form-label {
-            color: rgba(255, 255, 255, 0.7) !important;
-        }
-
-        /* Les Icônes SVG et le singe s'éclaircissent */
-        body.dark-mode #login-screen svg,
-        body.dark-mode #login-screen #toggle-password {
-            stroke: rgba(255, 255, 255, 0.5) !important;
-            color: rgba(255, 255, 255, 0.5) !important;
-        }
-
-        /* 🛑 IMPORTANT : FORCE les inputs en fond sombre, 
-           malgré les inline-styles (onfocusin/out) */
-        body.dark-mode #login-screen .form div[style*="onfocusin"] {
-            color: #ffffff !important; 
-            background-color: rgba(255, 255, 255, 0.05) !important; 
-            border-color: rgba(255, 255, 255, 0.1) !important; 
-        }
-
-        /* Focus en dark mode : bordure et lueur bleues */
-        body.dark-mode #login-screen .form div[style*="onfocusin"]:focus-within {
-            background-color: #121212 !important; 
-            border-color: var(--coallia-blue) !important; 
-            box-shadow: 0 0 12px rgba(0, 85, 164, 0.3) !important; 
-        }
-        
-        /* La couleur du texte tapé dans les inputs */
-        body.dark-mode #login-screen .form input {
-            color: #ffffff !important;
-        }
-
-        /* 👑 RESTAURATION DU BOUTON PREMIUM */
-        body.dark-mode #btn-login {
-            background: linear-gradient(135deg, #0055a4 0%, #003d75 100%) !important;
-            box-shadow: 0 8px 25px rgba(0, 85, 164, 0.3) !important;
-        }
-    </style>
-
-    <section id="login-screen" class="view hidden" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg-color); padding: 24px;">
-
-        <div class="auth-card" style="padding: 0; border-radius: 28px; position: relative; overflow: hidden; background: var(--card-color); border: 1px solid var(--border-color); box-shadow: 0 18px 48px rgba(10, 22, 44, 0.10); width: 100%; max-width: 380px;">
-
-            <div style="padding: 38px 30px 30px 30px;">
-
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <img src="/img/logo-coallia.png" alt="Coallia" class="logo-coallia" style="height: 62px; margin-bottom: 22px;">
-                    <h1 style="font-size: 25px; font-weight: 800; letter-spacing: -0.6px; margin: 0 0 8px 0; color: var(--text-dark);">Espace Permanence</h1>
-                    <p class="subtitle" style="font-size: 14px; font-weight: 500; margin: 0; line-height: 1.5; color: var(--text-gray);">
-                        Identifiez-vous pour ouvrir votre session
-                    </p>
-                </div>
-
-                <div class="form">
-                    <div id="error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 13px; border-radius: 14px; font-size: 13px; font-weight: 700; margin-bottom: 18px; box-shadow: 0 6px 15px rgba(255,59,48,0.18); text-align: center;">⚠️ Veuillez remplir tous les champs</div>
-
-                    <label for="prenom-pro" class="champ-label">Prénom</label>
-                    <div class="champ-auth">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        <input type="text" id="prenom-pro" placeholder="Votre prénom" autocomplete="off"
-                               autocapitalize="words" enterkeyhint="next">
-                    </div>
-
-                    <label for="pass-pro" class="champ-label">Code de service</label>
-                    <div class="champ-auth">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                        <input type="password" id="pass-pro" placeholder="••••••••" autocomplete="off"
-                               enterkeyhint="go">
-                        <span id="toggle-password" role="button" tabindex="0" aria-label="Afficher ou masquer le code de service">🙈</span>
-                    </div>
-
-                    <button id="btn-login" style="width: 100%; border: none; background: linear-gradient(135deg, #0055a4 0%, #00417d 100%); color: white; padding: 18px; border-radius: 16px; font-weight: 700; font-size: 16.5px; cursor: pointer; box-shadow: 0 8px 22px rgba(0, 85, 164, 0.28); transition: transform 0.18s cubic-bezier(0.4,0,0.2,1), box-shadow 0.18s ease; margin-top: 28px; -webkit-tap-highlight-color: transparent;">
-                        Déverrouiller la session
-                    </button>
-                </div>
+            <label for="prenom-pro" class="champ-label">Prénom</label>
+            <div class="champ-auth">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <input type="text" id="prenom-pro" placeholder="Votre prénom" autocomplete="off"
+                       autocapitalize="words" enterkeyhint="next">
             </div>
 
-            <!-- Pied de carte : mention légale sur fond légèrement teinté -->
-            <div style="background: var(--bg-color); border-top: 1px solid var(--border-color); padding: 18px 30px 20px 30px; text-align: center;">
-                <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--text-gray); font-weight: 600; margin-bottom: 9px;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <label for="pass-pro" class="champ-label">Code de service</label>
+            <div class="champ-auth">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                <input type="password" id="pass-pro" placeholder="••••••••" autocomplete="off"
+                       enterkeyhint="go">
+                <span id="toggle-password" class="auth-oeil" role="button" tabindex="0" aria-label="Afficher ou masquer le code de service">🙈</span>
+            </div>
+
+            <button id="btn-login">Déverrouiller la session</button>
+
+            <div class="auth-pied">
+                <div class="auth-pied-acces">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     Accès réservé aux professionnels habilités
                 </div>
-                <div style="margin-bottom: 9px;">
-                    <span id="lien-cgu" style="font-size: 11.5px; color: var(--coallia-blue); cursor: pointer; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; -webkit-tap-highlight-color: transparent;">Conditions d'utilisation</span>
-                </div>
-                <div style="font-size: 11.5px; color: var(--text-gray); font-weight: 500;">
-                    © 2026 Coallia Permia
-                </div>
+                <span id="lien-cgu" class="auth-pied-lien">Conditions d'utilisation</span>
+                <p class="auth-pied-copy">© 2026 Coallia Permia</p>
             </div>
         </div>
     </section>
