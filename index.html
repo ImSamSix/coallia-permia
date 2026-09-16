@@ -269,7 +269,20 @@
 
                 <button class="hub-btn" id="hub-medicaments" style="position: relative;">
                     <span class="hub-btn-icon hub-btn-icon--green">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 17.5a5 5 0 0 1 0-7.07l4-4a5 5 0 0 1 7.07 7.07l-4 4a5 5 0 0 1-7.07 0Z"></path><path d="M10 7 17 14"></path></svg>
+                        <svg viewBox="0 0 24 24">
+                            <defs>
+                                <clipPath id="gelule-clip"><rect x="2" y="8" width="20" height="8" rx="4"></rect></clipPath>
+                            </defs>
+                            <g transform="rotate(-45 12 12)">
+                                <g clip-path="url(#gelule-clip)">
+                                    <rect x="2" y="8" width="10" height="8" fill="currentColor"></rect>
+                                    <rect x="12" y="8" width="10" height="8" fill="#ffffff"></rect>
+                                </g>
+                                <rect x="2" y="8" width="20" height="8" rx="4" fill="none" stroke="currentColor" stroke-width="1.4"></rect>
+                                <line x1="12" y1="8.4" x2="12" y2="15.6" stroke="currentColor" stroke-width="1"></line>
+                                <path d="M4.3 9.6c1.6-.9 3.4-.9 5 0" fill="none" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.6"></path>
+                            </g>
+                        </svg>
                     </span>
                     <span class="hub-btn-title">Traçabilité Médicaments</span>
                     <span class="hub-btn-desc">Saisie & Enregistrement</span>
