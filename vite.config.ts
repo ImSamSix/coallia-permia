@@ -18,8 +18,8 @@ export default defineConfig({
       injectRegister: false,
       registerType: "autoUpdate",
       manifest: {
-        short_name: "Coallia Permia",
-        name: "Coallia Permia - Espace Permanence",
+        short_name: "Permia",
+        name: "Permia",
         lang: "fr",
         orientation: "portrait",
         start_url: "./index.html",

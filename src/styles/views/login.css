@@ -28,10 +28,7 @@ select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='h
     display: flex;
     justify-content: center;
     align-items: center;
-    background:
-        radial-gradient(ellipse 900px 480px at 50% -6%, rgba(0, 85, 164, 0.10), transparent 60%),
-        radial-gradient(ellipse 700px 480px at 92% 0%, rgba(0, 85, 164, 0.07), transparent 55%),
-        var(--bg-color);
+    background: var(--bg-color);
     /* min-height (pas height) + auto : sur mobile, 100vh inclut la zone
        masquée par la barre d'adresse, ce qui poussait visuellement la carte
        vers le haut de l'écran réellement visible. */
