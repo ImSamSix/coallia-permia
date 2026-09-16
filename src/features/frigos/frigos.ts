@@ -2,6 +2,7 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { jouerSon } from "@/ui/sound";
+import { vibrer } from "@/services/feedback";
 import { fermerModals } from "@/ui/modals";
 import { demanderConfirmation } from "@/ui/confirm-modal";
 import { attacherEffetAppui } from "@/ui/press-effect";
@@ -172,7 +173,7 @@ export function validerEvalFrigo(): void {
     const errorBubble = document.getElementById("frigo-error-bubble");
     errorBubble?.classList.remove("hidden");
 
-    if (navigator.vibrate) navigator.vibrate(200); // Bzzzt d'erreur
+    vibrer(200); // Bzzzt d'erreur
     jouerSon("error"); // Bruit d'erreur
 
     setTimeout(() => {
@@ -228,7 +229,7 @@ export function validerEvalFrigo(): void {
   renderFrigos();
   fermerModals();
 
-  if (navigator.vibrate) navigator.vibrate([50, 50]);
+  vibrer([50, 50]);
 }
 
 function setErreurContainer(id: string): void {
@@ -262,7 +263,7 @@ export function cancelFrigoTimer(): void {
 }
 
 export function ouvrirAdminFrigos(): void {
-  if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+  vibrer([50, 50, 50]);
 
   // On remet le sélecteur à zéro ("Sélectionner un frigo...")
   const select = document.getElementById("admin-frigo-select") as HTMLSelectElement;
@@ -331,7 +332,7 @@ export function ajouterResidentAdmin(): void {
   if (!selectVal) {
     select.style.border = "1px solid var(--danger)";
     setTimeout(() => (select.style.border = "1px solid transparent"), 2000);
-    if (navigator.vibrate) navigator.vibrate(200);
+    vibrer(200);
     return;
   }
 
@@ -406,7 +407,7 @@ function executerPurgeFrigos(): void {
   renderFrigos(); // Recharge l'affichage instantanément
 
   // Effets visuels et sonores de succès
-  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+  vibrer([100, 50, 100]);
   jouerSon("success");
 
   // Animation de la bulle pour confirmer

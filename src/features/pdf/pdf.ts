@@ -1,5 +1,6 @@
 import { state } from "@/state/store";
 import { jouerSon } from "@/ui/sound";
+import { vibrer } from "@/services/feedback";
 
 export type RapportType = "materiel" | "comptage";
 
@@ -251,7 +252,7 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
       btn.innerText = "✅ PDF Téléchargé";
       btn.style.backgroundColor = "var(--success)";
     }
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    vibrer([100, 50, 100]);
     jouerSon("success");
 
     setTimeout(() => {

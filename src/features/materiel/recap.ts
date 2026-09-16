@@ -1,5 +1,6 @@
 import { state } from "@/state/store";
 import { jouerSon } from "@/ui/sound";
+import { vibrer } from "@/services/feedback";
 
 interface LigneEmprunt {
   name: string;
@@ -30,7 +31,7 @@ export function genererRecap(): void {
 
   if (totalItems === 0) {
     document.getElementById("recap-empty-modal")?.classList.remove("hidden");
-    if (navigator.vibrate) navigator.vibrate([50, 50]);
+    vibrer([50, 50]);
     jouerSon("success");
     return;
   }

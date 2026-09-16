@@ -1,4 +1,5 @@
 import { jouerSon } from "./sound";
+import { vibrer } from "@/services/feedback";
 
 /** Signature créateur : bannière d'amour + pluie de cœurs (5 clics rapides). */
 export function afficherBanniereAmour(): void {
@@ -66,7 +67,7 @@ export function clicEasterEggAccueil(): void {
   if (easterEggClicks === 5) {
     afficherBanniereAmour();
     creerPluieDeCoeurs();
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+    vibrer([100, 50, 100, 50, 200]);
     easterEggClicks = 0;
   }
 }

@@ -2,6 +2,7 @@ import { getCleAuth } from "@/services/crypto";
 import { envoyerPayload } from "@/services/permia-relay";
 import { fermerModals } from "@/ui/modals";
 import { jouerSon } from "@/ui/sound";
+import { vibrer } from "@/services/feedback";
 import { attacherEffetAppui } from "@/ui/press-effect";
 
 // --- LOGIQUE PHOTO FRIGOS ---
@@ -24,7 +25,7 @@ export function initSignalementCamera(): void {
   input.addEventListener("change", function (e) {
     const target = e.target as HTMLInputElement;
     if (target.files && target.files[0]) {
-      if (navigator.vibrate) navigator.vibrate(50);
+      vibrer(50);
 
       const file = target.files[0];
       const reader = new FileReader();
@@ -130,7 +131,7 @@ export async function envoyerSignalement(): Promise<void> {
   if (hasError) {
     errorBubble.innerText = "⚠️ Veuillez remplir tous les champs et joindre une photo.";
     errorBubble.classList.remove("hidden");
-    if (navigator.vibrate) navigator.vibrate([200]);
+    vibrer([200]);
     setTimeout(() => errorBubble.classList.add("hidden"), 3000);
     return;
   }
@@ -164,7 +165,7 @@ export async function envoyerSignalement(): Promise<void> {
       frigoSelect.value = "";
       effacerDescSig();
 
-      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      vibrer([100, 50, 100]);
       jouerSon("success");
 
       document.getElementById("sig-success-modal")?.classList.remove("hidden");

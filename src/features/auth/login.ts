@@ -3,6 +3,7 @@ import { assurerCryptoJS, definirClesSession, deriverCleAuth, derriverCleVault, 
 import { fetchVault, login } from "@/services/permia-relay";
 import { dechiffrerCoffreLocal } from "@/services/storage";
 import { jouerSon } from "@/ui/sound";
+import { vibrer } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
 import type { LoginResponse } from "@/types/relay";
 
@@ -46,7 +47,7 @@ export function echecAuth(message: string, idsChamps: string[] = ["pass-pro"]): 
     champ.addEventListener("input", nettoyer);
   });
 
-  if (navigator.vibrate) navigator.vibrate(200);
+  vibrer(200);
 }
 
 export async function validerConnexionSecurisee(): Promise<void> {
@@ -141,7 +142,7 @@ export async function validerConnexionSecurisee(): Promise<void> {
         return;
       }
 
-      if (navigator.vibrate) navigator.vibrate([50, 50]);
+      vibrer([50, 50]);
       inputPassEl.value = "";
       openMenu();
     } else if (response.status === 401 || response.status === 403 || response.status === 429) {
@@ -164,7 +165,7 @@ export async function validerConnexionSecurisee(): Promise<void> {
       const expirationTime = new Date().getTime() + SESSION_DUREE_MS;
       localStorage.setItem("coallia_session_expire", String(expirationTime));
 
-      if (navigator.vibrate) navigator.vibrate([50, 50]);
+      vibrer([50, 50]);
       inputPassEl.value = "";
       openMenu();
     } else {

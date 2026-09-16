@@ -1,0 +1,113 @@
+/* ==========================================================================
+   🛠️ MODALE OPTIONS ("Mon Espace")
+   ========================================================================== */
+
+.options-modal-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(0, 85, 164, 0.10);
+    color: var(--coallia-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px auto 16px auto;
+}
+.options-modal-icon svg { width: 30px; height: 30px; }
+
+.options-modal-title {
+    margin: 0 0 22px 0;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: var(--text-dark);
+    text-align: center;
+}
+
+/* Boutons pleine largeur du menu (Annuaire / Plan du foyer / Mode sombre) :
+   même gabarit icône + libellé pour les trois. */
+#pro-menu-modal .btn-primary,
+#pro-menu-modal .btn-secondary,
+.options-btn-blue-tint {
+    width: 100%;
+    margin-bottom: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 17px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    outline: none;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+}
+#pro-menu-modal .btn-primary { box-shadow: 0 4px 15px rgba(0, 85, 164, 0.2); }
+#pro-menu-modal .btn-primary svg,
+#pro-menu-modal .btn-secondary svg,
+.options-btn-blue-tint svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* "Plan du foyer" : teinte bleutée, entre le bleu plein de l'annuaire et
+   le gris neutre du mode sombre. */
+.options-btn-blue-tint {
+    background: rgba(0, 85, 164, 0.08);
+    color: var(--coallia-blue);
+}
+body.dark-mode .options-btn-blue-tint { background: rgba(85, 144, 204, 0.16); }
+
+/* Icône jour/nuit : les deux SVG partagent l'espace, seul un des deux est
+   visible (cf. théorie de bascule dans theme.ts) — la rotation/zoom au clic
+   s'applique au conteneur, donc à l'icône affichée. */
+#theme-icon {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 22px;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#theme-icon svg { position: absolute; width: 22px; height: 22px; }
+
+.options-feedback-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-gray);
+    text-align: center;
+    margin: 8px 0 12px 0;
+}
+
+.options-feedback-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 22px;
+}
+.options-feedback-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 4px;
+    border-radius: 14px;
+    background: var(--input-bg);
+    border: 1.5px solid transparent;
+    color: var(--text-gray);
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.options-feedback-btn svg { width: 20px; height: 20px; }
+.options-feedback-btn.actif {
+    background: rgba(0, 85, 164, 0.08);
+    border-color: var(--coallia-blue);
+    color: var(--coallia-blue);
+}
+body.dark-mode .options-feedback-btn.actif { background: rgba(85, 144, 204, 0.18); }

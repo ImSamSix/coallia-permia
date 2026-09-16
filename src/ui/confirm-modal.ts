@@ -1,3 +1,5 @@
+import { vibrer } from "@/services/feedback";
+
 /**
  * Confirmation in-app : confirm() natif est bloqué par iOS hors geste
  * utilisateur direct (ex. appel depuis un setTimeout) — on passe par une
@@ -13,7 +15,7 @@ export function demanderConfirmation(titre: string, texte: string, callback: () 
   if (titreEl) titreEl.innerText = titre;
   if (texteEl) texteEl.innerText = texte;
   document.getElementById("confirm-modal")?.classList.remove("hidden");
-  if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+  vibrer([60, 40, 60]);
 }
 
 export function annulerConfirmation(): void {

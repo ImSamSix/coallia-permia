@@ -1,11 +1,18 @@
+import { vibrer } from "@/services/feedback";
+
 const THEME_STORAGE_KEY = "coallia_theme";
+
+function afficherIcone(icon: HTMLElement, isDark: boolean): void {
+  icon.querySelector(".icone-lune")?.classList.toggle("hidden", isDark);
+  icon.querySelector(".icone-soleil")?.classList.toggle("hidden", !isDark);
+}
 
 export function toggleThemeAnimated(): void {
   const icon = document.getElementById("theme-icon");
   const text = document.getElementById("theme-text");
 
   // 1. Petite vibration et animation de disparition (ça tourne et ça rétrécit)
-  if (navigator.vibrate) navigator.vibrate(50);
+  vibrer(50);
   if (icon) icon.style.transform = "rotate(-160deg) scale(0.15)";
 
   // 2. On attend la moitié de l'animation pour changer les couleurs et le texte
@@ -14,8 +21,8 @@ export function toggleThemeAnimated(): void {
     localStorage.setItem(THEME_STORAGE_KEY, isDark ? "dark" : "light");
 
     if (icon && text) {
-      icon.innerText = isDark ? "☀️" : "🌙";
-      text.innerText = isDark ? "Passer au Mode Clair" : "Passer au Mode Sombre";
+      afficherIcone(icon, isDark);
+      text.innerText = isDark ? "Mode clair" : "Mode sombre";
 
       // 3. Animation d'apparition (ça tourne dans l'autre sens et reprend sa taille)
       icon.style.transform = "rotate(200deg) scale(1)";
@@ -36,7 +43,7 @@ export function initTheme(): void {
   const icon = document.getElementById("theme-icon");
   const text = document.getElementById("theme-text");
   if (icon && text) {
-    icon.innerText = isDark ? "☀️" : "🌙";
-    text.innerText = isDark ? "Passer au Mode Clair" : "Passer au Mode Sombre";
+    afficherIcone(icon, isDark);
+    text.innerText = isDark ? "Mode clair" : "Mode sombre";
   }
 }

@@ -2,6 +2,7 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { fermerModals } from "@/ui/modals";
 import { jouerSon } from "@/ui/sound";
+import { vibrer } from "@/services/feedback";
 import type { AnnuaireRole } from "@/types/annuaire";
 
 export function ouvrirAnnuaire(): void {
@@ -23,7 +24,7 @@ export function startContactTimer(role: AnnuaireRole): void {
   isContactLongPress = false;
   contactTimer = setTimeout(() => {
     isContactLongPress = true; // Empêche l'appel classique de se lancer
-    if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+    vibrer([50, 50, 50]);
     ouvrirEditContact(role);
   }, 5000); // 5 secondes
 }
@@ -75,7 +76,7 @@ export function validerEditContact(): void {
   document.getElementById("edit-contact-modal")?.classList.add("hidden");
   document.getElementById("annuaire-modal")?.classList.remove("hidden");
 
-  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+  vibrer([100, 50, 100]);
   jouerSon("success");
 }
 

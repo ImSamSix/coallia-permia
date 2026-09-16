@@ -1,6 +1,7 @@
 import { state } from "@/state/store";
 import { chiffrer, getCleAuth, getCleMaitresse, tenterDechiffrement } from "./crypto";
 import { pushCloudSync, pushEtatOperationnel } from "./permia-relay";
+import { vibrer } from "./feedback";
 import type { VaultData } from "@/types/vault";
 import type { MediaKey } from "@/types/media";
 
@@ -66,7 +67,7 @@ export function sauvegarderToutesLesDonnees(): void {
       badge.innerText = "⚠️ Mémoire pleine — sauvegarde locale impossible";
       badge.classList.remove("hidden");
     }
-    if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    vibrer([200, 100, 200]);
     // On NE s'arrête pas : l'envoi cloud reste la meilleure chance de conserver les données.
   }
 

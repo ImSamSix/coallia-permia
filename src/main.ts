@@ -6,6 +6,7 @@ import { getCleAuth, getCleMaitresse } from "@/services/crypto";
 import { dechiffrerCoffreLocal, purgerDonneesAnciennes, definirCallbackApresSauvegarde } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { fetchVault } from "@/services/permia-relay";
+import { vibrer } from "@/services/feedback";
 import { initTheme } from "@/features/theme/theme";
 import { openMenu } from "@/features/navigation/navigation";
 import { initialiserAutosave, purgerToutAutosave, signalerActivite, verifierSession } from "@/features/session/session";
@@ -144,7 +145,7 @@ window.onload = async () => {
       offlineBadge.style.background = "var(--danger)";
       offlineBadge.innerHTML = "<span>☁️</span> Mode Hors-ligne";
       offlineBadge.classList.remove("hidden");
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      vibrer([200, 100, 200]);
     }
   });
 
@@ -153,7 +154,7 @@ window.onload = async () => {
     if (offlineBadge) {
       offlineBadge.style.background = "var(--success)";
       offlineBadge.innerHTML = "<span>✅</span> Connexion rétablie ! Synchronisation...";
-      if (navigator.vibrate) navigator.vibrate([50, 50]);
+      vibrer([50, 50]);
       setTimeout(() => {
         offlineBadge.classList.add("hidden");
       }, 3000);

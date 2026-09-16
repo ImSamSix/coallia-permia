@@ -3,6 +3,7 @@ import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { securiserTexte } from "@/ui/dom-utils";
 import { jouerSon } from "@/ui/sound";
+import { vibrer } from "@/services/feedback";
 import { fermerModals } from "@/ui/modals";
 import { updateDashboardBadges } from "@/features/navigation/navigation";
 import { telechargerPDF } from "@/features/pdf/pdf";
@@ -55,7 +56,7 @@ export function lancerComptageMecs(): void {
     typeSelect.classList.add("input-error"); // Applique le halo rouge natif de style.css
 
     errorBubble?.classList.remove("hidden");
-    if (navigator.vibrate) navigator.vibrate(35);
+    vibrer(35);
     jouerSon("error"); // Bip sonore d'erreur
 
     // Restauration automatique de l'interface après 3 secondes
@@ -277,7 +278,7 @@ function enregistrerPresenceMecs(isPresent: boolean): void {
     if (jeune.isMajor) mecsSessionEnCours.breakdown.majeurs.presents++;
     else mecsSessionEnCours.breakdown.mineurs.presents++;
 
-    if (navigator.vibrate) navigator.vibrate(30);
+    vibrer(30);
 
     mecsIndexActuel++;
     majDashboardComptage();
@@ -355,7 +356,7 @@ export function validerMotifAbsenceMecs(motif: string): void {
     isMajor: jeune.isMajor // 👑 Sauvegarde le statut pour l'affichage différencié
   });
 
-  if (navigator.vibrate) navigator.vibrate([60, 40]);
+  vibrer([60, 40]);
 
   document.getElementById("comptage-absence-modal")?.classList.add("hidden");
 
@@ -477,7 +478,7 @@ export async function cloreComptageMecs(): Promise<void> {
 
   // Retours haptiques et sonores premium de validation
   jouerSon("success");
-  if (navigator.vibrate) navigator.vibrate([50, 50]);
+  vibrer([50, 50]);
 
   // Redirection fluide vers l'écran d'accueil du comptage
   retourSaisieComptage();
@@ -486,7 +487,7 @@ export async function cloreComptageMecs(): Promise<void> {
 // --- EXTRACTION ET VISUALISATION DU DERNIER APPEL (PRISE DE SERVICE) ---
 export function voirDernierComptage(): void {
   if (!state.mecsComptageLogs || state.mecsComptageLogs.length === 0) {
-    if (navigator.vibrate) navigator.vibrate(100); // Micro-vibration de signalement
+    vibrer(100); // Micro-vibration de signalement
     jouerSon("error"); // Bip d'avertissement sonore
 
     document.getElementById("comptage-empty-modal")?.classList.remove("hidden");
@@ -584,7 +585,7 @@ export function verifierAnnulationComptage(): void {
   if (workspaceHidden) {
     retourSaisieComptage();
   } else {
-    if (navigator.vibrate) navigator.vibrate(150);
+    vibrer(150);
     jouerSon("error");
     document.getElementById("comptage-cancel-modal")?.classList.remove("hidden");
   }
@@ -647,7 +648,7 @@ export function validerAbsenceAutreMecs(): void {
     input?.classList.add("input-error"); // Ajoute le halo rouge natif de style.css
     errorBubble?.classList.remove("hidden");
 
-    if (navigator.vibrate) navigator.vibrate(200); // Vibreur haptique standard de 200ms
+    vibrer(200); // Vibreur haptique standard de 200ms
     jouerSon("error"); // Bruit d'avertissement sonore
 
     // Nettoyage automatique au bout de 3 secondes pour préserver la lisibilité

@@ -1,10 +1,12 @@
 import { state } from "@/state/store";
 import { getCleMaitresse } from "@/services/crypto";
+import { getFeedbackMode, setFeedbackMode, vibrer, type FeedbackMode } from "@/services/feedback";
 import { ouvrirLogout } from "@/features/session/session";
 import { ouvrirPainModal } from "@/features/pain/pain";
 import { ouvrirAnnuaire } from "@/features/annuaire/annuaire";
 import { toggleThemeAnimated } from "@/features/theme/theme";
 import { clicEasterEggAccueil } from "@/ui/easter-egg";
+import { jouerSon } from "@/ui/sound";
 import { attacherEffetAppui } from "@/ui/press-effect";
 
 /**
@@ -135,6 +137,25 @@ export function openMenu(): void {
 
 export function ouvrirMenuPro(): void {
   document.getElementById("pro-menu-modal")?.classList.remove("hidden");
+  initFeedbackModeUI();
+}
+
+/** Met en surbrillance le mode actif (Son / Vibration / Aucun). */
+export function initFeedbackModeUI(): void {
+  const mode = getFeedbackMode();
+  document.querySelectorAll<HTMLButtonElement>(".options-feedback-btn").forEach((btn) => {
+    btn.classList.toggle("actif", btn.dataset.feedbackMode === mode);
+  });
+}
+
+/** Change le canal de retour d'interaction et en fait immédiatement la démonstration. */
+function choisirFeedbackMode(mode: FeedbackMode): void {
+  setFeedbackMode(mode);
+  initFeedbackModeUI();
+  // Chacune de ces deux fonctions s'auto-filtre sur le mode qu'on vient de
+  // définir : une seule des deux produira effectivement quelque chose.
+  jouerSon("success");
+  vibrer(40);
 }
 
 /** 🔍 ÉCRAN 404 — page ou vue introuvable. */
@@ -164,5 +185,10 @@ export function initNavigationListeners(): void {
   // Modale "Mon Espace" (ouverte par ouvrirMenuPro ci-dessus)
   document.getElementById("btn-annuaire")?.addEventListener("click", ouvrirAnnuaire);
   document.getElementById("btn-theme-toggle")?.addEventListener("click", toggleThemeAnimated);
+  document.querySelectorAll<HTMLButtonElement>(".options-feedback-btn").forEach((btn) => {
+    const mode = btn.dataset.feedbackMode as FeedbackMode;
+    btn.addEventListener("click", () => choisirFeedbackMode(mode));
+  });
+  initFeedbackModeUI();
   attacherEffetAppui(document.getElementById("btn-pro-menu-fermer"), 0.95);
 }

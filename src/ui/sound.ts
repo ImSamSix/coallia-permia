@@ -1,9 +1,13 @@
+import { getFeedbackMode } from "@/services/feedback";
+
 export type SonType = "success" | "error";
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-/** Générateur de sons (Web Audio API) : bip aigu de succès, bzzzt grave d'erreur. */
+/** Générateur de sons (Web Audio API) : bip aigu de succès, bzzzt grave d'erreur.
+ *  Silencieux hors du mode "son" (menu Options > Retour d'interaction). */
 export function jouerSon(type: SonType): void {
+  if (getFeedbackMode() !== "son") return;
   if (audioCtx.state === "suspended") audioCtx.resume();
 
   const oscillator = audioCtx.createOscillator();

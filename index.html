@@ -912,16 +912,44 @@
 
 <div id="pro-menu-modal" class="modal-overlay hidden">
     <div class="modal-card" style="max-width: 320px;">
-        <h3 style="color: var(--coallia-blue); margin-bottom: 25px;">👤 Mon Espace</h3>
-        
-        <button class="btn-primary" id="btn-annuaire" style="width: 100%; margin-bottom: 15px; font-size: 16px; font-weight: 700; padding: 18px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,85,164,0.2);">
-            <span style="font-size: 20px;">📞</span> Annuaire d'urgence
+        <div class="options-modal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82L4.2 7.1a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path></svg>
+        </div>
+        <h3 class="options-modal-title">Options</h3>
+
+        <button class="btn-primary" id="btn-annuaire">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"></path><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M9 9h1M9 13h6M9 17h6"></path></svg>
+            Annuaire d'urgence
         </button>
-        
-        <button class="btn-secondary" id="btn-theme-toggle" style="width: 100%; margin-bottom: 25px; font-size: 15px; padding: 16px; border-radius: 14px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 700; color: var(--text-dark); background: var(--input-bg); border: 1px solid var(--border-color); outline: none;">
-            <span id="theme-icon" style="font-size: 22px; display: inline-block; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">🌙</span>
-            <span id="theme-text">Passer au Mode Sombre</span>
+
+        <button class="options-btn-blue-tint" id="btn-plan-foyer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v18"></path><path d="M14 9h4a1 1 0 0 1 1 1v12"></path><path d="M10 6h.01M10 10h.01M10 14h.01M6 6h.01M6 10h.01M6 14h.01M6 18h.01M10 18h.01M17 13h.01M17 17h.01"></path></svg>
+            Plan du foyer
         </button>
+
+        <button class="btn-secondary" id="btn-theme-toggle">
+            <span id="theme-icon">
+                <svg class="icone-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"></path></svg>
+                <svg class="icone-soleil hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+            </span>
+            <span id="theme-text">Mode sombre</span>
+        </button>
+
+        <div class="options-feedback-label">Retour d'interaction</div>
+        <div class="options-feedback-grid">
+            <button class="options-feedback-btn" id="btn-feedback-son" data-feedback-mode="son">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                <span>Son</span>
+            </button>
+            <button class="options-feedback-btn" id="btn-feedback-vibration" data-feedback-mode="vibration">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 8 2 2-2 2 2 2-2 2"></path><path d="m22 8-2 2 2 2-2 2 2 2"></path><rect x="8" y="5" width="8" height="14" rx="1"></rect></svg>
+                <span>Vibration</span>
+            </button>
+            <button class="options-feedback-btn" id="btn-feedback-aucun" data-feedback-mode="aucun">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="22" y1="9" x2="16" y2="15"></line><line x1="16" y1="9" x2="22" y2="15"></line></svg>
+                <span>Aucun</span>
+            </button>
+        </div>
 
         <button id="btn-pro-menu-fermer" data-close-modal style="width: 100%; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--danger); background: rgba(255, 59, 48, 0.1); border: none; cursor: pointer; outline: none; transition: transform 0.2s;">
             Fermer

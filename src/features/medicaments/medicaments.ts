@@ -2,6 +2,7 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { demanderConfirmation } from "@/ui/confirm-modal";
+import { vibrer } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
 import type { MedLog } from "@/types/medication";
 
@@ -90,7 +91,7 @@ export function validerMedicament(): void {
     const errorBubble = document.getElementById("med-error-bubble");
     errorBubble?.classList.remove("hidden");
 
-    if (navigator.vibrate) navigator.vibrate([200]); // Petite vibration d'erreur comme pour les transmissions
+    vibrer([200]); // Petite vibration d'erreur comme pour les transmissions
 
     setTimeout(() => errorBubble?.classList.add("hidden"), 3000);
     return;
@@ -225,7 +226,7 @@ function executerPurgeMedicaments(): void {
     errorBubble.style.backgroundColor = "var(--success)";
     errorBubble.classList.remove("hidden");
 
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    vibrer([100, 50, 100]);
 
     setTimeout(() => {
       errorBubble.classList.add("hidden");
