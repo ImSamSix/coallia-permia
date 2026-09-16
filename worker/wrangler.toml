@@ -2,11 +2,18 @@ name = "relais-permia"
 main = "src/index.ts"
 compatibility_date = "2024-11-01"
 
-# KV : coffre chiffré ("master_vault" + historique) et catalogue MECS ("mecs_database")
+# KV : coffre chiffré ("master_vault" + historique). Le catalogue MECS ne
+# vient plus de KV (clé "mecs_database" désormais inutilisée) : il est lu en
+# direct depuis Supabase (partagé avec Habita) à chaque login/GET.
 [[kv_namespaces]]
 binding = "PERMIA_DB"
-id = "REMPLACER_PAR_L_ID_DU_NAMESPACE_KV"
+id = "de37fd13b37c4ee7a097cbc21b4a1eca"
+
+# Non sensible : l'URL du projet ne donne accès à rien sans la clé anon.
+[vars]
+SUPABASE_URL = "https://jgfwnatspdjvnxmbsgls.supabase.co"
 
 # Secrets (NE JAMAIS les mettre ici en clair) — à définir via :
 #   wrangler secret put MOT_DE_PASSE_PERMIA
 #   wrangler secret put URL_POWER_AUTOMATE
+#   wrangler secret put SUPABASE_ANON_KEY
