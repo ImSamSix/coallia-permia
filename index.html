@@ -290,8 +290,43 @@
                     <span class="hub-btn-title">Prêts Multimédia</span>
                     <span class="hub-btn-desc">Manettes Xbox & Télécommandes</span>
                 </button>
-                
+
             </div>
+        </main>
+    </section>
+
+    <section id="plan-foyer-view" class="view hidden">
+        <header class="top-bar">
+            <button class="back-btn" id="btn-plan-foyer-retour">← Accueil</button>
+            <div></div>
+            <div></div>
+        </header>
+
+        <main class="content">
+            <div class="di-head">
+                <span class="di-step">Plan du foyer</span>
+                <h1 class="di-main-title">Répartition</h1>
+            </div>
+
+            <div class="plan-recherche">
+                <span class="plan-rech-ico">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                </span>
+                <input type="text" id="plan-rech-champ" placeholder="Rechercher un résident…" autocomplete="off">
+                <button class="plan-rech-vider hidden" id="plan-rech-vider" aria-label="Effacer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+                </button>
+            </div>
+
+            <div id="plan-resultats"></div>
+
+            <div class="plan-onglets">
+                <button class="plan-onglet actif" data-bat="Capitainerie">Capitainerie</button>
+                <button class="plan-onglet" data-bat="C">Bât. C</button>
+                <button class="plan-onglet" data-bat="D">Bât. D</button>
+            </div>
+
+            <div id="plan-contenu"></div>
         </main>
     </section>
 

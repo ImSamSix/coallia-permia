@@ -43,6 +43,7 @@
 @import "./views/system-screens.css";
 @import "./views/comptage.css";
 @import "./views/medicaments.css";
+@import "./views/plan-foyer.css";
 
 @import "./theme-transitions.css";
 @import "./dark-mode.css";

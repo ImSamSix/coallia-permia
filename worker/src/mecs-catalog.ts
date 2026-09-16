@@ -135,7 +135,10 @@ export async function compilerCatalogueJeunes(env: Env): Promise<MecsJeuneCompil
       age,
       isMajor,
       chambre: `${batimentPrefix} │ ${chambreLabel}`,
-      initiales: (prenom.charAt(0) + nom.charAt(0)).toUpperCase() || "?"
+      initiales: (prenom.charAt(0) + nom.charAt(0)).toUpperCase() || "?",
+      bat: p.bat,
+      apt: p.apt,
+      chambreNum: p.ch
     };
   });
 }

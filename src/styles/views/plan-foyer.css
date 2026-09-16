@@ -1,0 +1,231 @@
+/* ==========================================================================
+   🏢 PLAN DU FOYER — fonctionnalité partagée avec Habita
+   ========================================================================== */
+
+#plan-foyer-view .di-head {
+    background: linear-gradient(160deg, rgba(0, 85, 164, 0.14), rgba(0, 85, 164, 0.04));
+    border-radius: 24px;
+    padding: 26px 22px;
+    margin: 12px 0 16px 0;
+    text-align: center;
+}
+body.dark-mode #plan-foyer-view .di-head {
+    background: linear-gradient(160deg, rgba(85, 144, 204, 0.18), rgba(85, 144, 204, 0.05));
+}
+#plan-foyer-view .di-step {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--coallia-blue);
+    margin-bottom: 8px;
+}
+#plan-foyer-view .di-main-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: var(--text-dark);
+}
+
+/* Recherche */
+.plan-recherche {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: 15px;
+    padding: 0 14px;
+    margin-bottom: 16px;
+}
+.plan-rech-ico { display: flex; color: var(--text-gray); flex-shrink: 0; }
+.plan-rech-ico svg { width: 19px; height: 19px; }
+.plan-recherche input {
+    flex: 1;
+    min-width: 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 14px 0 !important;
+    margin: 0 !important;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-dark);
+    outline: none;
+}
+.plan-rech-vider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: var(--input-bg);
+    color: var(--text-gray);
+    cursor: pointer;
+    padding: 0;
+}
+.plan-rech-vider svg { width: 13px; height: 13px; }
+
+.plan-rech-compte {
+    display: block;
+    text-align: center;
+    font-size: 11.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-gray);
+    margin-bottom: 10px;
+}
+
+.plan-resultat {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card-color);
+    border: 1.5px solid var(--border-color);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+}
+.plan-res-ico {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 11px;
+    background: rgba(0, 85, 164, 0.10);
+    color: var(--coallia-blue);
+    display: flex; align-items: center; justify-content: center;
+}
+.plan-res-ico svg { width: 18px; height: 18px; }
+.plan-res-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.plan-res-nom { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+.plan-res-lieu { font-size: 12px; font-weight: 500; color: var(--text-gray); overflow-wrap: anywhere; }
+
+.plan-aucun {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    padding: 30px 10px; color: var(--text-gray);
+}
+.plan-aucun-ico svg { width: 30px; height: 30px; }
+.plan-aucun-txt { font-size: 13.5px; font-weight: 600; }
+
+.plan-vide { text-align: center; color: var(--text-gray); font-size: 13.5px; font-weight: 500; padding: 20px; }
+
+/* Onglets bâtiments */
+.plan-onglets { display: flex; gap: 8px; margin-bottom: 16px; }
+.plan-onglet {
+    flex: 1;
+    border: 1.5px solid transparent;
+    border-radius: 14px;
+    background: var(--input-bg);
+    color: var(--text-gray);
+    padding: 11px 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.14s ease, background 0.2s, color 0.2s, border-color 0.2s;
+}
+.plan-onglet:active { transform: scale(0.96); }
+.plan-onglet.actif {
+    background: var(--card-color);
+    color: var(--coallia-blue);
+    border-color: rgba(0, 85, 164, 0.25);
+}
+
+/* Groupe de cartes (bâtiment / appartements) */
+.plan-etage-corps {
+    background: rgba(0, 85, 164, 0.05);
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+body.dark-mode .plan-etage-corps { background: rgba(85, 144, 204, 0.08); }
+
+.plan-apt {
+    background: var(--card-color);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+.plan-apt.ouvert {
+    box-shadow: 0 2px 6px rgba(0, 85, 164, 0.10), 0 10px 24px rgba(0, 85, 164, 0.12);
+}
+body.dark-mode .plan-apt.ouvert { box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5); }
+
+.plan-apt-tete {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; border: none; background: transparent;
+    padding: 13px 14px; cursor: pointer; text-align: left;
+    font-family: inherit;
+    transition: transform 0.14s ease, background 0.2s ease;
+}
+.plan-apt-tete:active { transform: scale(0.985); background: rgba(0, 85, 164, 0.04); }
+body.dark-mode .plan-apt-tete:active { background: rgba(85, 144, 204, 0.08); }
+
+.plan-apt-num {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 13px;
+    background: rgba(0, 85, 164, 0.11); color: var(--coallia-blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800;
+}
+.plan-apt-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.plan-apt-nb { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+.plan-apt-chev { flex-shrink: 0; color: var(--text-gray); display: flex; transition: transform 0.25s ease; }
+.plan-apt-chev svg { width: 17px; height: 17px; }
+.plan-apt.ouvert .plan-apt-chev { transform: rotate(180deg); }
+
+.plan-apt-detail {
+    height: 0;
+    overflow: hidden;
+    transition: height 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.plan-apt-detail-corps {
+    padding: 0 12px 12px 12px;
+    display: flex; flex-direction: column; gap: 7px;
+}
+
+.plan-apt.ouvert .plan-chambre {
+    animation: planChambre 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+.plan-apt.ouvert .plan-chambre:nth-child(1) { animation-delay: 0.06s; }
+.plan-apt.ouvert .plan-chambre:nth-child(2) { animation-delay: 0.10s; }
+.plan-apt.ouvert .plan-chambre:nth-child(3) { animation-delay: 0.14s; }
+.plan-apt.ouvert .plan-chambre:nth-child(4) { animation-delay: 0.18s; }
+.plan-apt.ouvert .plan-chambre:nth-child(n+5) { animation-delay: 0.22s; }
+
+@keyframes planChambre {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .plan-apt-detail { transition: none; }
+    .plan-apt.ouvert .plan-chambre { animation: none; }
+}
+
+.plan-chambre {
+    display: flex; align-items: flex-start; gap: 11px;
+    background: var(--input-bg); border-radius: 12px; padding: 10px 12px;
+}
+.plan-chambre.vide { background: rgba(142, 142, 147, 0.08); }
+.plan-ch-num {
+    flex-shrink: 0; font-size: 11.5px; font-weight: 800;
+    color: var(--coallia-blue); min-width: 46px; padding-top: 2px;
+}
+.plan-ch-noms { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.plan-ch-nom { font-size: 13.5px; font-weight: 700; color: var(--text-dark); overflow-wrap: anywhere; }
+.plan-ch-vide { font-size: 12.5px; font-style: italic; color: var(--text-gray); }
+
+.plan-ch-libre {
+    display: inline-block; margin-top: 3px;
+    padding: 3px 9px; border-radius: 7px;
+    background: rgba(52, 199, 89, 0.14); color: var(--success);
+    font-size: 10.5px; font-weight: 800;
+}
+
+.btn-modal.btn-plan { background: rgba(0, 85, 164, 0.10); color: var(--coallia-blue); }
+body.dark-mode .btn-modal.btn-plan { background: rgba(85, 144, 204, 0.16); }

@@ -24,6 +24,7 @@ import { initPainListeners } from "@/features/pain/pain";
 import { initComptageListeners } from "@/features/comptage-mecs/comptage-mecs";
 import { initMediaListeners } from "@/features/media/media";
 import { initAnnuaireListeners } from "@/features/annuaire/annuaire";
+import { initPlanFoyerListeners } from "@/features/plan-foyer/plan-foyer";
 import { initFermetureModals } from "@/ui/modals";
 import { initAutoResizeListeners } from "@/ui/dom-utils";
 import { initConfirmModalListeners } from "@/ui/confirm-modal";
@@ -63,4 +64,5 @@ export function initApp(): void {
   initComptageListeners();
   initMediaListeners();
   initAnnuaireListeners();
+  initPlanFoyerListeners();
 }

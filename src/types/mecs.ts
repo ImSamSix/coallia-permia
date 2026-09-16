@@ -7,8 +7,13 @@ export interface MecsJeune {
   nom: string;
   age: number;
   isMajor: boolean;
+  /** Libellé d'affichage prêt à l'emploi pour le comptage (ex. "🏢 Bât. C │ Apt 3 - Ch. 2"). */
   chambre: string;
   initiales: string;
+  /** Champs structurés (ex. "Capitainerie", "C", "D") pour le plan du foyer. */
+  bat: string;
+  apt?: string;
+  chambreNum: string;
 }
 
 export interface MecsAbsent {
