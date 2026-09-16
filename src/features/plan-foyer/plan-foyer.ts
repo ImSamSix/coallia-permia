@@ -148,7 +148,7 @@ export function basculerApt(apt: string): void {
   if (precedent && precedent !== apt) fermerDetailApt(precedent);
 
   const detail = document.getElementById("detail-" + apt);
-  const carte = detail?.closest(".plan-apt");
+  const carte = detail?.closest(".plan-apt") as HTMLElement | null;
   if (!detail || !carte) return;
 
   if (ouverture) {
@@ -156,9 +156,30 @@ export function basculerApt(apt: string): void {
     const corps = detail.querySelector(".plan-apt-detail-corps") as HTMLElement;
     detail.style.height = corps.offsetHeight + "px";
     vibrer(20);
+    // On attend la fin de l'animation d'ouverture pour mesurer la position
+    // définitive de la carte, puis on ne remonte l'écran que si elle dépasse.
+    detail.addEventListener("transitionend", () => assurerVisibiliteCarte(carte), { once: true });
   } else {
     fermerDetailApt(apt);
   }
+}
+
+/** Si la carte dépasse le bas de la zone visible, on la ramène en vue en douceur. */
+function assurerVisibiliteCarte(carte: HTMLElement): void {
+  const zone = document.querySelector<HTMLElement>("#plan-foyer-view .content");
+  if (!zone) return;
+
+  const rZone = zone.getBoundingClientRect();
+  const rCarte = carte.getBoundingClientRect();
+  const marge = 16;
+
+  const depassementBas = rCarte.bottom - (rZone.bottom - marge);
+  if (depassementBas <= 0) return;
+
+  // Ne jamais remonter au point de faire sortir le haut de la carte de la vue.
+  const deplacementMax = Math.max(rCarte.top - rZone.top - marge, 0);
+  const deplacement = Math.min(depassementBas, deplacementMax);
+  if (deplacement > 0) zone.scrollBy({ top: deplacement, behavior: "smooth" });
 }
 
 function fermerDetailApt(apt: string): void {
