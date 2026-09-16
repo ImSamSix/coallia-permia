@@ -35,7 +35,10 @@ body.dark-mode #splash-screen {
 .splash-logo {
     height: 130px;
     width: auto;
-    margin-bottom: 10px;
+    /* Marge négative : le PNG transparent a ~35 % de marge intégrée en bas
+       du canevas, donc l'espace visuel réel est bien plus grand que ce que
+       la boîte de l'image laisse penser. */
+    margin-bottom: -26px;
     opacity: 0;
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.08));
     animation: splashLogo 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
