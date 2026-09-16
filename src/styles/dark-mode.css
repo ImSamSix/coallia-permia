@@ -57,15 +57,6 @@ body.dark-mode .tab-indicator {
     border-color: rgba(255, 255, 255, 0.09);
 }
 
-/* Le logo du splash reste sur fond clair pour rester lisible
-   (le logo de l'écran de connexion est transparent : cf. login.css) */
-body.dark-mode .splash-logo {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 10px 16px;
-    box-sizing: content-box;
-}
-
 /* Le filet tricolore, très légèrement adouci sur fond sombre */
 body.dark-mode .modal-card::before,
 body.dark-mode .ann-filet { opacity: 0.88; }
