@@ -58,19 +58,20 @@
 }
 .ann-secours:active, .ann-contact:active { transform: scale(0.95); }
 
-.ann-emoji { font-size: 23px; line-height: 1; }
+.ann-emoji { display: flex; align-items: center; justify-content: center; color: var(--text-gray); }
+.ann-emoji svg { width: 24px; height: 24px; }
 .ann-nom { font-size: 12.5px; font-weight: 700; line-height: 1.25; }
 .ann-num { font-size: 15px; font-weight: 800; letter-spacing: 0.5px; }
 
-/* Secours : les seuls en couleur pleine */
+/* Secours : les seuls en couleur pleine (l'icône hérite via currentColor) */
 .ann-rouge { background: #ffebee; border-color: rgba(198,40,40,0.18); color: #c62828; }
 .ann-bleu  { background: #e3f2fd; border-color: rgba(21,101,192,0.18); color: #1565c0; }
+.ann-rouge .ann-emoji, .ann-bleu .ann-emoji { color: inherit; }
 
-/* Astreinte : liseré coloré, fond neutre */
-.ann-prio-1 { border-color: rgba(255,59,48,0.35); }
-.ann-prio-1 .ann-nom { color: var(--danger); }
-.ann-prio-2 { border-color: rgba(255,149,0,0.40); }
-.ann-prio-2 .ann-nom { color: var(--warning); }
+/* Astreinte : liseré + icône/texte coloré, fond neutre */
+.ann-prio-1 { border-color: rgba(255,59,48,0.35); color: var(--danger); }
+.ann-prio-2 { border-color: rgba(255,149,0,0.40); color: var(--warning); }
+.ann-prio-1 .ann-emoji, .ann-prio-2 .ann-emoji { color: inherit; }
 
 .ann-astuce {
     display: flex; align-items: center; justify-content: center; gap: 7px;
