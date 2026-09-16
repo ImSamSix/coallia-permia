@@ -1,5 +1,6 @@
 /* ========================================================================== */
-/* 🚀 ÉCRAN DE DÉMARRAGE — logo qui respire, sobre et épuré (style Habita)    */
+/* 🚀 ÉCRAN DE DÉMARRAGE — apparition séquencée logo → titre → jauge          */
+/* (calé sur le rendu réel de l'écran de démarrage Habita)                    */
 /* ========================================================================== */
 
 #splash-screen {
@@ -25,22 +26,26 @@ body.dark-mode #splash-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
-    animation: fadeInSplash 1s ease-out;
-    /* 👁️ Centre optique : ~8 % au-dessus du centre géométrique.
-       Un bloc mathématiquement centré paraît toujours trop bas à l'œil. */
-    transform: translateY(-8vh);
+    /* 👁️ Centre optique : très légèrement au-dessus du centre géométrique */
+    transform: translateY(-2vh);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Le logo respire doucement pendant tout le chargement */
+/* 1. Le logo émerge : net, stable, sans clignotement */
 .splash-logo {
     height: 130px;
     width: auto;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
+    opacity: 0;
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.08));
-    animation: breathe 2.5s infinite ease-in-out;
+    animation: splashLogo 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+}
+@keyframes splashLogo {
+    from { opacity: 0; transform: scale(0.93); }
+    to   { opacity: 1; transform: scale(1); }
 }
 
+/* 2. Le titre suit, décalé */
 .splash-title {
     font-size: 13px;
     font-weight: 800;
@@ -48,18 +53,47 @@ body.dark-mode #splash-screen {
     letter-spacing: 4px;
     /* Compense l'espace créé à droite par l'interlettrage */
     text-indent: 4px;
-    opacity: 0.7;
+    opacity: 0;
+    animation: splashApparition 0.5s ease-out 0.35s forwards;
+}
+@keyframes splashApparition {
+    from { opacity: 0; }
+    to   { opacity: 0.7; }
 }
 
-@keyframes breathe {
-    0%   { transform: scale(0.95); filter: drop-shadow(0 0 0 rgba(44, 62, 80, 0)); }
-    50%  { transform: scale(1.02); filter: drop-shadow(0 10px 20px rgba(44, 62, 80, 0.15)); }
-    100% { transform: scale(0.95); filter: drop-shadow(0 0 0 rgba(44, 62, 80, 0)); }
+/* 3. La jauge tricolore se remplit : progression + signature de marque */
+.splash-jauge {
+    width: 150px;
+    height: 3px;
+    border-radius: 3px;
+    margin-top: 18px;
+    overflow: hidden;
+    background: rgba(0, 85, 164, 0.10);
+    opacity: 0;
+    animation: splashApparitionPleine 0.3s ease 0.55s forwards;
 }
-
-@keyframes fadeInSplash {
+@keyframes splashApparitionPleine {
     from { opacity: 0; }
     to   { opacity: 1; }
+}
+.splash-jauge span {
+    display: block;
+    height: 100%;
+    width: 100%;
+    border-radius: 3px;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background: linear-gradient(
+        90deg,
+        #6B3FA0 0%,   #6B3FA0 30%,
+        #0055a4 30%,  #0055a4 74%,
+        #A8175A 74%,  #A8175A 100%
+    );
+    animation: splashRemplir 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.6s forwards;
+}
+@keyframes splashRemplir {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
 }
 
 /* Sortie : l'ensemble s'éloigne légèrement en s'effaçant */
@@ -68,13 +102,10 @@ body.dark-mode #splash-screen {
     visibility: hidden;
 }
 #splash-screen.hidden-splash .splash-content {
-    transform: translateY(-8vh) scale(1.05);
+    transform: translateY(-2vh) scale(1.05);
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .splash-content, .splash-logo {
-        animation: none !important;
-        opacity: 1;
-    }
-    .splash-content { transform: translateY(-8vh); }
+    .splash-logo, .splash-title, .splash-jauge { animation: none !important; opacity: 1; transform: none; }
+    .splash-jauge span { animation: none !important; transform: scaleX(1); }
 }
