@@ -230,15 +230,17 @@
 
     <section id="home-menu" class="view hidden">
         <header class="top-bar">
-            <div class="pro-badge"
-              id="pro-badge-home"
-              style="cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
-             <span id="display-pro-menu"></span>
-            </div>
-            
+            <button class="options-badge" id="pro-badge-home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82L4.2 7.1a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"></path></svg>
+                Options
+            </button>
+
             <button class="theme-toggle-btn" id="btn-pain-modal" style="font-size: 24px; justify-self: center;">🥖</button>
-            
-            <button class="logout-link" id="btn-logout">Déconnexion</button>
+
+            <button class="logout-link" id="btn-logout">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5"></path><path d="M21 12H9"></path></svg>
+                Déconnexion
+            </button>
         </header>
 
         <main class="content" style="display: flex; flex-direction: column; justify-content: flex-start; align-items: center; height: calc(100vh - 75px); overflow-y: auto; padding-top: 25px; padding-bottom: 60px; box-sizing: border-box;">

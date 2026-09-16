@@ -81,8 +81,6 @@ export function openMenu(): void {
   document.getElementById("home-menu")?.classList.remove("hidden");
 
   const prenom = localStorage.getItem("coallia_pro_prenom") || "";
-  const displayEl = document.getElementById("display-pro-menu");
-  if (displayEl) displayEl.innerText = "👤 " + prenom;
 
   // 👑 PERSONNALISATION TEMPORELLE (Horaires Réels Coallia)
   const now = new Date();

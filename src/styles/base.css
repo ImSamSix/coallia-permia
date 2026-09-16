@@ -70,32 +70,34 @@ body, html { margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMa
 /* ========================================================================== */
 
 /* 1. Configuration de la souplesse de retour (Spring-baking effect) */
-button, 
-.hub-btn, 
-.back-btn, 
-.logout-link, 
-.pro-badge, 
-.filter-btn, 
-.btn-eval, 
-.scan-main-btn, 
-.qty-btn, 
-.qty-btn-large, 
+button,
+.hub-btn,
+.back-btn,
+.logout-link,
+.pro-badge,
+.options-badge,
+.filter-btn,
+.btn-eval,
+.scan-main-btn,
+.qty-btn,
+.qty-btn-large,
 .theme-toggle-btn,
 .resident-title {
     transition: transform 0.15s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s ease, box-shadow 0.2s ease !important;
 }
 
 /* 2. Micro-contraction instantanée à 96% lors de la pression tactile (Touch Down) */
-button:active, 
-.hub-btn:active, 
-.back-btn:active, 
-.logout-link:active, 
-.pro-badge:active, 
-.filter-btn:active, 
-.btn-eval:active, 
-.scan-main-btn:active, 
-.qty-btn:active, 
-.qty-btn-large:active, 
+button:active,
+.hub-btn:active,
+.back-btn:active,
+.logout-link:active,
+.pro-badge:active,
+.options-badge:active,
+.filter-btn:active,
+.btn-eval:active,
+.scan-main-btn:active,
+.qty-btn:active,
+.qty-btn-large:active,
 .theme-toggle-btn:active,
 .resident-title:active {
     transform: scale(0.96) !important;

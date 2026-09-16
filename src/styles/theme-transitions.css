@@ -1,6 +1,6 @@
 /* 🎚️ Bascule fluide : les surfaces changent de couleur ensemble */
 body, .view, .modal-card, .hub-btn, .item-card, .tabs-nav,
-input, select, textarea, .pro-badge, .back-btn, .top-bar,
+input, select, textarea, .pro-badge, .options-badge, .logout-link, .back-btn, .top-bar,
 .modal-overlay, .ann-card {
     transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
