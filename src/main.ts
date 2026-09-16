@@ -10,15 +10,13 @@ import { initTheme } from "@/features/theme/theme";
 import { openMenu } from "@/features/navigation/navigation";
 import { initialiserAutosave, purgerToutAutosave, signalerActivite, verifierSession } from "@/features/session/session";
 import { startClock } from "@/features/medicaments/medicaments";
-import { initFrigoTabLongPress } from "@/features/frigos/frigos";
-import { initSignalementCamera } from "@/features/frigos/signalement";
 import { rafraichirBadgeAttente } from "@/ui/pending-badge";
-import { installGlobalBridge } from "@/bridge";
+import { initApp } from "@/app-init";
 
 // 🚧 Bascule manuelle d'intervention : coupe l'app entière sur l'écran de maintenance.
 const MODE_MAINTENANCE = false;
 
-installGlobalBridge();
+initApp();
 definirCallbackApresSauvegarde(rafraichirBadgeAttente);
 
 window.onload = async () => {
@@ -50,8 +48,6 @@ window.onload = async () => {
   }
 
   startClock();
-  initFrigoTabLongPress();
-  initSignalementCamera();
   initialiserAutosave();
 
   // 🛡️ VÉRIFICATION DE LA SÉCURITÉ AU DÉMARRAGE

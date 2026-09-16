@@ -190,3 +190,45 @@ export function togglePasswordVisibility(): void {
     toggleIcon.innerText = "🙈";
   }
 }
+
+/** Câble l'écran de connexion : Entrée pour avancer, œil pour afficher le code, bouton + retour tactile. */
+export function initLoginListeners(): void {
+  const prenomInput = document.getElementById("prenom-pro") as HTMLInputElement;
+  const passInput = document.getElementById("pass-pro") as HTMLInputElement;
+  const toggleIcon = document.getElementById("toggle-password");
+  const btnLogin = document.getElementById("btn-login");
+
+  prenomInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      passInput.focus();
+    }
+  });
+
+  passInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      validerConnexionSecurisee();
+    }
+  });
+
+  toggleIcon?.addEventListener("click", togglePasswordVisibility);
+
+  btnLogin?.addEventListener("click", validerConnexionSecurisee);
+
+  // Retour tactile spécifique : la souris anime aussi l'ombre, le tactile non
+  // (comportement d'origine, conservé à l'identique).
+  if (btnLogin) {
+    const el = btnLogin as HTMLElement;
+    el.addEventListener("mousedown", () => {
+      el.style.transform = "scale(0.97)";
+      el.style.boxShadow = "0 4px 12px rgba(0, 85, 164, 0.2)";
+    });
+    el.addEventListener("mouseup", () => {
+      el.style.transform = "scale(1)";
+      el.style.boxShadow = "0 8px 22px rgba(0, 85, 164, 0.28)";
+    });
+    el.addEventListener("touchstart", () => (el.style.transform = "scale(0.97)"), { passive: true });
+    el.addEventListener("touchend", () => (el.style.transform = "scale(1)"));
+  }
+}

@@ -1,5 +1,11 @@
 import { state } from "@/state/store";
 import { getCleMaitresse } from "@/services/crypto";
+import { ouvrirLogout } from "@/features/session/session";
+import { ouvrirPainModal } from "@/features/pain/pain";
+import { ouvrirAnnuaire } from "@/features/annuaire/annuaire";
+import { toggleThemeAnimated } from "@/features/theme/theme";
+import { clicEasterEggAccueil } from "@/ui/easter-egg";
+import { attacherEffetAppui } from "@/ui/press-effect";
 
 /**
  * ⚠️ CORRECTIF DE MIGRATION : la section "3. Calcul des transmissions" de
@@ -146,4 +152,19 @@ export function retourAccueilDepuis404(): void {
   } else {
     document.getElementById("login-screen")?.classList.remove("hidden");
   }
+}
+
+/** Câble la barre supérieure de l'accueil, le message de bienvenue et l'écran 404. */
+export function initNavigationListeners(): void {
+  document.getElementById("pro-badge-home")?.addEventListener("click", ouvrirMenuPro);
+  document.getElementById("btn-pain-modal")?.addEventListener("click", ouvrirPainModal);
+  document.getElementById("btn-logout")?.addEventListener("click", ouvrirLogout);
+  document.getElementById("welcome-message")?.addEventListener("click", clicEasterEggAccueil);
+  document.getElementById("btn-404-retour")?.addEventListener("click", retourAccueilDepuis404);
+  document.getElementById("btn-maintenance-refresh")?.addEventListener("click", () => window.location.reload());
+
+  // Modale "Mon Espace" (ouverte par ouvrirMenuPro ci-dessus)
+  document.getElementById("btn-annuaire")?.addEventListener("click", ouvrirAnnuaire);
+  document.getElementById("btn-theme-toggle")?.addEventListener("click", toggleThemeAnimated);
+  attacherEffetAppui(document.getElementById("btn-pro-menu-fermer"), 0.95);
 }

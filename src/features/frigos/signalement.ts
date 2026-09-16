@@ -2,6 +2,7 @@ import { getCleAuth } from "@/services/crypto";
 import { envoyerPayload } from "@/services/permia-relay";
 import { fermerModals } from "@/ui/modals";
 import { jouerSon } from "@/ui/sound";
+import { attacherEffetAppui } from "@/ui/press-effect";
 
 // --- LOGIQUE PHOTO FRIGOS ---
 export function declencherCamera(): void {
@@ -184,4 +185,15 @@ export async function envoyerSignalement(): Promise<void> {
 
   btn.innerText = "Envoyer";
   btn.disabled = false;
+}
+
+/** Câble la modale de signalement photo. */
+export function initSignalementListeners(): void {
+  const btnReprendre = document.getElementById("btn-reprendre-photo");
+  btnReprendre?.addEventListener("click", reprendrePhotoSig);
+  attacherEffetAppui(btnReprendre, 0.9);
+
+  document.getElementById("btn-effacer-photo")?.addEventListener("click", effacerPhotoSig);
+  document.getElementById("sig-desc-effacer")?.addEventListener("click", effacerDescSig);
+  document.getElementById("btn-envoyer-sig")?.addEventListener("click", envoyerSignalement);
 }

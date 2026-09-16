@@ -2,7 +2,12 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { securiserTexte } from "@/ui/dom-utils";
 import { fermerModals } from "@/ui/modals";
-import { renderFrigos } from "@/features/frigos/frigos";
+import { renderFrigos, startResetFrigoEvalTimer, stopResetFrigoEvalTimer, ouvrirHistoriqueFrigos } from "@/features/frigos/frigos";
+import { declencherCamera } from "@/features/frigos/signalement";
+import { openMenu } from "@/features/navigation/navigation";
+import { ouvrirScanner, basculerTorche } from "./scanner";
+import { genererRecap } from "./recap";
+import { telechargerPDF } from "@/features/pdf/pdf";
 import { catNames, genericCatalog } from "./catalog";
 import type { InventoryCategory } from "@/types/inventory";
 
@@ -472,14 +477,20 @@ export function renderItems(): void {
     let actionHTML = `<p class="status-text" style="color:var(--coallia-blue)">Illimité</p>`;
     if (isSel) {
       actionHTML = `
-                <div class="qty-controls" onclick="event.stopPropagation()">
-                    <button class="qty-btn" onclick="updatePanierGeneric('${gen.id}', -1, event)">-</button>
+                <div class="qty-controls">
+                    <button class="qty-btn qty-btn-moins">-</button>
                     <span>${qtyInPanier}</span>
-                    <button class="qty-btn" onclick="updatePanierGeneric('${gen.id}', 1, event)">+</button>
+                    <button class="qty-btn qty-btn-plus">+</button>
                 </div>
             `;
     }
     card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3>${gen.name}</h3></div>${actionHTML}</div>`;
+
+    if (isSel) {
+      card.querySelector(".qty-controls")?.addEventListener("click", (e) => e.stopPropagation());
+      card.querySelector(".qty-btn-moins")?.addEventListener("click", (e) => updatePanierGeneric(gen.id, -1, e));
+      card.querySelector(".qty-btn-plus")?.addEventListener("click", (e) => updatePanierGeneric(gen.id, 1, e));
+    }
     gridGeneric.appendChild(card);
   });
   zoneDispo.appendChild(gridGeneric);
@@ -585,4 +596,40 @@ export function renderItems(): void {
       });
     }
   }
+}
+
+/** Câble l'écran matériel (onglets, scanner, paniers, modales) — une fois au démarrage. */
+export function initMaterielListeners(): void {
+  document.getElementById("btn-materiel-retour")?.addEventListener("click", openMenu);
+
+  (["dispo", "emprunt", "frigos"] as MaterielTab[]).forEach((tab) => {
+    document.getElementById(`tab-btn-${tab}`)?.addEventListener("click", () => switchTab(tab));
+  });
+
+  document.getElementById("main-scan-btn")?.addEventListener("click", ouvrirScanner);
+  document.getElementById("main-photo-btn")?.addEventListener("click", declencherCamera);
+  document.getElementById("btn-torche")?.addEventListener("click", basculerTorche);
+
+  document.getElementById("btn-mode-panier")?.addEventListener("click", toggleModePanier);
+  document.getElementById("btn-bilan")?.addEventListener("click", genererRecap);
+  document.getElementById("btn-mode-panier-retour")?.addEventListener("click", toggleModePanierRetour);
+  document.getElementById("search-emprunt")?.addEventListener("input", renderItems);
+
+  document.getElementById("badge-etat-frigos")?.addEventListener("mousedown", startResetFrigoEvalTimer);
+  document.getElementById("badge-etat-frigos")?.addEventListener("mouseup", stopResetFrigoEvalTimer);
+  document.getElementById("badge-etat-frigos")?.addEventListener("mouseleave", stopResetFrigoEvalTimer);
+  document.getElementById("badge-etat-frigos")?.addEventListener("touchstart", startResetFrigoEvalTimer, { passive: true });
+  document.getElementById("badge-etat-frigos")?.addEventListener("touchend", stopResetFrigoEvalTimer);
+
+  document.getElementById("lien-historique-frigos")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    ouvrirHistoriqueFrigos();
+  });
+
+  document.getElementById("btn-qty-moins")?.addEventListener("click", () => changeModalQty(-1));
+  document.getElementById("btn-qty-plus")?.addEventListener("click", () => changeModalQty(1));
+  document.getElementById("btn-confirm-action")?.addEventListener("click", validerAction);
+
+  document.getElementById("btn-valider-panier")?.addEventListener("click", ouvrirModalPanier);
+  document.getElementById("btn-pdf-mat")?.addEventListener("click", () => telechargerPDF("materiel"));
 }

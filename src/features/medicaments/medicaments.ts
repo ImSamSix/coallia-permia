@@ -238,3 +238,21 @@ function executerPurgeMedicaments(): void {
 
   console.log("🤫 Nettoyage des logs médicaments effectué. Inventaire préservé.");
 }
+
+/** Câble l'écran médicaments (retour, horloge secrète, formulaire). */
+export function initMedicamentsListeners(): void {
+  document.getElementById("btn-medicaments-retour")?.addEventListener("click", openMenu);
+
+  const horloge = document.getElementById("real-time-clock");
+  horloge?.addEventListener("mousedown", startResetTimer);
+  horloge?.addEventListener("mouseup", stopResetTimer);
+  horloge?.addEventListener("mouseleave", stopResetTimer);
+  horloge?.addEventListener("touchstart", startResetTimer, { passive: true });
+  horloge?.addEventListener("touchend", stopResetTimer);
+
+  document.getElementById("med-type")?.addEventListener("change", checkMedAutre);
+  document.getElementById("btn-effacer-med-autre")?.addEventListener("click", effacerMedAutre);
+  document.getElementById("med-motif")?.addEventListener("change", checkMotifAutre);
+  document.getElementById("btn-effacer-motif-autre")?.addEventListener("click", effacerMotifAutre);
+  document.getElementById("btn-valider-medicament")?.addEventListener("click", validerMedicament);
+}

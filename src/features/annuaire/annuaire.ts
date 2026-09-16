@@ -78,3 +78,33 @@ export function validerEditContact(): void {
   if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
   jouerSon("success");
 }
+
+function fermerAnnuaire(): void {
+  document.getElementById("annuaire-modal")?.classList.add("hidden");
+}
+
+function annulerEditContact(): void {
+  document.getElementById("edit-contact-modal")?.classList.add("hidden");
+  document.getElementById("annuaire-modal")?.classList.remove("hidden");
+}
+
+const ROLES_ANNUAIRE: AnnuaireRole[] = ["astreinte1", "astreinte2", "coordF", "coordM", "chef", "tech"];
+
+/** Câble l'annuaire d'urgence : fermeture, appui long par contact, édition. */
+export function initAnnuaireListeners(): void {
+  document.getElementById("ann-fermer")?.addEventListener("click", fermerAnnuaire);
+
+  ROLES_ANNUAIRE.forEach((role) => {
+    const el = document.getElementById(`ann-contact-${role}`);
+    if (!el) return;
+    el.addEventListener("mousedown", () => startContactTimer(role));
+    el.addEventListener("mouseup", cancelContactTimer);
+    el.addEventListener("mouseleave", cancelContactTimer);
+    el.addEventListener("touchstart", () => startContactTimer(role), { passive: true });
+    el.addEventListener("touchend", cancelContactTimer);
+    el.addEventListener("click", () => appelerContact(role));
+  });
+
+  document.getElementById("btn-annuler-edit-contact")?.addEventListener("click", annulerEditContact);
+  document.getElementById("btn-valider-edit-contact")?.addEventListener("click", validerEditContact);
+}

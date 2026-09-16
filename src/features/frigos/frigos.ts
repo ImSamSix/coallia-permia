@@ -4,7 +4,13 @@ import { synchroniserDonnees } from "@/services/sync";
 import { jouerSon } from "@/ui/sound";
 import { fermerModals } from "@/ui/modals";
 import { demanderConfirmation } from "@/ui/confirm-modal";
+import { attacherEffetAppui } from "@/ui/press-effect";
 import type { CadenasState, ContenuState, FrigoEvalTemp, FrigoLog, HygieneState } from "@/types/frigo";
+
+/** Lien "Consulter l'historique des frigos" (SharePoint) — URL encodée en base64 dans l'ancien code, conservée à l'identique. */
+export function ouvrirHistoriqueFrigos(): void {
+  window.open(atob("aHR0cHM6Ly9jb2FsbGlhb3JnLnNoYXJlcG9pbnQuY29tLzp4Oi9zL0NvYWxsaWFfUGVybWlhL0lRQ2FJNHZ4V21oeFJMMlEwcGZTRklqNUFVM0NfSDBQYXZEU2xEdWZuWnowVVhvP2U9MTVXcmlT"), "_blank");
+}
 
 // ==========================================
 // 19. GESTION DES FRIGOS (DASHBOARD & ÉVALUATION)
@@ -40,7 +46,7 @@ export function renderFrigos(): void {
 
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h3 style="margin: 0 0 10px 0; font-size: 22px; color: var(--text-dark); font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">${f.name}</h3>
-                    <button onclick="voirJeunesFrigo(${f.id})" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 16px; font-size: 13px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s;">👥 Voir les jeunes</button>
+                    <button class="btn-voir-jeunes" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 16px; font-size: 13px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s;">👥 Voir les jeunes</button>
                 </div>
 
                 <div style="display: flex; justify-content: space-evenly; background: var(--input-bg); padding: 18px 5px; border-radius: 18px; margin-bottom: 25px;">
@@ -58,7 +64,7 @@ export function renderFrigos(): void {
                     </div>
                 </div>
 
-                <button class="btn-primary" style="width: 100%; padding: 16px; font-size: 15px; border-radius: 14px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,85,164,0.2);" onclick="ouvrirEvalFrigo(${f.id})">Nouvelle Évaluation</button>
+                <button class="btn-primary btn-nouvelle-eval" style="width: 100%; padding: 16px; font-size: 15px; border-radius: 14px; font-weight: 700; box-shadow: 0 4px 15px rgba(0,85,164,0.2);">Nouvelle Évaluation</button>
             </div>
 
             <div class="card-footer" style="background: var(--footer-bg); padding: 14px 20px; font-size: 11px; color: var(--text-gray); display: flex; justify-content: space-between; border-top: 1px solid var(--border-color);">
@@ -66,6 +72,8 @@ export function renderFrigos(): void {
                 <span>Par <b style="color: var(--text-dark);">${lastPro}</b></span>
             </div>
         `;
+    card.querySelector(".btn-voir-jeunes")?.addEventListener("click", () => voirJeunesFrigo(f.id));
+    card.querySelector(".btn-nouvelle-eval")?.addEventListener("click", () => ouvrirEvalFrigo(f.id));
     container.appendChild(card);
   });
 }
@@ -428,4 +436,21 @@ export function initFrigoTabLongPress(): void {
   btnFrigoTab.addEventListener("mouseup", cancelFrigoTimer);
   btnFrigoTab.addEventListener("mouseleave", cancelFrigoTimer);
   btnFrigoTab.addEventListener("touchend", cancelFrigoTimer);
+}
+
+/** Câble les modales frigos (évaluation + mode admin). */
+export function initFrigoModalListeners(): void {
+  (["cad", "hyg", "cont"] as const).forEach((cat) => {
+    document.querySelectorAll<HTMLElement>(`[id^="${cat}-"]`).forEach((btn) => {
+      const val = btn.id.slice(cat.length + 1) as CadenasState | HygieneState | ContenuState;
+      btn.addEventListener("click", () => selectEval(cat, val));
+    });
+  });
+  document.getElementById("eval-frigo-obs-effacer")?.addEventListener("click", effacerObsFrigo);
+  document.getElementById("btn-valider-eval-frigo")?.addEventListener("click", validerEvalFrigo);
+
+  document.getElementById("admin-frigo-select")?.addEventListener("change", renderAdminList);
+  document.getElementById("btn-ajouter-resident")?.addEventListener("click", ajouterResidentAdmin);
+
+  attacherEffetAppui(document.getElementById("btn-jeunes-frigo-fermer"), 0.95);
 }

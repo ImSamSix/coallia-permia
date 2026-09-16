@@ -4,6 +4,8 @@ import { synchroniserDonnees } from "@/services/sync";
 import { securiserTexte } from "@/ui/dom-utils";
 import { fermerModals } from "@/ui/modals";
 import { jouerSon } from "@/ui/sound";
+import { attacherEffetAppui } from "@/ui/press-effect";
+import { openMenu } from "@/features/navigation/navigation";
 import type { MediaKey, MediaLog } from "@/types/media";
 
 let activeMediaKey: MediaKey | null = null;
@@ -27,8 +29,8 @@ export function renderMediaItems(): void {
     const isAvail = item.status === "available";
 
     const actionButtonHTML = isAvail
-      ? `<button class="media-btn media-btn-preter" onclick="ouvrirModalPretMedia('${key}')">Prêter</button>`
-      : `<button class="media-btn media-btn-retour" onclick="validerRetourMedia('${key}')">Confirmer le retour</button>`;
+      ? `<button class="media-btn media-btn-preter">Prêter</button>`
+      : `<button class="media-btn media-btn-retour">Confirmer le retour</button>`;
 
     const footerHTML = isAvail
       ? `<div class="media-pied">
@@ -64,6 +66,11 @@ export function renderMediaItems(): void {
             </div>
             ${footerHTML}
         `;
+    if (isAvail) {
+      card.querySelector(".media-btn-preter")?.addEventListener("click", () => ouvrirModalPretMedia(key));
+    } else {
+      card.querySelector(".media-btn-retour")?.addEventListener("click", () => validerRetourMedia(key));
+    }
     container.appendChild(card);
   });
 }
@@ -293,4 +300,15 @@ export function validerRetourMedia(key: MediaKey): void {
 
   if (navigator.vibrate) navigator.vibrate([50, 50]);
   jouerSon("success");
+}
+
+/** Câble l'écran Prêts Multimédia et sa modale de signature. */
+export function initMediaListeners(): void {
+  document.getElementById("btn-media-retour")?.addEventListener("click", openMenu);
+
+  const btnEffacerSignature = document.getElementById("btn-effacer-signature");
+  btnEffacerSignature?.addEventListener("click", clearSignatureCanvas);
+  attacherEffetAppui(btnEffacerSignature, 0.95);
+
+  document.getElementById("btn-valider-pret-media")?.addEventListener("click", validerPretMedia);
 }

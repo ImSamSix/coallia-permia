@@ -109,3 +109,23 @@ export function effacerObsPain(): void {
     textarea.focus();
   }
 }
+
+/** Câble la modale "Suivi du Pain" (boutons +/- à appui long, formulaire). */
+export function initPainListeners(): void {
+  const btnMoins = document.getElementById("btn-pain-moins");
+  btnMoins?.addEventListener("mousedown", () => startPainInterval(-1));
+  btnMoins?.addEventListener("mouseup", stopPainInterval);
+  btnMoins?.addEventListener("mouseleave", stopPainInterval);
+  btnMoins?.addEventListener("touchstart", (e) => { e.preventDefault(); startPainInterval(-1); });
+  btnMoins?.addEventListener("touchend", stopPainInterval);
+
+  const btnPlus = document.getElementById("btn-pain-plus");
+  btnPlus?.addEventListener("mousedown", () => startPainInterval(1));
+  btnPlus?.addEventListener("mouseup", stopPainInterval);
+  btnPlus?.addEventListener("mouseleave", stopPainInterval);
+  btnPlus?.addEventListener("touchstart", (e) => { e.preventDefault(); startPainInterval(1); });
+  btnPlus?.addEventListener("touchend", stopPainInterval);
+
+  document.getElementById("pain-obs-effacer")?.addEventListener("click", effacerObsPain);
+  document.getElementById("btn-valider-pain")?.addEventListener("click", validerPain);
+}

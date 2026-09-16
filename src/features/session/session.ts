@@ -109,3 +109,8 @@ export function purgerToutAutosave(): void {
     localStorage.removeItem("autosave_" + id);
   });
 }
+
+/** Câble le bouton de confirmation de déconnexion ("Rester connecté" est un data-close-modal générique). */
+export function initSessionListeners(): void {
+  document.getElementById("btn-confirmer-deconnexion")?.addEventListener("click", confirmerDeconnexion);
+}

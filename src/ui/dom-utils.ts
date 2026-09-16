@@ -11,3 +11,10 @@ export function autoResize(textarea: HTMLTextAreaElement): void {
   textarea.style.height = "auto"; // Réinitialise la hauteur
   textarea.style.height = textarea.scrollHeight + "px"; // Ajuste au texte
 }
+
+/** Câble l'auto-redimensionnement sur toutes les zones de texte de l'app (une fois au démarrage). */
+export function initAutoResizeListeners(): void {
+  document.querySelectorAll<HTMLTextAreaElement>("textarea").forEach((textarea) => {
+    textarea.addEventListener("input", () => autoResize(textarea));
+  });
+}

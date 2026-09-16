@@ -6,6 +6,7 @@ import { jouerSon } from "@/ui/sound";
 import { fermerModals } from "@/ui/modals";
 import { updateDashboardBadges } from "@/features/navigation/navigation";
 import { telechargerPDF } from "@/features/pdf/pdf";
+import { attacherEffetAppui } from "@/ui/press-effect";
 import type { ComptageType, MecsSession } from "@/types/mecs";
 
 // Variables d'état volatiles pour la session de comptage en cours
@@ -665,4 +666,51 @@ export function validerAbsenceAutreMecs(): void {
 export function annulerAbsenceMecs(): void {
   fermerModals();
   genererCarteJeuneMecs(); // Réinitialise et replace la carte du jeune en cours
+}
+
+function effacerAbsenceAutreObs(): void {
+  const textarea = document.getElementById("absence-autre-obs") as HTMLTextAreaElement | null;
+  textarea?.focus();
+  if (textarea) textarea.value = "";
+}
+
+const MOTIFS_ABSENCE: Record<string, string> = {
+  "btn-absence-autorisee": "Absence autorisée",
+  "btn-absence-formation": "Formation",
+  "btn-absence-stage": "Stage",
+  "btn-absence-travail": "Travail",
+  "btn-absence-sport": "Sport",
+  "btn-absence-hopital": "Hospitalisation",
+  "btn-absence-absent": "Absent",
+  "btn-absence-fugue": "Fugue"
+};
+
+/** Câble l'écran de relevé de présence : lancement, workspace, absences, rapport. */
+export function initComptageListeners(): void {
+  const backBtn = document.getElementById("comptage-back-btn") as HTMLButtonElement | null;
+  if (backBtn) backBtn.onclick = verifierAnnulationComptage;
+
+  document.getElementById("btn-lancer-comptage")?.addEventListener("click", lancerComptageMecs);
+  document.getElementById("btn-voir-dernier-comptage")?.addEventListener("click", voirDernierComptage);
+
+  const btnAbsent = document.getElementById("btn-comptage-absent");
+  const btnPresent = document.getElementById("btn-comptage-present");
+  btnAbsent?.addEventListener("click", () => animerEtValiderBouton(false));
+  btnPresent?.addEventListener("click", () => animerEtValiderBouton(true));
+  attacherEffetAppui(btnAbsent, 0.92);
+  attacherEffetAppui(btnPresent, 0.92);
+
+  document.getElementById("btn-cloturer-comptage")?.addEventListener("click", cloreComptageMecs);
+  document.getElementById("btn-pdf-comptage")?.addEventListener("click", () => telechargerPDF("comptage"));
+
+  document.getElementById("absence-modal-back-btn")?.addEventListener("pointerdown", annulerAbsenceMecs);
+  Object.entries(MOTIFS_ABSENCE).forEach(([id, motif]) => {
+    document.getElementById(id)?.addEventListener("pointerdown", () => validerMotifAbsenceMecs(motif));
+  });
+  document.getElementById("btn-absence-autre")?.addEventListener("pointerdown", ouvrirAbsenceAutreSaisie);
+  document.getElementById("btn-absence-autre-retour")?.addEventListener("pointerdown", fermerAbsenceAutreSaisie);
+  document.getElementById("btn-absence-autre-confirmer")?.addEventListener("pointerdown", validerAbsenceAutreMecs);
+  document.getElementById("absence-autre-obs-effacer")?.addEventListener("click", effacerAbsenceAutreObs);
+
+  document.getElementById("comptage-cancel-confirmer")?.addEventListener("click", confirmerAbandonTournee);
 }

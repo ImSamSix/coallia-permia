@@ -28,3 +28,9 @@ export function validerConfirmation(): void {
   actionAConfirmer = null;
   action?.();
 }
+
+/** Câble les deux boutons de la modale de confirmation générique. */
+export function initConfirmModalListeners(): void {
+  document.getElementById("btn-annuler-confirmation")?.addEventListener("click", annulerConfirmation);
+  document.getElementById("btn-valider-confirmation")?.addEventListener("click", validerConfirmation);
+}
