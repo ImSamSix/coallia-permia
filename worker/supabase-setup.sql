@@ -8,10 +8,11 @@
 
 -- 1. Vue en lecture seule : expose uniquement la valeur de la clé
 --    'nomsJeunes', rien d'autre de app_config n'est accessible via anon.
+--    Colonnes réelles de app_config : cle (text), valeur (jsonb).
 create or replace view public.mecs_noms_jeunes as
-select value as noms_jeunes
+select valeur as noms_jeunes
 from public.app_config
-where key = 'nomsJeunes';
+where cle = 'nomsJeunes';
 
 grant select on public.mecs_noms_jeunes to anon;
 
