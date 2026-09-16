@@ -32,18 +32,13 @@ select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='h
         radial-gradient(ellipse 900px 480px at 50% -6%, rgba(0, 85, 164, 0.10), transparent 60%),
         radial-gradient(ellipse 700px 480px at 92% 0%, rgba(0, 85, 164, 0.07), transparent 55%),
         var(--bg-color);
-    padding: 24px;
+    /* min-height (pas height) + auto : sur mobile, 100vh inclut la zone
+       masquée par la barre d'adresse, ce qui poussait visuellement la carte
+       vers le haut de l'écran réellement visible. */
+    height: auto;
+    min-height: 100dvh;
+    padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px) 24px;
     overflow-y: auto;
-}
-
-/* Bandeau dégradé signature, fixé en haut de l'écran de connexion */
-#login-screen::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #5fa8ff 0%, var(--coallia-blue) 50%, #003d75 100%);
-    z-index: 1;
 }
 
 .auth-card {
