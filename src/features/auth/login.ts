@@ -182,12 +182,16 @@ export async function validerConnexionSecurisee(): Promise<void> {
 export function togglePasswordVisibility(): void {
   const passInput = document.getElementById("pass-pro") as HTMLInputElement;
   const toggleIcon = document.getElementById("toggle-password") as HTMLElement;
+  const iconOuvert = toggleIcon.querySelector(".icone-oeil-ouvert");
+  const iconBarre = toggleIcon.querySelector(".icone-oeil-barre");
   if (passInput.type === "password") {
     passInput.type = "text";
-    toggleIcon.innerText = "🙉";
+    iconOuvert?.classList.add("hidden");
+    iconBarre?.classList.remove("hidden");
   } else {
     passInput.type = "password";
-    toggleIcon.innerText = "🙈";
+    iconOuvert?.classList.remove("hidden");
+    iconBarre?.classList.add("hidden");
   }
 }
 
