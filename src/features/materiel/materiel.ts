@@ -129,17 +129,27 @@ export function switchTab(tab: MaterielTab): void {
 }
 
 export function toggleAccordion(cat: InventoryCategory): void {
-  accordions[cat] = !accordions[cat];
+  const ouverture = !accordions[cat];
 
-  // 👑 Pas de renderItems() ici : la liste des disponibles n'a pas changé,
+  // 👑 Une seule catégorie dépliée à la fois : certaines comptent une
+  // dizaine d'éléments, en garder plusieurs ouvertes en même temps
+  // surchargerait l'écran. Ouvrir une catégorie referme donc les autres.
+  //
+  // Pas de renderItems() ici : la liste des disponibles n'a pas changé,
   // seul l'état déplié/replié bascule. En touchant directement les classes
   // sur les éléments déjà en place, la transition CSS peut réellement jouer
   // (un re-rendu recréerait les nœuds déjà dans leur état final, sans
   // transition visible).
-  const wrapper = document.querySelector<HTMLElement>(`.accordion-content-wrapper[data-cat="${cat}"]`);
-  const chevron = document.querySelector<HTMLElement>(`.accordion-header[data-cat="${cat}"] .acc-chevron`);
-  wrapper?.classList.toggle("open", accordions[cat]);
-  if (chevron) chevron.style.transform = `rotate(${accordions[cat] ? 180 : 0}deg)`;
+  (Object.keys(accordions) as InventoryCategory[]).forEach((key) => {
+    const doitEtreOuverte = key === cat ? ouverture : false;
+    if (accordions[key] === doitEtreOuverte) return;
+    accordions[key] = doitEtreOuverte;
+
+    const wrapper = document.querySelector<HTMLElement>(`.accordion-content-wrapper[data-cat="${key}"]`);
+    const chevron = document.querySelector<HTMLElement>(`.accordion-header[data-cat="${key}"] .acc-chevron`);
+    wrapper?.classList.toggle("open", doitEtreOuverte);
+    if (chevron) chevron.style.transform = `rotate(${doitEtreOuverte ? 180 : 0}deg)`;
+  });
 }
 
 export function toggleResident(jeune: string): void {
