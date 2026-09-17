@@ -536,13 +536,36 @@ function afficherRapportFinalMecs(): void {
 }
 
 // 👑 LOGIQUE DE CLÔTURE : Sauvegarde le rapport de tournée dans le coffre crypté et synchronise le Cloud
-export async function cloreComptageMecs(): Promise<void> {
+export function cloreComptageMecs(): void {
   if (!mecsSessionEnCours) return;
 
   // Ajoute la session actuelle à l'historique global
-  state.mecsComptageLogs.push(mecsSessionEnCours);
+  const session = mecsSessionEnCours;
+  state.mecsComptageLogs.push(session);
 
-  // 📄 Génération du relevé PDF, joint au log pour envoi automatique
+  // 👑 RETOUR IMMÉDIAT : la génération du PDF (d'autant plus longue qu'il y a
+  // de jeunes signalés absents) et la sauvegarde continuent en tâche de fond
+  // — le professionnel n'a pas à attendre pour retrouver la main.
+  jouerSon("success");
+  vibrer([50, 50]);
+  retourSaisieComptage();
+
+  // ⚠️ Double requestAnimationFrame (et non un simple setTimeout(0), qui ne
+  // garantit pas qu'un repaint ait eu lieu avant de s'exécuter) : le rendu
+  // du PDF qui suit est synchrone et bloque le thread principal. Sans
+  // attendre qu'un vrai repaint soit passé, le retour à l'accueil ci-dessus
+  // resterait invisible à l'écran jusqu'à la fin de toute la génération.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      finaliserComptageEnArrierePlan(session);
+    });
+  });
+}
+
+// Génération du PDF (joint au log pour l'envoi automatique) puis sauvegarde
+// et synchronisation cloud : tout ce qui peut être lent tourne après coup,
+// sans bloquer le retour à l'écran d'accueil.
+async function finaliserComptageEnArrierePlan(session: MecsSession): Promise<void> {
   try {
     const dataUri = await telechargerPDF("comptage", { silencieux: true });
     const base64 = (dataUri || "").split(",")[1];
@@ -551,8 +574,8 @@ export async function cloreComptageMecs(): Promise<void> {
     if (base64 && base64.length < 2000000) {
       const d = new Date();
       const p2 = (n: number) => String(n).padStart(2, "0");
-      mecsSessionEnCours.pdfBase64 = base64;
-      mecsSessionEnCours.nomFichier = "Releve_Presence_" + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + "_" + p2(d.getHours()) + p2(d.getMinutes()) + ".pdf";
+      session.pdfBase64 = base64;
+      session.nomFichier = "Releve_Presence_" + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + "_" + p2(d.getHours()) + p2(d.getMinutes()) + ".pdf";
     } else {
       console.warn("📄 PDF trop volumineux, envoi des données seules.");
     }
@@ -560,16 +583,8 @@ export async function cloreComptageMecs(): Promise<void> {
     console.warn("📄 Génération du PDF impossible, envoi des données seules :", e);
   }
 
-  // Sauvegardes et synchronisation cloud invisible
   sauvegarderToutesLesDonnees();
   synchroniserDonnees();
-
-  // Retours haptiques et sonores premium de validation
-  jouerSon("success");
-  vibrer([50, 50]);
-
-  // Redirection fluide vers l'écran d'accueil du comptage
-  retourSaisieComptage();
 }
 
 // --- EXTRACTION ET VISUALISATION DU DERNIER APPEL (PRISE DE SERVICE) ---
