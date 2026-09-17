@@ -33,6 +33,9 @@ export function renderMediaItems(): void {
       ? `<button class="media-btn media-btn-preter">Prêter</button>`
       : `<button class="media-btn media-btn-retour">Confirmer le retour</button>`;
 
+    // ⚠️ Pour une carte "en prêt", le bouton de retour vit à la toute fin
+    // du pied (après la signature), pas dans le corps : on le confirme
+    // seulement une fois qu'on a vu à qui l'objet a été prêté.
     const footerHTML = isAvail
       ? `<div class="media-pied">
                    <span class="media-pied-lbl">Dernier emprunt</span>
@@ -51,6 +54,7 @@ export function renderMediaItems(): void {
                        <span class="media-pied-lbl">Signature</span>
                        <img src="${item.signature}" alt="Signature de l'emprunteur">
                    </div>
+                   ${actionButtonHTML}
                </div>`;
 
     const card = document.createElement("div");
@@ -63,7 +67,7 @@ export function renderMediaItems(): void {
                         <span class="media-point"></span>${isAvail ? "Disponible" : "En prêt"}
                     </span>
                 </div>
-                ${actionButtonHTML}
+                ${isAvail ? actionButtonHTML : ""}
             </div>
             ${footerHTML}
         `;
