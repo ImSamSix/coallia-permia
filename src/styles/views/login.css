@@ -158,24 +158,17 @@ body.dark-mode .auth-erreur {
 
 
 
-/* 👑 ENTRÉE PREMIUM : Glissement et fondu enchaîné de la carte d'authentification */
-.auth-card-entrance {
-    animation: smoothEntrance 0.45s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-
-@keyframes smoothEntrance {
-    from {
-        opacity: 0;
-        transform: translateY(24px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* ========================================================================== */
 /* 👑 MOTION ENGINE : Animations de transition Haute Définition (Cinématique) */
+/* ⚠️ Il existait ici une seconde animation (@keyframes smoothEntrance,
+   0→24px) qui tournait EN MÊME TEMPS que la transition ci-dessous (0.8s,
+   cible -19px) sur les mêmes propriétés (opacity, transform). Les deux se
+   disputaient l'affichage : la carte suivait d'abord l'animation (qui
+   visait le centre exact) puis, une fois celle-ci terminée à 0.45s,
+   "sautait" vers là où la transition en était rendue entre-temps (plus
+   haut, vers -19px) — c'est ce saut que l'utilisateur voyait. Un seul
+   mécanisme d'entrée doit piloter la carte : la transition ci-dessous
+   suffit et donne déjà le bon résultat final. */
 /* ========================================================================== */
 
 /* Structure de base de ton splash pour un effacement ultra-lisse */
