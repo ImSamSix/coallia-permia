@@ -68,7 +68,7 @@ export async function validerConnexionSecurisee(): Promise<void> {
   }
 
   const originalText = btn.innerText;
-  btn.innerText = "⏳ Vérification sécurisée...";
+  btn.innerText = "Vérification sécurisée...";
   btn.disabled = true;
   btn.style.opacity = "0.8";
 
