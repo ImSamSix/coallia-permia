@@ -40,7 +40,11 @@ function iconeChevronAccordion(ouvert: boolean): string {
 }
 
 function iconePanier(): string {
-  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 8H6"></path></svg>`;
+  // 👑 Même taille (14px) que iconeAnnulerSelection() : le bouton bascule
+  // entre les deux libellés, une taille différente changeait sa hauteur
+  // de quelques dixièmes de pixel et décalait toute la liste en dessous
+  // (accordéons, icônes, ronds verts) à chaque appui.
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 8H6"></path></svg>`;
 }
 
 function iconeAnnulerSelection(): string {
