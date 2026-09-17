@@ -1,4 +1,4 @@
-export type ComptageType = "Comptage du matin" | "Comptage du soir";
+export type ComptageType = "Relevé du matin" | "Relevé du soir";
 
 /** Un jeune du catalogue MECS, tel que compilé côté Worker (voir worker/src/mecs-catalog.ts). */
 export interface MecsJeune {
