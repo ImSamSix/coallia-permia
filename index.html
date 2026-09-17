@@ -749,7 +749,9 @@
 
     <div id="med-success-modal" class="modal-overlay hidden">
         <div class="modal-card" style="padding: 40px 20px;">
-            <div style="font-size: 50px; margin-bottom: 5px;">✅</div>
+            <div class="modal-icon-badge succes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
             <div id="modal-recorded-time" style="font-size: 18px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px;"></div>
             <h3 style="color: var(--success); margin-bottom: 10px;">Enregistré</h3>
             <p class="modal-subtitle">La prise a bien été sécurisée dans le registre.</p>
@@ -758,10 +760,12 @@
 
     <div id="med-alert-modal" class="modal-overlay hidden">
         <div class="modal-card" style="padding: 40px 20px;">
-            <div style="font-size: 50px; margin-bottom: 10px;">🛑</div>
+            <div class="modal-icon-badge alerte">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            </div>
             <h3 style="color: var(--danger); margin-bottom: 15px;">Délai de 6h non respecté</h3>
             <p class="modal-subtitle" id="med-alert-text" style="font-size: 15px; color: var(--text-dark);"></p>
-            <button class="btn-secondary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px;" data-close-modal>J'ai compris</button>
+            <button class="btn-primary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px;" data-close-modal>J'ai compris</button>
         </div>
     </div>
 

@@ -1,4 +1,21 @@
 /* MODALS */
+
+/* Badge d'icône rond (remplace les emojis géants type ✅/🛑 dans les
+   pop-ups d'alerte/confirmation) : fond teinté + icône dans la couleur
+   pleine, cohérent avec le reste de l'app. */
+.modal-icon-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px auto;
+}
+.modal-icon-badge svg { width: 30px; height: 30px; }
+.modal-icon-badge.succes { background: rgba(52, 199, 89, 0.14); color: var(--success); }
+.modal-icon-badge.alerte { background: rgba(255, 59, 48, 0.14); color: var(--danger); }
+
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(10, 18, 32, 0.55);
