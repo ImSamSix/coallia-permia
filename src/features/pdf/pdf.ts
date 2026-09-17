@@ -90,7 +90,14 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
   const btn = document.getElementById(btnId) as HTMLButtonElement | null;
   const originalText = btn ? btn.innerText : "";
   if (!silencieux && btn) {
-    btn.innerText = "⏳ Création du document...";
+    // Anneau de chargement animé (@keyframes spinSmooth, déjà global) plutôt
+    // qu'un emoji sablier : le bouton reste lisible et montre clairement
+    // que la génération est en cours.
+    btn.innerHTML = `
+      <span style="display:inline-flex; align-items:center; justify-content:center; gap:9px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="animation: spinSmooth 0.8s linear infinite;"><circle cx="12" cy="12" r="9" stroke-dasharray="28 100"></circle></svg>
+        Création du document...
+      </span>`;
     btn.disabled = true;
   }
 
@@ -317,7 +324,11 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
   const resultat: Promise<void> = tache.save().then(() => {
     // Succès !
     if (btn) {
-      btn.innerText = "✅ PDF Téléchargé";
+      btn.innerHTML = `
+        <span style="display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+          PDF Téléchargé
+        </span>`;
       btn.style.backgroundColor = "var(--success)";
     }
     vibrer([100, 50, 100]);
