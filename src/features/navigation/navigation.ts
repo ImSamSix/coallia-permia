@@ -24,6 +24,11 @@ export function updateDashboardBadges(): void {
   const now = new Date();
 
   // 1. Calcul des retards matériel (> 24h)
+  // ⚠️ Reflète le compte réel en direct : un retard reste un retard tant que
+  // l'objet n'est pas rendu, il ne doit pas disparaître simplement parce que
+  // l'écran Matériel a déjà été ouvert une fois (ancien système "vu/pas vu",
+  // qui masquait la pastille dès que le même retard persistant avait été
+  // "acquitté" une seule fois — le signalait comme résolu à tort).
   let retards = 0;
   state.inventory
     .filter((i) => i.status !== "available")
@@ -32,17 +37,10 @@ export function updateDashboardBadges(): void {
       if (diffHours >= 24) retards++;
     });
 
-  let matSeen = parseInt(localStorage.getItem("mat_seen_count") || "0");
-  if (retards < matSeen) {
-    matSeen = retards;
-    localStorage.setItem("mat_seen_count", String(matSeen));
-  }
-  const unseenMat = retards - matSeen;
-
   const badgeMat = document.getElementById("badge-materiel");
   if (badgeMat) {
-    if (unseenMat > 0) {
-      badgeMat.innerText = `${unseenMat} RETARD${unseenMat > 1 ? "S" : ""}`;
+    if (retards > 0) {
+      badgeMat.innerText = `${retards} RETARD${retards > 1 ? "S" : ""}`;
       badgeMat.className = "hub-badge";
       badgeMat.classList.remove("hidden");
     } else {
@@ -50,7 +48,7 @@ export function updateDashboardBadges(): void {
     }
   }
 
-  // 2. Calcul des frigos à évaluer
+  // 2. Calcul des frigos à évaluer (même logique : compte réel en direct)
   let frigosAevaluer = 0;
   const UNE_SEMAINE = 7 * 24 * 60 * 60 * 1000;
   state.frigosData.forEach((f) => {
@@ -59,17 +57,10 @@ export function updateDashboardBadges(): void {
     if (!isCheck || !isRecent) frigosAevaluer++;
   });
 
-  let frigoSeen = parseInt(localStorage.getItem("frigo_seen_count") || "0");
-  if (frigosAevaluer < frigoSeen) {
-    frigoSeen = frigosAevaluer;
-    localStorage.setItem("frigo_seen_count", String(frigoSeen));
-  }
-  const unseenFrigo = frigosAevaluer - frigoSeen;
-
   const badgeFrigo = document.getElementById("badge-frigo");
   if (badgeFrigo) {
-    if (unseenFrigo > 0) {
-      badgeFrigo.innerText = `${unseenFrigo} FRIGO${unseenFrigo > 1 ? "S" : ""}`;
+    if (frigosAevaluer > 0) {
+      badgeFrigo.innerText = `${frigosAevaluer} FRIGO${frigosAevaluer > 1 ? "S" : ""}`;
       badgeFrigo.className = "hub-badge warning";
       badgeFrigo.classList.remove("hidden");
     } else {

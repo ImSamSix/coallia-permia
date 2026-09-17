@@ -34,24 +34,6 @@ let selectedItemId: number | string | null = null;
 let modalQty = 1;
 
 export function openMateriel(): void {
-  // On mémorise qu'on a vu les frigos et les retards en cours
-  const now = new Date();
-  let retards = 0;
-  state.inventory
-    .filter((i) => i.status !== "available")
-    .forEach((item) => {
-      if ((now.getTime() - new Date(item.time ?? 0).getTime()) / 3600000 >= 24) retards++;
-    });
-  localStorage.setItem("mat_seen_count", String(retards));
-
-  let frigosAevaluer = 0;
-  state.frigosData.forEach((f) => {
-    const isCheck = f.cad && f.hyg && f.cont;
-    const isRecent = f.time && now.getTime() - f.time < 7 * 24 * 60 * 60 * 1000;
-    if (!isCheck || !isRecent) frigosAevaluer++;
-  });
-  localStorage.setItem("frigo_seen_count", String(frigosAevaluer));
-
   document.getElementById("home-menu")?.classList.add("hidden");
   document.getElementById("main-app")?.classList.remove("hidden");
 
