@@ -104,7 +104,7 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
   // 📄 Identité documentaire par type de rapport
   const META_DOC: Record<RapportType, { titre: string; sous: string }> = {
     materiel: { titre: "Bilan du matériel prêté", sous: "État des emprunts en cours" },
-    comptage: { titre: "Relevé de présence", sous: "Comptage réglementaire des résidents" }
+    comptage: { titre: "Relevé de présence", sous: "Relevé réglementaire des jeunes" }
   };
   const meta = META_DOC[type] || { titre: "Rapport de permanence", sous: "" };
 
@@ -152,7 +152,7 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
                 <div style="border:1px solid #c3d6ee; border-radius:12px; overflow:hidden; margin-bottom:24px; page-break-inside:avoid; break-inside:avoid;">
                 <table style="width:100%; border-collapse:separate; border-spacing:0; font-family:'Helvetica Neue', Arial, sans-serif;">
                     <tr>
-                        <td colspan="4" style="padding:7px 14px; background:#0055a4; border-radius:11px 11px 0 0;">
+                        <td colspan="4" style="padding:7px 14px; background:#0055a4; border-radius:11px 11px 0 0; text-align:center;">
                             <span style="font-size:9px; color:#ffffff; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;">Tournée de contrôle</span>
                         </td>
                     </tr>
