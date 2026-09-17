@@ -28,6 +28,19 @@
 .cpt-btn-valider { background: var(--success); color: #fff; box-shadow: 0 6px 20px rgba(34, 199, 89, 0.22); }
 .cpt-btn-absent  { background: var(--danger);  color: #fff; box-shadow: 0 6px 20px rgba(255, 59, 48, 0.22); }
 
+/* Bouton de correction ("rembobiner" la dernière carte), volontairement plus
+   discret et plus petit entre les deux actions principales : on le voit sans
+   qu'il ne rivalise avec Présent/Absent. */
+.cpt-btn-annuler {
+    align-self: center;
+    width: 46px; height: 46px;
+    background: var(--input-bg);
+    color: var(--text-gray);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 10px rgba(10, 22, 44, 0.06);
+}
+.cpt-btn-annuler svg { width: 19px; height: 19px; }
+
 /* Boutons de motif d'absence : icône + libellé, sans emoji. */
 .cpt-motif-btn {
     display: flex;

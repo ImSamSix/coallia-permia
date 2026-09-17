@@ -16,6 +16,11 @@ let mecsIndexActuel = 0;
 let touchStartX = 0;
 let touchEndX = 0;
 
+// Historique des décisions de la tournée en cours (true = présent, false =
+// absent), dans l'ordre où elles ont été prises : permet de revenir sur la
+// carte précédente en cas d'erreur de saisie sans casser le comptage.
+let historiqueMecs: boolean[] = [];
+
 /* ==========================================================================
    Icônes SVG (remplacent les emojis) — currentColor : héritent la couleur
    du texte qui les entoure, quel que soit le contexte (pastille, en-tête…).
@@ -149,6 +154,7 @@ export function lancerComptageMecs(): void {
   };
 
   mecsIndexActuel = 0;
+  historiqueMecs = [];
 
   document.getElementById("comptage-setup-screen")?.classList.add("hidden");
   document.getElementById("comptage-workspace")?.classList.remove("hidden");
@@ -270,6 +276,42 @@ function genererCarteJeuneMecs(): void {
   );
 
   holder.appendChild(card);
+  majBoutonAnnulerMecs();
+}
+
+// Le bouton "Annuler" (rembobinage) n'est visible que s'il y a au moins une
+// carte déjà traitée : rien à corriger sur la toute première du parcours.
+function majBoutonAnnulerMecs(): void {
+  const btn = document.getElementById("btn-comptage-annuler") as HTMLButtonElement | null;
+  if (!btn) return;
+  btn.style.visibility = historiqueMecs.length > 0 ? "visible" : "hidden";
+}
+
+// 👑 CORRECTION D'ERREUR : revient sur la dernière carte traitée (présent ou
+// absent) sans avoir à interrompre toute la tournée. Rétablit les compteurs,
+// retire l'éventuelle entrée d'absence, et réaffiche la carte du jeune.
+export function annulerDerniereCarteMecs(): void {
+  if (!mecsSessionEnCours || historiqueMecs.length === 0) return;
+
+  const etaitPresent = historiqueMecs.pop();
+  mecsIndexActuel--;
+  const jeune = state.mecsJeunesCatalog[mecsIndexActuel];
+  if (!jeune) return;
+
+  if (etaitPresent) {
+    mecsSessionEnCours.presents--;
+    if (jeune.isMajor) mecsSessionEnCours.breakdown.majeurs.presents--;
+    else mecsSessionEnCours.breakdown.mineurs.presents--;
+  } else {
+    mecsSessionEnCours.absents--;
+    if (jeune.isMajor) mecsSessionEnCours.breakdown.majeurs.absents--;
+    else mecsSessionEnCours.breakdown.mineurs.absents--;
+    mecsSessionEnCours.listeAbsents.pop();
+  }
+
+  vibrer(40);
+  majDashboardComptage();
+  genererCarteJeuneMecs();
 }
 
 // Intercepteur pour appliquer l'animation d'éjection lors du clic sur les boutons du bas
@@ -302,6 +344,7 @@ function enregistrerPresenceMecs(isPresent: boolean): void {
     if (jeune.isMajor) mecsSessionEnCours.breakdown.majeurs.presents++;
     else mecsSessionEnCours.breakdown.mineurs.presents++;
 
+    historiqueMecs.push(true);
     vibrer(30);
 
     mecsIndexActuel++;
@@ -345,6 +388,7 @@ export function validerMotifAbsenceMecs(motif: string): void {
     isMajor: jeune.isMajor // 👑 Sauvegarde le statut pour l'affichage différencié
   });
 
+  historiqueMecs.push(false);
   vibrer([60, 40]);
 
   document.getElementById("comptage-absence-modal")?.classList.add("hidden");
@@ -584,6 +628,7 @@ export function confirmerAbandonTournee(): void {
   fermerModals();
   mecsSessionEnCours = null;
   mecsIndexActuel = 0;
+  historiqueMecs = [];
   document.getElementById("comptage-workspace")?.classList.add("hidden");
   document.getElementById("comptage-setup-screen")?.classList.remove("hidden");
 
@@ -685,10 +730,13 @@ export function initComptageListeners(): void {
 
   const btnAbsent = document.getElementById("btn-comptage-absent");
   const btnPresent = document.getElementById("btn-comptage-present");
+  const btnAnnuler = document.getElementById("btn-comptage-annuler");
   btnAbsent?.addEventListener("click", () => animerEtValiderBouton(false));
   btnPresent?.addEventListener("click", () => animerEtValiderBouton(true));
+  btnAnnuler?.addEventListener("click", annulerDerniereCarteMecs);
   attacherEffetAppui(btnAbsent, 0.92);
   attacherEffetAppui(btnPresent, 0.92);
+  attacherEffetAppui(btnAnnuler, 0.9);
 
   document.getElementById("btn-cloturer-comptage")?.addEventListener("click", cloreComptageMecs);
   document.getElementById("btn-pdf-comptage")?.addEventListener("click", () => telechargerPDF("comptage"));
