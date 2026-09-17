@@ -193,7 +193,8 @@ body.dark-mode .auth-erreur {
 /* 🚀 L'ENVOLÉE CINÉTIQUE : Transition active vers l'état parfait */
 .auth-card.auth-card-entrance {
     opacity: 1 !important;
-    transform: translateY(0) scale(1) !important;
+    /* Remonté de 0,5 cm (~19px) par rapport au centre géométrique. */
+    transform: translateY(-19px) scale(1) !important;
     filter: blur(0) !important;
 }
 
