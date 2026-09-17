@@ -86,7 +86,7 @@ function construireBulleRepartition(
  * jeune. Le préfixe emoji déjà présent dans le libellé bâtiment (⚓/🏢, ajouté
  * côté Worker) est retiré puisqu'on affiche notre propre icône à la place.
  */
-function construireItineraire(chambreTexte: string, mini = false): string {
+function construireItineraire(chambreTexte: string, mini = false, sansCadre = false): string {
   const parts = chambreTexte.split("│");
   const batimentBrut = (parts[0] ? parts[0].trim() : "").replace(/^[⚓🏢]\s*/u, "");
   const detailsBrut = parts[1] ? parts[1].trim() : "";
@@ -111,6 +111,13 @@ function construireItineraire(chambreTexte: string, mini = false): string {
     morceaux.push(separateur, segment(iconePorte(taille), aptBrut));
   }
   morceaux.push(separateur, segment(iconeLit(taille), chBrut));
+
+  // 👑 Variante "sans cadre" : sur une carte déjà blanche (récap final), une
+  // pastille grise en plus casse l'esthétique — on affiche l'itinéraire en
+  // ligne discrète (texte secondaire), sans boîte imbriquée.
+  if (sansCadre) {
+    return `<div style="display:flex; align-items:center; justify-content:flex-start; gap:7px; flex-wrap:wrap; color:var(--text-gray); font-weight:700; font-size:12px;">${morceaux.join("")}</div>`;
+  }
 
   const fontSize = mini ? "11px" : "14px";
   const padding = mini ? "7px 10px" : "12px 14px";
@@ -498,13 +505,13 @@ function afficherRapportFinalMecs(): void {
           ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:800; color:var(--danger); background:rgba(255,59,48,0.1); padding:2px 7px; border-radius:6px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;">${iconeEnfant(10)}MINEUR</span>`
           : "";
 
-        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:8px; font-weight:600; box-shadow:0 3px 10px rgba(10,22,44,0.045);`;
+        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:9px; font-weight:600; box-shadow:0 3px 10px rgba(10,22,44,0.045);`;
         row.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; text-align:left;">
                 <span style="color:var(--text-dark);">${ab.prenom} ${ab.nom} ${alertTag}</span>
-                <span style="font-size:11px; background:var(--input-bg); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700; white-space:nowrap;">${ab.motif}</span>
+                <span style="font-size:11px; background:rgba(255,59,48,0.09); padding:5px 10px; border-radius:8px; color:var(--danger); font-weight:700; white-space:nowrap; flex-shrink:0;">${ab.motif}</span>
             </div>
-            ${construireItineraire(ab.chambre, true)}
+            ${construireItineraire(ab.chambre, true, true)}
         `;
         listHolder.appendChild(row);
       });
