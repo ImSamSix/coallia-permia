@@ -57,9 +57,11 @@ function construireItineraire(chambreTexte: string, mini = false): string {
     chBrut = sub[1] ? sub[1].trim() : "";
   }
 
-  const taille = mini ? 12 : 13;
+  // 👑 Version "carte principale" (mini=false) volontairement plus grande :
+  // c'est le repère n°1 pour le pro, mis en avant tout en haut de la carte.
+  const taille = mini ? 12 : 16;
   const segment = (icone: string, texteBrut: string): string =>
-    `<span style="display:inline-flex; align-items:center; gap:5px;">${icone}${securiserTexte(texteBrut)}</span>`;
+    `<span style="display:inline-flex; align-items:center; gap:6px;">${icone}${securiserTexte(texteBrut)}</span>`;
   const separateur = `<span style="opacity:0.4;">›</span>`;
 
   const morceaux = [segment(iconeBatiment(taille), batimentBrut)];
@@ -68,10 +70,10 @@ function construireItineraire(chambreTexte: string, mini = false): string {
   }
   morceaux.push(separateur, segment(iconeLit(taille), chBrut));
 
-  const fontSize = mini ? "11px" : "12px";
-  const padding = mini ? "7px 10px" : "9px 12px";
+  const fontSize = mini ? "11px" : "14px";
+  const padding = mini ? "7px 10px" : "12px 14px";
 
-  return `<div style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; background:var(--input-bg); color:var(--text-dark); border:1px solid var(--border-color); border-radius:12px; padding:${padding}; font-weight:700; font-size:${fontSize}; width:100%; box-sizing:border-box;">${morceaux.join("")}</div>`;
+  return `<div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; background:var(--input-bg); color:var(--text-dark); border:1px solid var(--border-color); border-radius:14px; padding:${padding}; font-weight:800; font-size:${fontSize}; width:100%; box-sizing:border-box;">${morceaux.join("")}</div>`;
 }
 
 // --- INTERFACE COMMANDE COMPTAGE ---
@@ -207,15 +209,15 @@ function genererCarteJeuneMecs(): void {
   card.id = "tinder-card-actuelle";
 
   card.style.cssText =
-    "width:100%; background:var(--card-color); border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.06); border:1px solid var(--border-color); padding:25px; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; height:340px; position:absolute; z-index:2; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.2s; touch-action:none;";
+    "width:100%; background:var(--card-color); border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.06); border:1px solid var(--border-color); padding:22px 25px 25px 25px; text-align:center; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; height:340px; position:absolute; z-index:2; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.2s; touch-action:none;";
 
   card.innerHTML = `
+        <div style="width:100%; margin-bottom:24px;">${construireItineraire(jeune.chambre)}</div>
+
         <div style="width:100px; height:100px; border-radius:50%; background:rgba(0,85,164,0.06); border:3px solid var(--coallia-blue); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; color:var(--coallia-blue); margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">${jeune.initiales}</div>
         <h2 style="font-size:22px; font-weight:800; margin:0 0 5px 0; color:var(--text-dark);">${jeune.prenom} ${jeune.nom}</h2>
         <p style="margin:0 0 15px 0; font-size:15px; color:var(--text-gray); font-weight:600;">${jeune.age} ans</p>
-        <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; padding:6px 14px; border-radius:20px; color:white; background:${colorStatut}; margin-bottom:20px;">${tagStatut}</span>
-
-        ${construireItineraire(jeune.chambre)}
+        <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; padding:6px 14px; border-radius:20px; color:white; background:${colorStatut};">${tagStatut}</span>
     `;
 
   // Gestion du Drag (mouvement de la carte sous le doigt)

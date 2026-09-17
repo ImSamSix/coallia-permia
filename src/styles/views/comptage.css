@@ -11,6 +11,37 @@
     opacity: 0;
 }
 
+/* Boutons Présent/Absent : classes dédiées (pas .btn-primary/.btn-danger)
+   pour échapper à la surcharge "body.dark-mode .btn-primary" (bleue) qui
+   faisait perdre sa couleur verte au bouton Valider en mode sombre. Même
+   croix/coche SVG (stroke-width identique) pour un rendu bien proportionné. */
+.cpt-btn-action {
+    padding: 0;
+    border-radius: 50%;
+    width: 75px; height: 75px;
+    display: flex; align-items: center; justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.cpt-btn-action svg { width: 30px; height: 30px; }
+.cpt-btn-valider { background: var(--success); color: #fff; box-shadow: 0 6px 20px rgba(34, 199, 89, 0.22); }
+.cpt-btn-absent  { background: var(--danger);  color: #fff; box-shadow: 0 6px 20px rgba(255, 59, 48, 0.22); }
+
+/* Boutons de motif d'absence : icône + libellé, sans emoji. */
+.cpt-motif-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 15px 5px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 14px;
+}
+.cpt-motif-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
 
 /* ========================================================================== */
 /* 📋 RELEVÉ DE PRÉSENCE — écran de lancement                                 */
