@@ -617,41 +617,46 @@
             <button class="cpt-scroll-top" id="btn-scroll-top-comptage" aria-label="Remonter en haut du rapport">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
             </button>
-            <button class="btn-primary" id="btn-cloturer-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Terminer et Enregistrer</button>
+            <button class="btn-primary" id="btn-cloturer-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Enregistrer</button>
         </div>
     </div>
 
-   <!-- ÉCRAN 4 : Visualisation complète du Dernier Passage (Prise de service) -->
-    <!-- 👑 NOUVEAU DESIGNE FLEX : L'écran principal ne scrolle plus et s'adapte à la hauteur du téléphone -->
-    <div id="comptage-last-view" class="content hidden" style="height: calc(100vh - 100px); display: flex; flex-direction: column; overflow: hidden; padding-bottom: 5px; box-sizing: border-box;">
-        
-        <!-- 👑 ZONE DE SCROLL INTERNE : Seule la bulle blanche défile si la liste des absents est longue -->
-        <div class="med-form-card" style="width: 100%; max-width: 450px; margin: 0 auto; border: 1px solid var(--border-color); box-shadow: 0 15px 40px rgba(0,0,0,0.04); overflow-y: auto; flex: 1; margin-bottom: 15px; padding: 25px 20px;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <div style="font-size: 40px; margin-bottom: 5px;">📋</div>
-                <h3 style="margin: 0; font-weight: 800; color: var(--coallia-blue);">DERNIER COMPTAGE ENREGISTRÉ</h3>
-                <p id="last-view-meta" style="color: var(--text-gray); font-size: 12px; font-weight: 600; margin: 5px 0 0 0; text-align: center;"></p>
+   <!-- ÉCRAN 4 : Visualisation complète du Dernier Passage — même page plein écran que le rapport final -->
+    <div id="comptage-last-view" class="content hidden" style="position: relative;">
+
+        <!-- Zone défilante : uniquement cette zone scrolle, l'en-tête et le bouton final restent fixes -->
+        <div id="comptage-lastview-scroll" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 2px 20px 2px;">
+
+            <div style="text-align: center; margin-bottom: 22px;">
+                <div class="cpt-picto" style="margin: 0 auto 10px auto;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2.2"></rect><path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1Z"></path><path d="m8.5 12.5 2 2 4-4.2"></path><path d="M8.5 17h7"></path></svg>
+                </div>
+                <span class="cpt-kicker">Prise de service</span>
+                <h2 class="section-title" style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-dark);">Dernier comptage enregistré</h2>
+                <p id="last-view-meta" style="color: var(--text-gray); font-size: 12px; font-weight: 600; margin: 6px 0 0 0;"></p>
             </div>
 
-            <div id="last-view-stats-html" style="background: var(--input-bg); padding: 15px; border-radius: 16px; margin-bottom: 20px;">
+            <div id="last-view-stats-html" class="cpt-report-card" style="margin-bottom: 20px;">
                 <!-- Rempli dynamiquement par JS -->
             </div>
 
-            <h4 class="section-title" style="margin: 25px auto 15px auto; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                🚨 Jeunes absents lors du dernier relevé
+            <h4 class="section-title" style="margin: 0 0 15px 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Jeunes absents lors du dernier relevé
             </h4>
-            
-            <div id="last-view-absents-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 5px;">
+
+            <div id="last-view-absents-list" style="display: flex; flex-direction: column; gap: 10px;">
                 <!-- Rempli dynamiquement par JS -->
             </div>
         </div>
 
-        <!-- 👑 ACTION SOUDÉE EN BAS : Le bouton sort de la carte et reste 100% fixe au bas de l'écran -->
-        <button class="btn-primary"
-        id="btn-pdf-comptage"
-        style="width: 100%; max-width: 450px; padding: 16px; font-size: 15px; border-radius: 14px; font-weight: 700; background: var(--coallia-blue); color: white; border: none; box-shadow: 0 4px 15px rgba(0, 85, 164, 0.2); cursor: pointer; margin: 10px auto 20px auto; outline: none; flex-shrink: 0; -webkit-tap-highlight-color: transparent;">
-    Générer la feuille d'appel en PDF
-</button>
+        <!-- Pied fixe : le CTA PDF reste toujours visible, le bouton "remonter" flotte juste au-dessus -->
+        <div class="cpt-report-footer">
+            <button class="cpt-scroll-top" id="btn-scroll-top-lastview" aria-label="Remonter en haut">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+            </button>
+            <button class="btn-primary" id="btn-pdf-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Générer la feuille d'appel en PDF</button>
+        </div>
     </div>
 </section>
     

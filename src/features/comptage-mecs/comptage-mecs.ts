@@ -240,6 +240,22 @@ function setText(id: string, texte: string): void {
   if (el) el.innerText = texte;
 }
 
+// Câble une zone de scroll à son bouton flottant "remonter en haut" : apparaît
+// dès qu'on a scrollé, ramène en douceur en haut au clic. Partagé entre le
+// rapport final et l'écran "dernier relevé", qui ont le même gabarit.
+function cablerBoutonRemonter(idScroll: string, idBouton: string): void {
+  const zone = document.getElementById(idScroll);
+  const bouton = document.getElementById(idBouton);
+  if (!zone || !bouton) return;
+
+  zone.addEventListener("scroll", () => {
+    bouton.classList.toggle("visible", zone.scrollTop > 200);
+  });
+  bouton.addEventListener("click", () => {
+    zone.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
 // Générateur dynamique HTML de la carte Tinder avec support Drag & Swipe fluide
 function genererCarteJeuneMecs(): void {
   const holder = document.getElementById("comptage-card-holder");
@@ -571,6 +587,11 @@ export function voirDernierComptage(): void {
   document.getElementById("comptage-setup-screen")?.classList.add("hidden");
   document.getElementById("comptage-last-view")?.classList.remove("hidden");
 
+  // Écran toujours réaffiché depuis le haut, bouton "remonter" au repos au départ
+  const lastViewScroll = document.getElementById("comptage-lastview-scroll");
+  if (lastViewScroll) lastViewScroll.scrollTop = 0;
+  document.getElementById("btn-scroll-top-lastview")?.classList.remove("visible");
+
   const backBtn = document.getElementById("comptage-back-btn") as HTMLButtonElement | null;
   if (backBtn) {
     backBtn.innerText = "← Retour";
@@ -589,22 +610,12 @@ export function voirDernierComptage(): void {
   if (stats) {
     stats.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:700;"><span>Total Jeunes du Foyer :</span><b style="color:var(--text-dark);">${dernierLog.totalJeunes}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px;"><span>🟢 Présents :</span><b style="color:var(--success);">${dernierLog.presents}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:13px;"><span>🔴 Absents :</span><b style="color:var(--danger);">${dernierLog.absents}</b></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--success)")}Présents :</span><b style="color:var(--success);">${dernierLog.presents}</b></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--danger)")}Absents :</span><b style="color:var(--danger);">${dernierLog.absents}</b></div>
 
-        <div style="border-top:1px solid var(--border-color); padding-top:15px; display:flex; flex-direction:column; gap:10px; width:100%;">
-            <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeEnfant(14)}Mineurs</div>
-                <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
-                    Présents : <span style="color:var(--success); font-weight:700;">${dernierLog.breakdown?.mineurs?.presents || 0}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${dernierLog.breakdown?.mineurs?.absents || 0}</span>
-                </div>
-            </div>
-            <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeAdulte(14)}Majeurs</div>
-                <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
-                    Présents : <span style="color:var(--success); font-weight:700;">${dernierLog.breakdown?.majeurs?.presents || 0}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${dernierLog.breakdown?.majeurs?.absents || 0}</span>
-                </div>
-            </div>
+        <div style="border-top:1px solid var(--border-color); padding-top:15px; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%;">
+            ${construireBulleRepartition(iconeEnfant(14), "Mineurs", "var(--warning)", "rgba(255,159,10,0.14)", dernierLog.breakdown?.mineurs?.presents || 0, dernierLog.breakdown?.mineurs?.absents || 0)}
+            ${construireBulleRepartition(iconeAdulte(14), "Majeurs", "var(--coallia-blue)", "rgba(0,85,164,0.12)", dernierLog.breakdown?.majeurs?.presents || 0, dernierLog.breakdown?.majeurs?.absents || 0)}
         </div>
     `;
   }
@@ -614,25 +625,25 @@ export function voirDernierComptage(): void {
     listHolder.innerHTML = "";
 
     if (!dernierLog.listeAbsents || dernierLog.listeAbsents.length === 0) {
-      listHolder.innerHTML = `<div style="text-align:center; color:var(--success); font-weight:600; font-size:13px; padding:10px;">✨ Aucun absent lors de ce contrôle. L'établissement était complet.</div>`;
+      listHolder.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:7px; text-align:center; color:var(--success); font-weight:600; font-size:13px; padding:10px;">${iconeCheckSucces(14)}Aucun absent lors de ce contrôle. L'établissement était complet.</div>`;
     } else {
       dernierLog.listeAbsents.forEach((ab) => {
         const row = document.createElement("div");
         const estMineur = ab.isMajor === false;
-        const cardBg = estMineur ? "rgba(255, 59, 48, 0.05)" : "var(--input-bg)";
-        const cardBorder = estMineur ? "1px solid rgba(255, 59, 48, 0.15)" : "1px solid transparent";
+        const cardBg = estMineur ? "rgba(255, 59, 48, 0.06)" : "var(--card-color)";
+        const cardBorder = estMineur ? "1px solid rgba(255, 59, 48, 0.18)" : "1px solid var(--border-color)";
         const borderLeft = estMineur ? "border-left: 5px solid var(--danger);" : "";
         const alertTag = estMineur
           ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:800; color:var(--danger); background:rgba(255,59,48,0.1); padding:2px 7px; border-radius:6px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;">${iconeEnfant(10)}MINEUR</span>`
           : "";
 
-        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:8px; font-weight:600;`;
+        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:9px; font-weight:600; box-shadow:0 3px 10px rgba(10,22,44,0.045);`;
         row.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; text-align:left;">
-                    <span style="color:var(--text-dark);">${ab.prenom} ${ab.nom} ${alertTag}</span>
-                    <span style="font-size:11px; background:var(--card-color); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700; white-space:nowrap;">${ab.motif}</span>
+                    <span style="color:var(--text-dark); display:inline-flex; align-items:center;">${ab.prenom} ${ab.nom} ${alertTag}</span>
+                    <span style="font-size:11px; background:rgba(255,59,48,0.09); padding:5px 10px; border-radius:8px; color:var(--danger); font-weight:700; white-space:nowrap; flex-shrink:0;">${ab.motif}</span>
                 </div>
-                ${construireItineraire(ab.chambre, true)}
+                ${construireItineraire(ab.chambre, true, true)}
             `;
         listHolder.appendChild(row);
       });
@@ -780,17 +791,9 @@ export function initComptageListeners(): void {
   document.getElementById("btn-cloturer-comptage")?.addEventListener("click", cloreComptageMecs);
   document.getElementById("btn-pdf-comptage")?.addEventListener("click", () => telechargerPDF("comptage"));
 
-  // Rapport final : bouton "remonter en haut" apparaissant dès qu'on a scrollé
-  const reportScroll = document.getElementById("comptage-report-scroll");
-  const btnScrollTop = document.getElementById("btn-scroll-top-comptage");
-  if (reportScroll && btnScrollTop) {
-    reportScroll.addEventListener("scroll", () => {
-      btnScrollTop.classList.toggle("visible", reportScroll.scrollTop > 200);
-    });
-    btnScrollTop.addEventListener("click", () => {
-      reportScroll.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }
+  // Rapport final + dernier relevé : bouton "remonter en haut" apparaissant dès qu'on a scrollé
+  cablerBoutonRemonter("comptage-report-scroll", "btn-scroll-top-comptage");
+  cablerBoutonRemonter("comptage-lastview-scroll", "btn-scroll-top-lastview");
 
   document.getElementById("absence-modal-back-btn")?.addEventListener("pointerdown", annulerAbsenceMecs);
   Object.entries(MOTIFS_ABSENCE).forEach(([id, motif]) => {
