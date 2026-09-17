@@ -257,8 +257,12 @@ button:active,
 /* 👑 SYSTEME HORS-LIGNE ANDROID : Bulle de sécurité au-dessus du bouton Pain */
 /* ========================================================================== */
 
-/* 1. Quand la bulle s'affiche, on pousse toute la page de 45px vers le bas */
-body:has(.offline-badge:not(.hidden)) .view {
+/* 1. Quand la bulle s'affiche, on pousse toute la page de 45px vers le bas
+   pour ne pas recouvrir les boutons du haut — sauf #login-screen, qui n'a
+   pas d'en-tête à dégager : le décalage n'y servait à rien et faisait
+   "sauter" toute la carte de connexion (surtout ~2-3s après l'ouverture,
+   quand la bulle se referme automatiquement après le passage en ligne). */
+body:has(.offline-badge:not(.hidden)) .view:not(#login-screen) {
     padding-top: 65px !important; /* Crée l'espace parfait tout en haut de l'écran */
 }
 
