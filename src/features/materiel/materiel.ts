@@ -8,7 +8,7 @@ import { openMenu } from "@/features/navigation/navigation";
 import { ouvrirScanner, basculerTorche } from "./scanner";
 import { genererRecap } from "./recap";
 import { telechargerPDF } from "@/features/pdf/pdf";
-import { catNames, genericCatalog } from "./catalog";
+import { catNames, genericCatalog, catIcons, genericIcons } from "./catalog";
 import type { InventoryCategory } from "@/types/inventory";
 
 export type MaterielTab = "dispo" | "emprunt" | "frigos";
@@ -32,6 +32,12 @@ let panierRetour: (number | string)[] = [];
 let selectedActionType: ActionType | null = null;
 let selectedItemId: number | string | null = null;
 let modalQty = 1;
+
+// Chevron fin (même tracé que les sélecteurs de l'app) remplaçant les ▲/▼ :
+// pointe vers le bas au repos, pivote à 180° une fois la carte ouverte.
+function iconeChevronAccordion(ouvert: boolean): string {
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s ease; transform:rotate(${ouvert ? 180 : 0}deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+}
 
 export function openMateriel(): void {
   document.getElementById("home-menu")?.classList.add("hidden");
@@ -421,7 +427,7 @@ export function renderItems(): void {
     const dispos = items.filter((i) => i.status === "available");
     const accHeader = document.createElement("div");
     accHeader.className = "accordion-header";
-    accHeader.innerHTML = `<span>${catNames[catKey]} (${dispos.length}/${items.length})</span> <span>${accordions[catKey] ? "▲" : "▼"}</span>`;
+    accHeader.innerHTML = `<span style="display:inline-flex; align-items:center; gap:9px;">${catIcons[catKey]}${catNames[catKey]} (${dispos.length}/${items.length})</span> ${iconeChevronAccordion(accordions[catKey])}`;
     accHeader.onclick = () => toggleAccordion(catKey);
     zoneDispo.appendChild(accHeader);
 
@@ -433,7 +439,7 @@ export function renderItems(): void {
         const card = document.createElement("div");
         card.className = `item-card available ${isSel ? "selected-panier" : ""}`;
         card.onclick = () => clicCarteUnique(item.id);
-        card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3>${item.name}</h3></div><div class="dot-indicator"></div></div>`;
+        card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${catIcons[catKey]}${item.name}</h3></div><div class="dot-indicator"></div></div>`;
         accContent.appendChild(card);
       });
       if (dispos.length === 0) accContent.innerHTML = `<p style="color:var(--text-gray); font-size:13px; margin:5px 0;">Tout est emprunté.</p>`;
@@ -443,7 +449,7 @@ export function renderItems(): void {
 
   const titreGeneric = document.createElement("h3");
   titreGeneric.className = "section-title";
-  titreGeneric.innerText = "🍳 Petit Matériel (Libre)";
+  titreGeneric.innerText = "Petit Matériel (Libre)";
   zoneDispo.appendChild(titreGeneric);
 
   const gridGeneric = document.createElement("div");
@@ -466,7 +472,7 @@ export function renderItems(): void {
                 </div>
             `;
     }
-    card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3>${gen.name}</h3></div>${actionHTML}</div>`;
+    card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${genericIcons[gen.id]}${gen.name}</h3></div>${actionHTML}</div>`;
 
     if (isSel) {
       card.querySelector(".qty-controls")?.addEventListener("click", (e) => e.stopPropagation());
