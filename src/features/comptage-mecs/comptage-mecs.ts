@@ -40,6 +40,14 @@ function iconePorte(taille = 13): string {
 function iconeLit(taille = 13): string {
   return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"></path><path d="M3 18h18"></path><path d="M3 22v-4"></path><path d="M21 22v-4"></path><path d="M6 10V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4"></path></svg>`;
 }
+// Pastille colorée (remplace les 🟢/🔴) : même code couleur que le reste de
+// l'app (var(--success)/var(--danger)), en SVG plutôt qu'en emoji.
+function iconePastille(couleur: string): string {
+  return `<svg width="9" height="9" viewBox="0 0 10 10" style="flex-shrink:0;"><circle cx="5" cy="5" r="5" fill="${couleur}"></circle></svg>`;
+}
+function iconeCheckSucces(taille = 14): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>`;
+}
 
 /**
  * Construit le "fil d'Ariane" Bâtiment › Appartement › Chambre à partir du
@@ -404,6 +412,11 @@ function afficherRapportFinalMecs(): void {
   document.getElementById("comptage-workspace")?.classList.add("hidden");
   document.getElementById("comptage-report-screen")?.classList.remove("hidden");
 
+  // Rapport toujours réaffiché depuis le haut, bouton "remonter" repos au départ
+  const reportScroll = document.getElementById("comptage-report-scroll");
+  if (reportScroll) reportScroll.scrollTop = 0;
+  document.getElementById("btn-scroll-top-comptage")?.classList.remove("visible");
+
   const maintenant = new Date();
   const heureFin = maintenant.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
   const dureeMin = Math.round((maintenant.getTime() - mecsSessionEnCours.timestampDebut) / 60000);
@@ -425,8 +438,8 @@ function afficherRapportFinalMecs(): void {
   if (statsHtml) {
     statsHtml.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:700;"><span>Total Jeunes du Foyer :</span><b style="color:var(--text-dark);">${mecsSessionEnCours.totalJeunes}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px;"><span>🟢 Total Présents :</span><b style="color:var(--success);">${mecsSessionEnCours.presents}</b></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:13px;"><span>🔴 Total Absents :</span><b style="color:var(--danger);">${mecsSessionEnCours.absents}</b></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--success)")}Total Présents :</span><b style="color:var(--success);">${mecsSessionEnCours.presents}</b></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--danger)")}Total Absents :</span><b style="color:var(--danger);">${mecsSessionEnCours.absents}</b></div>
 
         <!-- 👑 Bulles verticales de fin de tournée -->
         <div style="border-top:1px solid var(--border-color); padding-top:15px; display:flex; flex-direction:column; gap:10px; width:100%;">
@@ -452,7 +465,7 @@ function afficherRapportFinalMecs(): void {
     listHolder.innerHTML = "";
 
     if (mecsSessionEnCours.listeAbsents.length === 0) {
-      listHolder.innerHTML = `<div style="text-align:center; color:var(--success); font-weight:600; font-size:13px; padding:10px;">✨ Aucun absent. L'établissement est complet.</div>`;
+      listHolder.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:7px; text-align:center; color:var(--success); font-weight:600; font-size:13px; padding:10px;">${iconeCheckSucces(14)}Aucun absent. L'établissement est complet.</div>`;
     } else {
       // 👑 Moteur de rendu identique avec distinction visuelle des mineurs
       mecsSessionEnCours.listeAbsents.forEach((ab) => {
@@ -740,6 +753,18 @@ export function initComptageListeners(): void {
 
   document.getElementById("btn-cloturer-comptage")?.addEventListener("click", cloreComptageMecs);
   document.getElementById("btn-pdf-comptage")?.addEventListener("click", () => telechargerPDF("comptage"));
+
+  // Rapport final : bouton "remonter en haut" apparaissant dès qu'on a scrollé
+  const reportScroll = document.getElementById("comptage-report-scroll");
+  const btnScrollTop = document.getElementById("btn-scroll-top-comptage");
+  if (reportScroll && btnScrollTop) {
+    reportScroll.addEventListener("scroll", () => {
+      btnScrollTop.classList.toggle("visible", reportScroll.scrollTop > 200);
+    });
+    btnScrollTop.addEventListener("click", () => {
+      reportScroll.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
 
   document.getElementById("absence-modal-back-btn")?.addEventListener("pointerdown", annulerAbsenceMecs);
   Object.entries(MOTIFS_ABSENCE).forEach(([id, motif]) => {

@@ -584,26 +584,39 @@
         </div>
     </div>
 
-    <!-- ÉCRAN 3 : Rapport et Bilan Final -->
-    <div id="comptage-report-screen" class="content hidden" style="overflow-y: auto; padding-bottom: 30px;">
-        <div class="med-form-card" style="width: 100%; max-width: 450px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 40px; margin-bottom: 5px;">📄</div>
-                <h3 style="margin: 0; font-weight: 800; color: var(--coallia-blue);">RAPPORT DE TOURNÉE</h3>
-                <p id="report-meta" style="color: var(--text-gray); font-size: 12px; font-weight: 600; margin: 5px 0 0 0;"></p>
+    <!-- ÉCRAN 3 : Rapport et Bilan Final — page plein écran façon app native (plus de carte flottante) -->
+    <div id="comptage-report-screen" class="content hidden" style="position: relative;">
+
+        <!-- Zone défilante : uniquement cette zone scrolle, l'en-tête et le bouton final restent fixes -->
+        <div id="comptage-report-scroll" style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 2px 20px 2px;">
+
+            <div style="text-align: center; margin-bottom: 22px;">
+                <div class="cpt-report-icone">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <span class="cpt-kicker">Tournée terminée</span>
+                <h2 class="section-title" style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-dark);">Rapport de tournée</h2>
+                <p id="report-meta" style="color: var(--text-gray); font-size: 12px; font-weight: 600; margin: 6px 0 0 0;"></p>
             </div>
 
             <div id="report-stats-html" style="background: var(--input-bg); padding: 15px; border-radius: 16px; margin-bottom: 20px;">
                 <!-- Statistiques injectées par le JS -->
             </div>
 
-            <h4 class="section-title" style="margin: 25px auto 15px auto; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
-    🚨 Jeunes absents lors de ce contrôle
+            <h4 class="section-title" style="margin: 0 0 15px 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Jeunes absents lors de ce contrôle
             </h4>
-            <div id="report-absents-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+            <div id="report-absents-list" style="display: flex; flex-direction: column; gap: 10px;">
                 <!-- Liste des absents injectée par le JS -->
             </div>
+        </div>
 
+        <!-- Pied fixe : le CTA final reste toujours visible, le bouton "remonter" flotte juste au-dessus -->
+        <div class="cpt-report-footer">
+            <button class="cpt-scroll-top" id="btn-scroll-top-comptage" aria-label="Remonter en haut du rapport">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+            </button>
             <button class="btn-primary" id="btn-cloturer-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Terminer et Enregistrer</button>
         </div>
     </div>

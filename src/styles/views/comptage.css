@@ -172,3 +172,54 @@
     margin-bottom: 5px; font-size: 12.5px;
 }
 
+
+/* ========================================================================== */
+/* RELEVÉ DE PRÉSENCE — écran de rapport final (plein écran, façon app native) */
+/* ========================================================================== */
+
+/* Icône de tournée terminée : remplace l'ancien 📄 par un badge check rond,
+   cohérent avec le sens réel de l'écran (la tournée s'est bien terminée). */
+.cpt-report-icone {
+    width: 52px; height: 52px;
+    margin: 0 auto 10px auto;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(52, 199, 89, 0.12);
+    border-radius: 50%;
+    color: var(--success);
+}
+.cpt-report-icone svg { width: 26px; height: 26px; }
+
+/* Pied fixe de l'écran de rapport : ancre positionnée pour le bouton
+   "remonter en haut", qui flotte juste au-dessus du CTA final quel que
+   soit la hauteur réelle de ce dernier. */
+.cpt-report-footer {
+    position: relative;
+    flex-shrink: 0;
+    padding-top: 14px;
+}
+
+.cpt-scroll-top {
+    position: absolute;
+    bottom: 100%;
+    right: 4px;
+    margin-bottom: 12px;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--card-color);
+    color: var(--coallia-blue);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(10, 22, 44, 0.16);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.cpt-scroll-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+.cpt-scroll-top svg { width: 18px; height: 18px; }
+
