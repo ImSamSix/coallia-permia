@@ -83,7 +83,7 @@ interface TelechargerPdfOptions {
 }
 
 /** Génération de rapports PDF (bilan matériel / relevé de présence MECS). */
-export function telechargerPDF(type: RapportType, options?: TelechargerPdfOptions): Promise<string> | Promise<void> | undefined {
+export async function telechargerPDF(type: RapportType, options?: TelechargerPdfOptions): Promise<string | void> {
   const silencieux = !!(options && options.silencieux);
 
   const btnId = type === "comptage" ? "btn-pdf-comptage" : "btn-pdf-mat";
@@ -99,6 +99,11 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
         Création du document...
       </span>`;
     btn.disabled = true;
+
+    // Laisse le navigateur peindre l'anneau avant de lancer le rendu (lourd
+    // et synchrone) du PDF : sans cette frame d'attente, le clic reste
+    // visuellement figé jusqu'à la fin de toute la génération.
+    await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 
   // 1. Récupération des données formatées
