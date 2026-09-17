@@ -110,7 +110,10 @@
 .cpt-select {
     width: 100%;
     text-align: center; text-align-last: center;
-    font-size: 16px; margin: 0 0 20px 0;
+    font-size: 16px;
+    /* Même espace qu'entre le sous-titre et ce sélecteur (.cpt-sous),
+       pour que le groupe de boutons en dessous respire à l'identique. */
+    margin: 0 0 24px 0;
     padding: 16px 42px;
     cursor: pointer;
 }
