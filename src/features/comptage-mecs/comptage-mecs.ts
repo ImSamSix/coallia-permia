@@ -48,6 +48,35 @@ function iconePastille(couleur: string): string {
 function iconeCheckSucces(taille = 14): string {
   return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>`;
 }
+function iconeCroixPetite(taille = 11): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+}
+
+/**
+ * Carte de répartition (Mineurs/Majeurs) du rapport final : badge d'icône
+ * teinté + deux pastilles Présents/Absents, plutôt que du texte brut sur
+ * fond gris. Les deux cartes vivent côte à côte dans une grille 2 colonnes.
+ */
+function construireBulleRepartition(
+  icone: string,
+  label: string,
+  couleurTexte: string,
+  couleurFond: string,
+  presents: number,
+  absents: number
+): string {
+  return `
+        <div style="background:var(--card-color); border:1px solid var(--border-color); border-radius:14px; padding:12px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <div style="display:flex; align-items:center; gap:7px;">
+                <span style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:50%; background:${couleurFond}; color:${couleurTexte}; flex-shrink:0;">${icone}</span>
+                <span style="font-weight:800; font-size:13.5px; color:var(--text-dark);">${label}</span>
+            </div>
+            <div style="display:flex; gap:8px; width:100%;">
+                <span style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(52,199,89,0.12); color:var(--success); font-weight:700; font-size:12.5px; padding:7px 6px; border-radius:9px;">${iconeCheckSucces(11)}${presents}</span>
+                <span style="flex:1; display:flex; align-items:center; justify-content:center; gap:5px; background:rgba(255,59,48,0.1); color:var(--danger); font-weight:700; font-size:12.5px; padding:7px 6px; border-radius:9px;">${iconeCroixPetite(11)}${absents}</span>
+            </div>
+        </div>`;
+}
 
 /**
  * Construit le "fil d'Ariane" Bâtiment › Appartement › Chambre à partir du
@@ -441,20 +470,10 @@ function afficherRapportFinalMecs(): void {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--success)")}Total Présents :</span><b style="color:var(--success);">${mecsSessionEnCours.presents}</b></div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--danger)")}Total Absents :</span><b style="color:var(--danger);">${mecsSessionEnCours.absents}</b></div>
 
-        <!-- 👑 Bulles verticales de fin de tournée : chips pastel nichées dans la carte -->
-        <div style="border-top:1px solid var(--border-color); padding-top:15px; display:flex; flex-direction:column; gap:10px; width:100%;">
-            <div style="background:var(--input-bg); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeEnfant(14)}Mineurs</div>
-                <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
-                    Présents : <span style="color:var(--success); font-weight:700;">${mecsSessionEnCours.breakdown.mineurs.presents}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${mecsSessionEnCours.breakdown.mineurs.absents}</span>
-                </div>
-            </div>
-            <div style="background:var(--input-bg); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeAdulte(14)}Majeurs</div>
-                <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
-                    Présents : <span style="color:var(--success); font-weight:700;">${mecsSessionEnCours.breakdown.majeurs.presents}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${mecsSessionEnCours.breakdown.majeurs.absents}</span>
-                </div>
-            </div>
+        <!-- 👑 Répartition Mineurs/Majeurs : badges colorés + pastilles Présents/Absents -->
+        <div style="border-top:1px solid var(--border-color); padding-top:15px; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%;">
+            ${construireBulleRepartition(iconeEnfant(14), "Mineurs", "var(--warning)", "rgba(255,159,10,0.14)", mecsSessionEnCours.breakdown.mineurs.presents, mecsSessionEnCours.breakdown.mineurs.absents)}
+            ${construireBulleRepartition(iconeAdulte(14), "Majeurs", "var(--coallia-blue)", "rgba(0,85,164,0.12)", mecsSessionEnCours.breakdown.majeurs.presents, mecsSessionEnCours.breakdown.majeurs.absents)}
         </div>
     `;
   }
