@@ -36,7 +36,7 @@ let modalQty = 1;
 // Chevron fin (même tracé que les sélecteurs de l'app) remplaçant les ▲/▼ :
 // pointe vers le bas au repos, pivote à 180° une fois la carte ouverte.
 function iconeChevronAccordion(ouvert: boolean): string {
-  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s ease; transform:rotate(${ouvert ? 180 : 0}deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+  return `<svg class="acc-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s ease; transform:rotate(${ouvert ? 180 : 0}deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 }
 
 export function openMateriel(): void {
@@ -130,7 +130,16 @@ export function switchTab(tab: MaterielTab): void {
 
 export function toggleAccordion(cat: InventoryCategory): void {
   accordions[cat] = !accordions[cat];
-  renderItems();
+
+  // 👑 Pas de renderItems() ici : la liste des disponibles n'a pas changé,
+  // seul l'état déplié/replié bascule. En touchant directement les classes
+  // sur les éléments déjà en place, la transition CSS peut réellement jouer
+  // (un re-rendu recréerait les nœuds déjà dans leur état final, sans
+  // transition visible).
+  const wrapper = document.querySelector<HTMLElement>(`.accordion-content-wrapper[data-cat="${cat}"]`);
+  const chevron = document.querySelector<HTMLElement>(`.accordion-header[data-cat="${cat}"] .acc-chevron`);
+  wrapper?.classList.toggle("open", accordions[cat]);
+  if (chevron) chevron.style.transform = `rotate(${accordions[cat] ? 180 : 0}deg)`;
 }
 
 export function toggleResident(jeune: string): void {
@@ -425,26 +434,34 @@ export function renderItems(): void {
   (Object.keys(catNames) as InventoryCategory[]).forEach((catKey) => {
     const items = state.inventory.filter((i) => i.category === catKey);
     const dispos = items.filter((i) => i.status === "available");
+    const isOpen = accordions[catKey];
+
     const accHeader = document.createElement("div");
     accHeader.className = "accordion-header";
-    accHeader.innerHTML = `<span style="display:inline-flex; align-items:center; gap:9px;">${catIcons[catKey]}${catNames[catKey]} (${dispos.length}/${items.length})</span> ${iconeChevronAccordion(accordions[catKey])}`;
+    accHeader.dataset.cat = catKey;
+    accHeader.innerHTML = `<span style="display:inline-flex; align-items:center; gap:9px;">${catIcons[catKey]}${catNames[catKey]} (${dispos.length}/${items.length})</span> ${iconeChevronAccordion(isOpen)}`;
     accHeader.onclick = () => toggleAccordion(catKey);
     zoneDispo.appendChild(accHeader);
 
-    if (accordions[catKey]) {
-      const accContent = document.createElement("div");
-      accContent.className = "accordion-content open";
-      dispos.forEach((item) => {
-        const isSel = modePanier && panierUnique.includes(item.id);
-        const card = document.createElement("div");
-        card.className = `item-card available ${isSel ? "selected-panier" : ""}`;
-        card.onclick = () => clicCarteUnique(item.id);
-        card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${catIcons[catKey]}${item.name}</h3></div><div class="dot-indicator"></div></div>`;
-        accContent.appendChild(card);
-      });
-      if (dispos.length === 0) accContent.innerHTML = `<p style="color:var(--text-gray); font-size:13px; margin:5px 0;">Tout est emprunté.</p>`;
-      zoneDispo.appendChild(accContent);
-    }
+    // 👑 Le wrapper reste toujours dans le DOM (ouvert ou non) : c'est ce qui
+    // permet à toggleAccordion() de se contenter de basculer une classe CSS
+    // (déplié/replié fluide) plutôt que de tout reconstruire à chaque clic.
+    const accWrapper = document.createElement("div");
+    accWrapper.className = `accordion-content-wrapper ${isOpen ? "open" : ""}`;
+    accWrapper.dataset.cat = catKey;
+    const accContent = document.createElement("div");
+    accContent.className = "accordion-content";
+    dispos.forEach((item) => {
+      const isSel = modePanier && panierUnique.includes(item.id);
+      const card = document.createElement("div");
+      card.className = `item-card available ${isSel ? "selected-panier" : ""}`;
+      card.onclick = () => clicCarteUnique(item.id);
+      card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${catIcons[catKey]}${item.name}</h3></div><div class="dot-indicator"></div></div>`;
+      accContent.appendChild(card);
+    });
+    if (dispos.length === 0) accContent.innerHTML = `<p style="color:var(--text-gray); font-size:13px; margin:5px 0;">Tout est emprunté.</p>`;
+    accWrapper.appendChild(accContent);
+    zoneDispo.appendChild(accWrapper);
   });
 
   const titreGeneric = document.createElement("h3");
