@@ -264,8 +264,8 @@ function genererCarteJeuneMecs(): void {
   card.innerHTML = `
         <div style="width:100%; margin-bottom:24px;">${construireItineraire(jeune.chambre)}</div>
 
-        <div style="width:100px; height:100px; border-radius:50%; background:rgba(0,85,164,0.06); border:3px solid var(--coallia-blue); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; color:var(--coallia-blue); margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">${jeune.initiales}</div>
-        <h2 style="font-size:22px; font-weight:800; margin:0 0 5px 0; color:var(--text-dark);">${jeune.prenom} ${jeune.nom}</h2>
+        <div style="width:100px; height:100px; flex-shrink:0; border-radius:50%; background:rgba(0,85,164,0.06); border:3px solid var(--coallia-blue); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; color:var(--coallia-blue); margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">${jeune.initiales}</div>
+        <h2 style="font-size:22px; font-weight:800; margin:0 0 5px 0; color:var(--text-dark); line-height:1.15;">${jeune.prenom} ${jeune.nom}</h2>
         <p style="margin:0 0 15px 0; font-size:15px; color:var(--text-gray); font-weight:600;">${jeune.age} ans</p>
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; padding:6px 14px; border-radius:20px; color:white; background:${colorStatut};">${tagStatut}</span>
     `;
