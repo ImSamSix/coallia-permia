@@ -511,8 +511,8 @@
             <label class="form-label cpt-label">Type de passage *</label>
             <select id="comptage-type-select" class="cpt-select">
                 <option value="" disabled selected>Sélectionner un passage...</option>
-                <option value="Comptage du matin">Matin</option>
-                <option value="Comptage du soir">Soir</option>
+                <option value="Relevé du matin">Matin</option>
+                <option value="Relevé du soir">Soir</option>
             </select>
 
             <button class="btn-primary cpt-lancer" id="btn-lancer-comptage">
@@ -617,7 +617,7 @@
             <button class="cpt-scroll-top" id="btn-scroll-top-comptage" aria-label="Remonter en haut du rapport">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
             </button>
-            <button class="btn-primary" id="btn-cloturer-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Enregistrer</button>
+            <button class="btn-primary" id="btn-cloturer-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Enregistrer le relevé de présence</button>
         </div>
     </div>
 
@@ -632,7 +632,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2.2"></rect><path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1Z"></path><path d="m8.5 12.5 2 2 4-4.2"></path><path d="M8.5 17h7"></path></svg>
                 </div>
                 <span class="cpt-kicker">Prise de service</span>
-                <h2 class="section-title" style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-dark);">Dernier comptage enregistré</h2>
+                <h2 class="section-title" style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-dark);">Dernier relevé enregistré</h2>
                 <p id="last-view-meta" style="color: var(--text-gray); font-size: 12px; font-weight: 600; margin: 6px 0 0 0;"></p>
             </div>
 
@@ -655,7 +655,7 @@
             <button class="cpt-scroll-top" id="btn-scroll-top-lastview" aria-label="Remonter en haut">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
             </button>
-            <button class="btn-primary" id="btn-pdf-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Générer la feuille d'appel en PDF</button>
+            <button class="btn-primary" id="btn-pdf-comptage" style="width: 100%; padding: 18px; font-size: 16px; border-radius: 14px; font-weight: 700;">Générer le relevé de présence</button>
         </div>
     </div>
 </section>

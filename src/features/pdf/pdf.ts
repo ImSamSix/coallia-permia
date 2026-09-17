@@ -4,6 +4,79 @@ import { vibrer } from "@/services/feedback";
 
 export type RapportType = "materiel" | "comptage";
 
+/* ==========================================================================
+   Icônes SVG pour le PDF — mêmes tracés que dans l'app, mais avec une
+   couleur figée en HEX passée en paramètre : html2canvas ne résout pas les
+   variables CSS (var(--xxx)) de façon fiable au moment du rendu du canvas.
+   ========================================================================== */
+function svgEnfant(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4.5"></circle><path d="M18 21v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 6 19.5V21"></path></svg>`;
+}
+function svgAdulte(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>`;
+}
+function svgCheck(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>`;
+}
+function svgCroix(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+}
+function svgAlerte(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+}
+function svgBatiment(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v18"></path><path d="M14 9h4a1 1 0 0 1 1 1v12"></path><path d="M10 6h.01M10 10h.01M10 14h.01M6 6h.01M6 10h.01M6 14h.01M6 18h.01M10 18h.01M17 13h.01M17 17h.01"></path></svg>`;
+}
+function svgPorte(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"></rect><path d="M14 12h.01"></path></svg>`;
+}
+function svgLit(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"></path><path d="M3 18h18"></path><path d="M3 22v-4"></path><path d="M21 22v-4"></path><path d="M6 10V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4"></path></svg>`;
+}
+
+/** Fil d'Ariane Bâtiment › Appartement › Chambre, version PDF (texte discret, centré). */
+function itinerairePdf(chambreTexte: string): string {
+  const parts = chambreTexte.split("│");
+  const batimentBrut = (parts[0] ? parts[0].trim() : "").replace(/^[⚓🏢]\s*/u, "");
+  const detailsBrut = parts[1] ? parts[1].trim() : "";
+
+  let aptBrut = "";
+  let chBrut = detailsBrut;
+  if (detailsBrut.includes("-")) {
+    const sub = detailsBrut.split("-");
+    aptBrut = sub[0] ? sub[0].trim() : "";
+    chBrut = sub[1] ? sub[1].trim() : "";
+  }
+
+  const couleur = "#8a93a5";
+  const segment = (icone: string, texte: string): string =>
+    `<span style="display:inline-flex; align-items:center; gap:5px;">${icone}${texte}</span>`;
+  const separateur = `<span style="opacity:0.5;">›</span>`;
+
+  const morceaux = [segment(svgBatiment(11, couleur), batimentBrut)];
+  if (aptBrut) {
+    morceaux.push(separateur, segment(svgPorte(11, couleur), aptBrut));
+  }
+  morceaux.push(separateur, segment(svgLit(11, couleur), chBrut));
+
+  return `<div style="display:flex; align-items:center; justify-content:center; gap:7px; flex-wrap:wrap; font-size:11px; font-weight:700; color:${couleur};">${morceaux.join("")}</div>`;
+}
+
+/** Carte de répartition Mineurs/Majeurs, version PDF (mêmes codes couleur que l'app). */
+function bulleRepartitionPdf(icone: string, label: string, couleurFond: string, presents: number, absents: number): string {
+  return `
+        <div style="background:#ffffff; border:1px solid #e3e8f0; border-radius:12px; padding:12px; text-align:center;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-bottom:9px;">
+                <span style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:50%; background:${couleurFond};">${icone}</span>
+                <span style="font-weight:800; font-size:12.5px; color:#1a1f2b;">${label}</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+                <span style="flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:rgba(46,125,50,0.12); color:#2e7d32; font-weight:700; font-size:11.5px; padding:6px 4px; border-radius:8px;">${svgCheck(10, "#2e7d32")}${presents}</span>
+                <span style="flex:1; display:flex; align-items:center; justify-content:center; gap:4px; background:rgba(211,47,47,0.1); color:#d32f2f; font-weight:700; font-size:11.5px; padding:6px 4px; border-radius:8px;">${svgCroix(10, "#d32f2f")}${absents}</span>
+            </div>
+        </div>`;
+}
+
 interface TelechargerPdfOptions {
   /** Mode silencieux : génère le PDF sans le télécharger ni toucher au bouton (envoi Power Automate). */
   silencieux?: boolean;
@@ -50,34 +123,33 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
 
     let absentsHTML = "";
     if (!dernierLog.listeAbsents || dernierLog.listeAbsents.length === 0) {
-      absentsHTML = `<div style="text-align:center; color:#2e7d32; font-weight:600; font-size:13.5px; padding:15px; background:#e8f5e9; border-radius:10px;">✨ Aucun absent lors de ce contrôle. L'établissement était complet.</div>`;
+      absentsHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:7px; text-align:center; color:#2e7d32; font-weight:600; font-size:13px; padding:14px; background:#ffffff; border:1px solid #e3e8f0; border-radius:12px; font-family:'Helvetica Neue', Arial, sans-serif;">${svgCheck(14, "#2e7d32")}Aucun absent lors de ce contrôle. L'établissement était complet.</div>`;
     } else {
       dernierLog.listeAbsents.forEach((ab) => {
         const estMineur = ab.isMajor === false;
-        const cardBg = estMineur ? "#fff5f5" : "#f8f9fa";
-        const borderLeft = estMineur ? "border-left: 5px solid #d32f2f;" : "border-left: 5px solid #757575;";
+        const cardBg = estMineur ? "rgba(211,47,47,0.05)" : "#ffffff";
+        const cardBorder = estMineur ? "1px solid rgba(211,47,47,0.22)" : "1px solid #e3e8f0";
+        const borderLeft = estMineur ? "border-left: 5px solid #d32f2f;" : "";
         const alertTag = estMineur
-          ? "<span style='font-size:9px; font-weight:800; color:#d32f2f; background:rgba(211,47,47,0.1); padding:2px 6px; border-radius:5px; margin-left:8px; font-family:sans-serif;'>🚨 MINEUR</span>"
+          ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:9px; font-weight:800; color:#d32f2f; background:rgba(211,47,47,0.1); padding:2px 7px; border-radius:6px; margin-left:6px;">${svgEnfant(9, "#d32f2f")}MINEUR</span>`
           : "";
 
+        // page-break-inside:avoid (+ préfixe break-inside) : une carte ne
+        // doit jamais être coupée entre deux pages du PDF.
         absentsHTML += `
-                        <table style="width: 100%; background:${cardBg}; border:1px solid #e0e0e0; ${borderLeft} padding: 12px; border-radius: 10px; margin-bottom: 8px; border-collapse: separate; box-sizing: border-box; font-family:'Helvetica Neue', Arial, sans-serif;">
-                            <tr>
-                                <td style="text-align: left; vertical-align: middle;">
-                                    <span style="color:#111; font-size:13.5px; font-weight:700;">${ab.prenom} ${ab.nom} ${alertTag}</span><br>
-                                    <span style="font-size:11px; color:#666; font-weight:700; margin-top:2px; display:inline-block;">🚪 ${ab.chambre}</span>
-                                </td>
-                                <td style="text-align: right; vertical-align: middle; padding-right: 2px;">
-                                    <span style="font-size:11px; background:#ffffff; padding:5px 12px; border-radius:6px; border:1px solid #e0e0e0; color:#d32f2f; font-weight:800; text-transform:uppercase; display:inline-block; white-space:nowrap;">${ab.motif}</span>
-                                </td>
-                            </tr>
-                        </table>
+                        <div style="background:${cardBg}; border:${cardBorder}; ${borderLeft} border-radius:12px; padding:12px 14px; margin-bottom:8px; box-sizing:border-box; font-family:'Helvetica Neue', Arial, sans-serif; page-break-inside:avoid; break-inside:avoid;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:9px;">
+                                <span style="color:#111; font-size:13px; font-weight:700; display:inline-flex; align-items:center;">${ab.prenom} ${ab.nom}${alertTag}</span>
+                                <span style="font-size:10.5px; background:rgba(211,47,47,0.08); padding:4px 10px; border-radius:7px; color:#d32f2f; font-weight:700; white-space:nowrap; flex-shrink:0;">${ab.motif}</span>
+                            </div>
+                            ${itinerairePdf(ab.chambre)}
+                        </div>
                     `;
       });
     }
 
     contenuHTML = `
-                <div style="border:1px solid #c3d6ee; border-radius:12px; overflow:hidden; margin-bottom:24px;">
+                <div style="border:1px solid #c3d6ee; border-radius:12px; overflow:hidden; margin-bottom:24px; page-break-inside:avoid; break-inside:avoid;">
                 <table style="width:100%; border-collapse:separate; border-spacing:0; font-family:'Helvetica Neue', Arial, sans-serif;">
                     <tr>
                         <td colspan="4" style="padding:7px 14px; background:#0055a4; border-radius:11px 11px 0 0;">
@@ -105,30 +177,20 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
                 </table>
                 </div>
 
-                <div style="border: 1px solid #e0e0e0; background: #ffffff; padding: 18px; border-radius: 12px; margin-bottom: 25px; font-family: 'Helvetica Neue', Arial, sans-serif;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:800; font-size:14.5px; border-bottom:1px dashed #e0e0e0; padding-bottom:6px;"><span>Total Jeunes du Foyer :</span><b style="color:#0055a4;">${dernierLog.totalJeunes}</b></div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:13px; font-weight:600;"><span>🟢 Présents :</span><b style="color:#2e7d32;">${dernierLog.presents}</b></div>
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:13px; font-weight:600;"><span>🔴 Absents :</span><b style="color:#d32f2f;">${dernierLog.absents}</b></div>
+                <div style="background:#ffffff; border:1px solid #e3e8f0; box-shadow:0 3px 10px rgba(10,22,44,0.05); padding:16px 18px; border-radius:14px; margin-bottom:24px; font-family:'Helvetica Neue', Arial, sans-serif; page-break-inside:avoid; break-inside:avoid;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:800; font-size:14px; border-bottom:1px dashed #e3e8f0; padding-bottom:8px;"><span>Total Jeunes du Foyer :</span><b style="color:#0055a4;">${dernierLog.totalJeunes}</b></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-size:12.5px; font-weight:600;"><span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#2e7d32;"></span>Total Présents :</span><b style="color:#2e7d32;">${dernierLog.presents}</b></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:12.5px; font-weight:600;"><span style="display:inline-flex; align-items:center; gap:6px;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#d32f2f;"></span>Total Absents :</span><b style="color:#d32f2f;">${dernierLog.absents}</b></div>
 
-                    <table style="width:100%; border-collapse:collapse; margin-top:10px;">
+                    <table style="width:100%; border-collapse:separate; border-spacing:5px 0; margin:8px -5px 0 -5px;">
                         <tr>
-                            <td style="width:50%; padding-right:6px;">
-                                <div style="background:#f8f9fa; border:1px solid #e0e0e0; padding:10px; border-radius:8px; text-align:center;">
-                                    <div style="font-weight:800; font-size:12px; margin-bottom:3px; color:#222;">👶 MINEURS</div>
-                                    <div style="font-size:11.5px; color:#555; font-weight:600;">Présents : <span style="color:#2e7d32; font-weight:700;">${dernierLog.breakdown?.mineurs?.presents || 0}</span> │ Absents : <span style="color:#d32f2f; font-weight:700;">${dernierLog.breakdown?.mineurs?.absents || 0}</span></div>
-                                </div>
-                            </td>
-                            <td style="width:50%; padding-left:6px;">
-                                <div style="background:#f8f9fa; border:1px solid #e0e0e0; padding:10px; border-radius:8px; text-align:center;">
-                                    <div style="font-weight:800; font-size:12px; margin-bottom:3px; color:#222;">🧑 MAJEURS</div>
-                                    <div style="font-size:11.5px; color:#555; font-weight:600;">Présents : <span style="color:#2e7d32; font-weight:700;">${dernierLog.breakdown?.majeurs?.presents || 0}</span> │ Absents : <span style="color:#d32f2f; font-weight:700;">${dernierLog.breakdown?.majeurs?.absents || 0}</span></div>
-                                </div>
-                            </td>
+                            <td style="width:50%; padding:0;">${bulleRepartitionPdf(svgEnfant(13, "#c97a00"), "Mineurs", "rgba(255,159,10,0.16)", dernierLog.breakdown?.mineurs?.presents || 0, dernierLog.breakdown?.mineurs?.absents || 0)}</td>
+                            <td style="width:50%; padding:0;">${bulleRepartitionPdf(svgAdulte(13, "#0055a4"), "Majeurs", "rgba(0,85,164,0.14)", dernierLog.breakdown?.majeurs?.presents || 0, dernierLog.breakdown?.majeurs?.absents || 0)}</td>
                         </tr>
                     </table>
                 </div>
 
-                <h4 style="text-align: center; font-size: 13.5px; color: #111; border-bottom: 2px solid #0055a4; padding-bottom: 5px; margin-bottom: 12px; text-transform: uppercase; font-weight: 800; letter-spacing:0.3px; font-family:'Helvetica Neue', Arial, sans-serif;">🚨 Détail des signalements d'absence</h4>
+                <h4 style="text-align: center; font-size: 13.5px; color: #111; border-bottom: 2px solid #0055a4; padding-bottom: 5px; margin-bottom: 12px; text-transform: uppercase; font-weight: 800; letter-spacing:0.3px; font-family:'Helvetica Neue', Arial, sans-serif; display:flex; align-items:center; justify-content:center; gap:7px;">${svgAlerte(13, "#d32f2f")}Jeunes absents lors de ce contrôle</h4>
                 <div style="width:100%;">${absentsHTML}</div>
             `;
     titreDoc = "Appel_Foyer_MECS_" + dateAujourdhui.replace(/\//g, "-");
@@ -139,16 +201,19 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
   elementTemp.innerHTML = `
         <div style="padding: 16px 28px 24px 28px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1a1f2b; background: #fff; width: 680px; max-width: 680px; box-sizing: border-box;">
 
-            <!-- EN-TÊTE : logo à gauche, identité de la structure à droite -->
+            <!-- EN-TÊTE : logo (identique au splash screen) calé à gauche, identité de la
+                 structure centrée sur la page — une colonne fantôme à droite, de même
+                 largeur que le logo, équilibre la mise en page pour un centrage réel. -->
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 14px;">
                 <tr>
-                    <td style="vertical-align: middle; text-align: left;">
-                        <img src="/img/logo-coallia.png" style="height: 44px; display: block;">
+                    <td style="width: 90px; vertical-align: middle; text-align: left;">
+                        <img src="/img/app-icon-transparent.png" style="height: 50px; display: block;">
                     </td>
-                    <td style="vertical-align: middle; text-align: right;">
+                    <td style="vertical-align: middle; text-align: center;">
                         <div style="font-size: 12px; font-weight: 800; color: #1a1f2b; letter-spacing: 1.4px; text-transform: uppercase;">Coallia Guillaudot</div>
                         <div style="font-size: 10.5px; color: #7c8699; font-weight: 600; margin-top: 2px;">Espace Permanence</div>
                     </td>
+                    <td style="width: 90px;"></td>
                 </tr>
             </table>
 
@@ -161,8 +226,8 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
                 </tr>
             </table>
 
-            <!-- TITRE DU DOCUMENT -->
-            <div style="margin-bottom: 16px;">
+            <!-- TITRE DU DOCUMENT, centré -->
+            <div style="text-align: center; margin-bottom: 16px;">
                 <div style="font-size: 9.5px; font-weight: 800; color: #A8175A; letter-spacing: 1.6px; text-transform: uppercase; margin-bottom: 5px;">Document de permanence</div>
                 <h1 style="margin: 0; font-size: 23px; font-weight: 800; color: #1a1f2b; letter-spacing: -0.3px;">${meta.titre}</h1>
                 ${meta.sous ? `<div style="font-size: 12px; color: #7c8699; margin-top: 4px; font-weight: 500;">${meta.sous}</div>` : ``}
@@ -194,12 +259,15 @@ export function telechargerPDF(type: RapportType, options?: TelechargerPdfOption
     `;
 
   // 3. Configuration du PDF (On laisse 25mm de vide en bas pour le pied de page)
+  //    pagebreak "css" : respecte page-break-inside:avoid posé sur les cartes
+  //    (stats, absents) pour qu'aucune ne soit jamais coupée entre deux pages.
   const opt: Html2PdfOptions = {
     margin: [10, 10, 25, 10],
     filename: titreDoc + ".pdf",
     image: { type: "jpeg", quality: 0.98 },
     html2canvas: { scale: 2, useCORS: true, logging: false },
-    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    pagebreak: { mode: ["css", "legacy"] }
   };
 
   // 4. Génération avec injection du Footer en bas de CHAQUE page !
