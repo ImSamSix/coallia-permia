@@ -550,14 +550,16 @@ export function cloreComptageMecs(): void {
   vibrer([50, 50]);
   retourSaisieComptage();
 
-  // ⚠️ Double requestAnimationFrame (et non un simple setTimeout(0), qui ne
-  // garantit pas qu'un repaint ait eu lieu avant de s'exécuter) : le rendu
-  // du PDF qui suit est synchrone et bloque le thread principal. Sans
-  // attendre qu'un vrai repaint soit passé, le retour à l'accueil ci-dessus
-  // resterait invisible à l'écran jusqu'à la fin de toute la génération.
+  // ⚠️ Le retour à l'accueil déclenche l'animation d'entrée du menu (fondu
+  // du contenu : 0.36s au total, cf. .view:not(.hidden) > .content dans
+  // base.css). Le rendu du PDF qui suit est synchrone et bloque le thread
+  // principal — s'il démarre avant la fin de cette animation, elle reste
+  // figée à mi-fondu (écran "blanc") jusqu'à la fin de toute la génération.
+  // Double rAF pour garantir qu'un premier repaint a bien eu lieu, puis un
+  // délai couvrant la durée de l'animation avant de lancer le travail lourd.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      finaliserComptageEnArrierePlan(session);
+      setTimeout(() => finaliserComptageEnArrierePlan(session), 400);
     });
   });
 }
