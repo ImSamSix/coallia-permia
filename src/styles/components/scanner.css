@@ -86,16 +86,17 @@
     .scan-ligne { animation: none; top: 50%; }
 }
 
-/* 🔦 Bouton d'éclairage du scanner */
+/* 🔦 Bouton flash du scanner : bleu clair au repos, bleu Coallia plein une
+   fois allumé — même logique que les autres boutons actifs de l'app. */
 .scan-torche {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%;
     padding: 12px;
     margin-bottom: 10px;
-    border: 1.5px solid var(--border-color);
+    border: 1.5px solid rgba(0, 85, 164, 0.2);
     border-radius: 14px;
-    background: var(--card-color);
-    color: var(--text-gray);
+    background: rgba(0, 85, 164, 0.08);
+    color: var(--coallia-blue);
     font-size: 13.5px; font-weight: 700;
     font-family: 'Inter', sans-serif;
     cursor: pointer;
@@ -105,10 +106,10 @@
 }
 .scan-torche:active { transform: scale(0.97); }
 
-/* État allumé : ambre, pour évoquer la lumière */
+/* État allumé : bleu Coallia plein */
 .scan-torche.active {
-    background: rgba(255, 179, 0, 0.14);
-    border-color: rgba(255, 179, 0, 0.55);
-    color: #B26A00;
+    background: var(--coallia-blue);
+    border-color: var(--coallia-blue);
+    color: #fff;
 }
 

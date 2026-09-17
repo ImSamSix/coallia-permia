@@ -26,6 +26,14 @@ body.dark-mode .ecran-btn {
     box-shadow: none !important;
 }
 
+/* Flash allumé : reste en bleu Coallia plein même en dark mode (plus
+   spécifique que la règle bleutée ci-dessus, qui ne concerne que le repos) */
+body.dark-mode .scan-torche.active {
+    background: var(--coallia-blue) !important;
+    border-color: var(--coallia-blue) !important;
+    color: #fff !important;
+}
+
 /* Halo de focus : plus discret */
 body.dark-mode input:focus,
 body.dark-mode select:focus,

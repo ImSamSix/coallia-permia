@@ -72,7 +72,7 @@ export async function basculerTorche(): Promise<void> {
     await piste.applyConstraints({ advanced: [{ torch: torcheActive } as MediaTrackConstraintSet] });
 
     btn?.classList.toggle("active", torcheActive);
-    if (label) label.innerText = torcheActive ? "Éclairage allumé" : "Éclairage";
+    if (label) label.innerText = torcheActive ? "Éteindre le flash" : "Allumer le flash";
     vibrer(30);
   } catch (e) {
     console.warn("🔦 Éclairage indisponible :", e);
@@ -89,7 +89,7 @@ function reinitialiserTorche(): void {
     btn.classList.remove("active");
     btn.classList.add("hidden");
   }
-  if (label) label.innerText = "Éclairage";
+  if (label) label.innerText = "Allumer le flash";
 }
 
 function onScanSuccess(decodedText: string): void {
