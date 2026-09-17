@@ -31,13 +31,17 @@ function updatePainDisplay(): void {
 
   displayEl.innerText = String(painQty);
 
-  // Application stricte de tes règles de couleur
+  // Application stricte de tes règles de couleur, en tons pastel (fond
+  // teinté + texte dans la couleur pleine) plutôt qu'un aplat saturé.
   if (painQty === 0) {
-    displayEl.style.backgroundColor = "var(--success)"; // Vert
+    displayEl.style.backgroundColor = "rgba(52, 199, 89, 0.14)"; // Vert
+    displayEl.style.color = "var(--success)";
   } else if (painQty >= 1 && painQty <= 5) {
-    displayEl.style.backgroundColor = "var(--warning)"; // Orange
+    displayEl.style.backgroundColor = "rgba(255, 149, 0, 0.14)"; // Orange
+    displayEl.style.color = "var(--warning)";
   } else {
-    displayEl.style.backgroundColor = "var(--danger)"; // Rouge
+    displayEl.style.backgroundColor = "rgba(255, 59, 48, 0.14)"; // Rouge
+    displayEl.style.color = "var(--danger)";
   }
 }
 
