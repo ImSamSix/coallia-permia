@@ -162,6 +162,17 @@ export function toggleAccordion(cat: InventoryCategory): void {
     wrapper?.classList.toggle("open", doitEtreOuverte);
     if (chevron) chevron.style.transform = `rotate(${doitEtreOuverte ? 180 : 0}deg)`;
   });
+
+  // 👑 En repliant automatiquement la catégorie précédente, tout ce qui suit
+  // remonte d'un coup — l'en-tête qu'on vient de déplier peut se retrouver
+  // hors champ, en haut de l'écran. On la ramène en vue une fois la
+  // transition (0.3s) terminée, pour ne jamais avoir à scroller à la main.
+  if (ouverture) {
+    const header = document.querySelector<HTMLElement>(`.accordion-header[data-cat="${cat}"]`);
+    setTimeout(() => {
+      header?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 320);
+  }
 }
 
 export function toggleResident(jeune: string): void {
