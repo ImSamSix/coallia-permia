@@ -16,6 +16,64 @@ let mecsIndexActuel = 0;
 let touchStartX = 0;
 let touchEndX = 0;
 
+/* ==========================================================================
+   Icônes SVG (remplacent les emojis) — currentColor : héritent la couleur
+   du texte qui les entoure, quel que soit le contexte (pastille, en-tête…).
+   ========================================================================== */
+function iconeEnfant(taille = 14): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4.5"></circle><path d="M18 21v-1.5a4.5 4.5 0 0 0-4.5-4.5h-3A4.5 4.5 0 0 0 6 19.5V21"></path></svg>`;
+}
+function iconeAdulte(taille = 14): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>`;
+}
+function iconeBatiment(taille = 13): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v18"></path><path d="M14 9h4a1 1 0 0 1 1 1v12"></path><path d="M10 6h.01M10 10h.01M10 14h.01M6 6h.01M6 10h.01M6 14h.01M6 18h.01M10 18h.01M17 13h.01M17 17h.01"></path></svg>`;
+}
+function iconePorte(taille = 13): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"></rect><path d="M14 12h.01"></path></svg>`;
+}
+function iconeLit(taille = 13): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"></path><path d="M3 18h18"></path><path d="M3 22v-4"></path><path d="M21 22v-4"></path><path d="M6 10V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v4"></path></svg>`;
+}
+
+/**
+ * Construit le "fil d'Ariane" Bâtiment › Appartement › Chambre à partir du
+ * libellé compilé côté Worker (ex. "🏢 Bât. C │ Apt 3 - Ch. 2"), avec une
+ * icône dédiée par étape plutôt que 3 pastilles isolées : le pro voit d'un
+ * coup d'œil le trajet complet à parcourir, dans l'ordre, pour retrouver le
+ * jeune. Le préfixe emoji déjà présent dans le libellé bâtiment (⚓/🏢, ajouté
+ * côté Worker) est retiré puisqu'on affiche notre propre icône à la place.
+ */
+function construireItineraire(chambreTexte: string, mini = false): string {
+  const parts = chambreTexte.split("│");
+  const batimentBrut = (parts[0] ? parts[0].trim() : "").replace(/^[⚓🏢]\s*/u, "");
+  const detailsBrut = parts[1] ? parts[1].trim() : "";
+
+  let aptBrut = "";
+  let chBrut = detailsBrut;
+  if (detailsBrut.includes("-")) {
+    const sub = detailsBrut.split("-");
+    aptBrut = sub[0] ? sub[0].trim() : "";
+    chBrut = sub[1] ? sub[1].trim() : "";
+  }
+
+  const taille = mini ? 12 : 13;
+  const segment = (icone: string, texteBrut: string): string =>
+    `<span style="display:inline-flex; align-items:center; gap:5px;">${icone}${securiserTexte(texteBrut)}</span>`;
+  const separateur = `<span style="opacity:0.4;">›</span>`;
+
+  const morceaux = [segment(iconeBatiment(taille), batimentBrut)];
+  if (aptBrut) {
+    morceaux.push(separateur, segment(iconePorte(taille), aptBrut));
+  }
+  morceaux.push(separateur, segment(iconeLit(taille), chBrut));
+
+  const fontSize = mini ? "11px" : "12px";
+  const padding = mini ? "7px 10px" : "9px 12px";
+
+  return `<div style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap; background:var(--input-bg); color:var(--text-dark); border:1px solid var(--border-color); border-radius:12px; padding:${padding}; font-weight:700; font-size:${fontSize}; width:100%; box-sizing:border-box;">${morceaux.join("")}</div>`;
+}
+
 // --- INTERFACE COMMANDE COMPTAGE ---
 export function openComptageMenu(): void {
   document.getElementById("home-menu")?.classList.add("hidden");
@@ -27,11 +85,12 @@ export function openComptageMenu(): void {
   document.getElementById("comptage-report-screen")?.classList.add("hidden");
   document.getElementById("comptage-last-view")?.classList.add("hidden");
 
-  // On remet le bouton du haut en mode "Accueil" par défaut
+  // On remet le bouton du haut en mode "Accueil" par défaut, bien visible
   const backBtn = document.getElementById("comptage-back-btn") as HTMLButtonElement | null;
   if (backBtn) {
     backBtn.innerText = "← Accueil";
     backBtn.onclick = retourSaisieComptage;
+    backBtn.classList.remove("hidden");
   }
 }
 
@@ -92,10 +151,12 @@ export function lancerComptageMecs(): void {
   document.getElementById("comptage-setup-screen")?.classList.add("hidden");
   document.getElementById("comptage-workspace")?.classList.remove("hidden");
 
+  // ⚠️ Le bouton retour est masqué pendant toute la tournée (et jusqu'à la
+  // clôture) : impossible de l'interrompre par erreur une fois lancée, il
+  // faut aller jusqu'au bout ou saisir "Terminer et Enregistrer".
   const backBtn = document.getElementById("comptage-back-btn") as HTMLButtonElement | null;
   if (backBtn) {
-    backBtn.innerText = "← Retour";
-    backBtn.onclick = verifierAnnulationComptage;
+    backBtn.classList.add("hidden");
   }
 
   majDashboardComptage();
@@ -139,23 +200,8 @@ function genererCarteJeuneMecs(): void {
   }
 
   const jeune = state.mecsJeunesCatalog[mecsIndexActuel];
-  const tagStatut = jeune.isMajor ? "🧑 MAJEUR" : "👶 MINEUR";
+  const tagStatut = jeune.isMajor ? `${iconeAdulte(13)}MAJEUR` : `${iconeEnfant(13)}MINEUR`;
   const colorStatut = jeune.isMajor ? "var(--coallia-blue)" : "var(--warning)";
-
-  // 👑 EXTRACTION ET SÉPARATION CHIRURGICALE DU TRAJET (Bâtiment │ Appartement │ Chambre)
-  const chambreParts = jeune.chambre.split("│");
-  const batimentLabel = chambreParts[0] ? chambreParts[0].trim() : "";
-  const detailsLabel = chambreParts[1] ? chambreParts[1].trim() : "";
-
-  let aptLabel = "";
-  let chLabel = detailsLabel;
-
-  // Si la ligne contient un appartement (Bâtiments C et D), on sépare l'Apt de la Chambre
-  if (detailsLabel.includes("-")) {
-    const subParts = detailsLabel.split("-");
-    aptLabel = subParts[0] ? subParts[0].trim() : "";
-    chLabel = subParts[1] ? subParts[1].trim() : "";
-  }
 
   const card = document.createElement("div");
   card.id = "tinder-card-actuelle";
@@ -163,37 +209,13 @@ function genererCarteJeuneMecs(): void {
   card.style.cssText =
     "width:100%; background:var(--card-color); border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.06); border:1px solid var(--border-color); padding:25px; text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center; height:340px; position:absolute; z-index:2; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.2s; touch-action:none;";
 
-  // 👑 CONSTRUCTION DYNAMIQUE DES BULLES (Harmonisation Apple-Style : toutes en gris et écriture sombre)
-  let bullesHTML = `
-        <div style="background: var(--input-bg); color: var(--text-dark); font-weight: 700; font-size: 12px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border-color); white-space: nowrap; display: flex; align-items: center; justify-content: center;">
-            ${batimentLabel}
-        </div>
-    `;
-
-  if (aptLabel) {
-    bullesHTML += `
-            <div style="background: var(--input-bg); color: var(--text-dark); font-weight: 700; font-size: 12px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border-color); white-space: nowrap; display: flex; align-items: center; justify-content: center;">
-                🏢 ${aptLabel}
-            </div>
-        `;
-  }
-
-  bullesHTML += `
-        <div style="background: var(--input-bg); color: var(--text-dark); font-weight: 700; font-size: 12px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border-color); white-space: nowrap; display: flex; align-items: center; justify-content: center;">
-            🚪 ${chLabel}
-        </div>
-    `;
-
   card.innerHTML = `
         <div style="width:100px; height:100px; border-radius:50%; background:rgba(0,85,164,0.06); border:3px solid var(--coallia-blue); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; color:var(--coallia-blue); margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">${jeune.initiales}</div>
         <h2 style="font-size:22px; font-weight:800; margin:0 0 5px 0; color:var(--text-dark);">${jeune.prenom} ${jeune.nom}</h2>
         <p style="margin:0 0 15px 0; font-size:15px; color:var(--text-gray); font-weight:600;">${jeune.age} ans</p>
-        <span style="font-size:11px; font-weight:800; padding:6px 14px; border-radius:20px; color:white; background:${colorStatut}; margin-bottom:20px;">${tagStatut}</span>
+        <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; padding:6px 14px; border-radius:20px; color:white; background:${colorStatut}; margin-bottom:20px;">${tagStatut}</span>
 
-        <!-- 👑 TRIPLE BADGE PARFAITEMENT SÉPARÉ : Même hauteur, même arrondi, même typographie -->
-        <div style="display: flex; gap: 6px; justify-content: center; width: 100%; box-sizing: border-box; flex-wrap: nowrap;">
-            ${bullesHTML}
-        </div>
+        ${construireItineraire(jeune.chambre)}
     `;
 
   // Gestion du Drag (mouvement de la carte sous le doigt)
@@ -284,50 +306,15 @@ function enregistrerPresenceMecs(isPresent: boolean): void {
     majDashboardComptage();
     genererCarteJeuneMecs();
   } else {
-    // 👑 DECOUPAGE ET EXTRACTION DES DONNÉES DU TRAJET
+    // Injection du rendu épuré (Nom en valeur + itinéraire complet en dessous)
     const subtitleEl = document.getElementById("absence-modal-subtitle");
-    const chambreParts = jeune.chambre.split("│");
-    const batimentLabel = chambreParts[0] ? chambreParts[0].trim() : "";
-    const detailsLabel = chambreParts[1] ? chambreParts[1].trim() : "";
-
-    let aptLabel = "";
-    let chLabel = detailsLabel;
-
-    if (detailsLabel.includes("-")) {
-      const subParts = detailsLabel.split("-");
-      aptLabel = subParts[0] ? subParts[0].trim() : "";
-      chLabel = subParts[1] ? subParts[1].trim() : "";
-    }
-
-    // 👑 CORRECTION ESTHÉTIQUE : Construction des mini-badges gris identiques à la carte principale
-    let miniBullesHTML = `
-            <div style="background: var(--input-bg); color: var(--text-dark); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); white-space: nowrap;">
-                ${batimentLabel}
-            </div>
-        `;
-
-    if (aptLabel) {
-      miniBullesHTML += `
-                <div style="background: var(--input-bg); color: var(--text-dark); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); white-space: nowrap;">
-                    🏢 ${aptLabel}
-                </div>
-            `;
-    }
-
-    miniBullesHTML += `
-            <div style="background: var(--input-bg); color: var(--text-dark); font-weight: 700; font-size: 11px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color); white-space: nowrap;">
-                🚪 ${chLabel}
-            </div>
-        `;
-
-    // Injection du rendu épuré (Nom en valeur + alignement horizontal des capsules)
     if (subtitleEl) {
       subtitleEl.innerHTML = `
                 <div style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 12px; letter-spacing: -0.3px;">
                     ${jeune.prenom} ${jeune.nom}
                 </div>
-                <div style="display: flex; gap: 5px; justify-content: center; width: 100%; flex-wrap: nowrap; margin-bottom: 5px;">
-                    ${miniBullesHTML}
+                <div style="margin-bottom: 5px;">
+                    ${construireItineraire(jeune.chambre, true)}
                 </div>
             `;
     }
@@ -398,13 +385,13 @@ function afficherRapportFinalMecs(): void {
         <!-- 👑 Bulles verticales de fin de tournée -->
         <div style="border-top:1px solid var(--border-color); padding-top:15px; display:flex; flex-direction:column; gap:10px; width:100%;">
             <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">👶 Mineurs</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeEnfant(14)}Mineurs</div>
                 <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
                     Présents : <span style="color:var(--success); font-weight:700;">${mecsSessionEnCours.breakdown.mineurs.presents}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${mecsSessionEnCours.breakdown.mineurs.absents}</span>
                 </div>
             </div>
             <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">🧑 Majeurs</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeAdulte(14)}Majeurs</div>
                 <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
                     Présents : <span style="color:var(--success); font-weight:700;">${mecsSessionEnCours.breakdown.majeurs.presents}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${mecsSessionEnCours.breakdown.majeurs.absents}</span>
                 </div>
@@ -430,16 +417,16 @@ function afficherRapportFinalMecs(): void {
         const cardBorder = estMineur ? "1px solid rgba(255, 59, 48, 0.15)" : "1px solid transparent";
         const borderLeft = estMineur ? "border-left: 5px solid var(--danger);" : "";
         const alertTag = estMineur
-          ? "<span style='font-size:10px; font-weight:800; color:var(--danger); background:rgba(255,59,48,0.1); padding:2px 7px; border-radius:6px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;'>🚨 MINEUR</span>"
+          ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:800; color:var(--danger); background:rgba(255,59,48,0.1); padding:2px 7px; border-radius:6px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;">${iconeEnfant(10)}MINEUR</span>`
           : "";
 
-        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600;`;
+        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:8px; font-weight:600;`;
         row.innerHTML = `
-            <div style="text-align:left;">
-                <span style="color:var(--text-dark);">${ab.prenom} ${ab.nom} ${alertTag}</span><br>
-                <span style="font-size:11px; color:var(--text-gray); font-weight:700;">🚪 ${ab.chambre}</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; text-align:left;">
+                <span style="color:var(--text-dark);">${ab.prenom} ${ab.nom} ${alertTag}</span>
+                <span style="font-size:11px; background:var(--card-color); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700; white-space:nowrap;">${ab.motif}</span>
             </div>
-            <div style="font-size:11px; background:var(--card-color); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700;">${ab.motif}</div>
+            ${construireItineraire(ab.chambre, true)}
         `;
         listHolder.appendChild(row);
       });
@@ -522,13 +509,13 @@ export function voirDernierComptage(): void {
 
         <div style="border-top:1px solid var(--border-color); padding-top:15px; display:flex; flex-direction:column; gap:10px; width:100%;">
             <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">👶 Mineurs</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeEnfant(14)}Mineurs</div>
                 <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
                     Présents : <span style="color:var(--success); font-weight:700;">${dernierLog.breakdown?.mineurs?.presents || 0}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${dernierLog.breakdown?.mineurs?.absents || 0}</span>
                 </div>
             </div>
             <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
-                <div style="font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">🧑 Majeurs</div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeAdulte(14)}Majeurs</div>
                 <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
                     Présents : <span style="color:var(--success); font-weight:700;">${dernierLog.breakdown?.majeurs?.presents || 0}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${dernierLog.breakdown?.majeurs?.absents || 0}</span>
                 </div>
@@ -551,16 +538,16 @@ export function voirDernierComptage(): void {
         const cardBorder = estMineur ? "1px solid rgba(255, 59, 48, 0.15)" : "1px solid transparent";
         const borderLeft = estMineur ? "border-left: 5px solid var(--danger);" : "";
         const alertTag = estMineur
-          ? "<span style='font-size:10px; font-weight:800; color:var(--danger); background:rgba(255,59,48,0.1); padding:2px 7px; border-radius:6px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;'>🚨 MINEUR</span>"
+          ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:800; color:var(--danger); background:rgba(255,59,48,0.1); padding:2px 7px; border-radius:6px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;">${iconeEnfant(10)}MINEUR</span>`
           : "";
 
-        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; justify-content:space-between; align-items:center; font-weight:600;`;
+        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:8px; font-weight:600;`;
         row.innerHTML = `
-                <div style="text-align:left;">
-                    <span style="color:var(--text-dark);">${ab.prenom} ${ab.nom} ${alertTag}</span><br>
-                    <span style="font-size:11px; color:var(--text-gray); font-weight:700;">🚪 ${ab.chambre}</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; text-align:left;">
+                    <span style="color:var(--text-dark);">${ab.prenom} ${ab.nom} ${alertTag}</span>
+                    <span style="font-size:11px; background:var(--card-color); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700; white-space:nowrap;">${ab.motif}</span>
                 </div>
-                <div style="font-size:11px; background:var(--card-color); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700;">${ab.motif}</div>
+                ${construireItineraire(ab.chambre, true)}
             `;
         listHolder.appendChild(row);
       });
