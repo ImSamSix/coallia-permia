@@ -170,6 +170,7 @@ export function toggleResident(jeune: string): void {
 // ==========================================
 export function toggleModePanier(): void {
   modePanier = !modePanier;
+  const avaitDesGeneriquesSelectionnes = Object.keys(panierGeneric).length > 0;
   panierUnique = [];
   panierGeneric = {};
   const btn = document.getElementById("btn-mode-panier");
@@ -183,7 +184,17 @@ export function toggleModePanier(): void {
       document.getElementById("floating-panier")?.classList.add("hidden");
     }
   }
-  renderItems();
+
+  // 👑 Ni les accordéons de catégories ni leurs icônes/chevrons ne changent
+  // en activant/désactivant la sélection groupée : un renderItems() complet
+  // les recréerait tous pour rien, ce qui les fait visuellement clignoter.
+  // On retire juste la sélection visuelle des cartes uniques déjà en place…
+  document.querySelectorAll("#list-dispo .item-card.available.selected-panier").forEach((el) => el.classList.remove("selected-panier"));
+  // …et on ne reconstruit la grille "Petit Matériel" (Illimité ↔ contrôles de
+  // quantité) que si elle avait vraiment quelque chose à réinitialiser —
+  // sinon son contenu est déjà identique et la reconstruire ferait
+  // clignoter ces icônes-là pour rien, à chaque appui.
+  if (avaitDesGeneriquesSelectionnes) renderGenericGrid();
 }
 
 export function toggleModePanierRetour(): void {
@@ -235,7 +246,7 @@ export function updatePanierGeneric(genId: string, delta: number, event: Event):
   panierGeneric[genId] += delta;
   if (panierGeneric[genId] <= 0) delete panierGeneric[genId];
   majBarrePanier();
-  renderItems();
+  renderGenericGrid();
 }
 
 // ==========================================
@@ -246,10 +257,14 @@ export function clicCarteUnique(id: number): void {
   if (!item) return;
   if (item.status === "available") {
     if (modePanier) {
-      if (panierUnique.includes(id)) panierUnique = panierUnique.filter((i) => i !== id);
-      else panierUnique.push(id);
+      const nowSelected = !panierUnique.includes(id);
+      if (nowSelected) panierUnique.push(id);
+      else panierUnique = panierUnique.filter((i) => i !== id);
       majBarrePanier();
-      renderItems();
+      // 👑 Sélectionner/désélectionner une carte ne change que sa propre
+      // bordure : pas besoin de renderItems() (qui recréerait accordéons,
+      // icônes et chevrons pour rien).
+      document.querySelector(`#list-dispo .item-card.available[data-id="${id}"]`)?.classList.toggle("selected-panier", nowSelected);
     } else {
       selectedActionType = "unique";
       selectedItemId = id;
@@ -274,7 +289,7 @@ export function clicCarteGeneric(genId: string): void {
     if (!panierGeneric[genId]) panierGeneric[genId] = 1;
     else delete panierGeneric[genId];
     majBarrePanier();
-    renderItems();
+    renderGenericGrid();
   } else {
     selectedActionType = "generic";
     selectedItemId = genId;
@@ -439,6 +454,53 @@ export function validerAction(): void {
   renderItems();
 }
 
+// 👑 Isolé de renderItems() : la sélection groupée (modePanier) ne change
+// que ce bloc (icône du matériel générique inchangée, seuls "Illimité" ↔
+// les contrôles de quantité varient). Le rendre seul, sans reconstruire les
+// accordéons de catégories, évite que leurs icônes et chevrons ne
+// clignotent à chaque bascule du mode.
+function renderGenericGrid(): void {
+  const genericSection = document.getElementById("generic-materiel-section");
+  if (!genericSection) return;
+  genericSection.innerHTML = "";
+
+  const titreGeneric = document.createElement("h3");
+  titreGeneric.className = "section-title";
+  titreGeneric.innerText = "Petit Matériel (Libre)";
+  genericSection.appendChild(titreGeneric);
+
+  const gridGeneric = document.createElement("div");
+  gridGeneric.className = "items-grid";
+
+  genericCatalog.forEach((gen) => {
+    const qtyInPanier = panierGeneric[gen.id] || 0;
+    const isSel = modePanier && qtyInPanier > 0;
+    const card = document.createElement("div");
+    card.className = `item-card generic ${isSel ? "selected-panier" : ""}`;
+    card.onclick = () => clicCarteGeneric(gen.id);
+
+    let actionHTML = `<p class="status-text" style="color:var(--coallia-blue)">Illimité</p>`;
+    if (isSel) {
+      actionHTML = `
+                <div class="qty-controls">
+                    <button class="qty-btn qty-btn-moins">-</button>
+                    <span>${qtyInPanier}</span>
+                    <button class="qty-btn qty-btn-plus">+</button>
+                </div>
+            `;
+    }
+    card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${genericIcons[gen.id]}${gen.name}</h3></div>${actionHTML}</div>`;
+
+    if (isSel) {
+      card.querySelector(".qty-controls")?.addEventListener("click", (e) => e.stopPropagation());
+      card.querySelector(".qty-btn-moins")?.addEventListener("click", (e) => updatePanierGeneric(gen.id, -1, e));
+      card.querySelector(".qty-btn-plus")?.addEventListener("click", (e) => updatePanierGeneric(gen.id, 1, e));
+    }
+    gridGeneric.appendChild(card);
+  });
+  genericSection.appendChild(gridGeneric);
+}
+
 // ==========================================
 // 7. AFFICHAGE DU MATÉRIEL
 // ==========================================
@@ -473,6 +535,7 @@ export function renderItems(): void {
       const isSel = modePanier && panierUnique.includes(item.id);
       const card = document.createElement("div");
       card.className = `item-card available ${isSel ? "selected-panier" : ""}`;
+      card.dataset.id = String(item.id);
       card.onclick = () => clicCarteUnique(item.id);
       card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${catIcons[catKey]}${item.name}</h3></div><div class="dot-indicator"></div></div>`;
       accContent.appendChild(card);
@@ -482,41 +545,10 @@ export function renderItems(): void {
     zoneDispo.appendChild(accWrapper);
   });
 
-  const titreGeneric = document.createElement("h3");
-  titreGeneric.className = "section-title";
-  titreGeneric.innerText = "Petit Matériel (Libre)";
-  zoneDispo.appendChild(titreGeneric);
-
-  const gridGeneric = document.createElement("div");
-  gridGeneric.className = "items-grid";
-
-  genericCatalog.forEach((gen) => {
-    const qtyInPanier = panierGeneric[gen.id] || 0;
-    const isSel = modePanier && qtyInPanier > 0;
-    const card = document.createElement("div");
-    card.className = `item-card generic ${isSel ? "selected-panier" : ""}`;
-    card.onclick = () => clicCarteGeneric(gen.id);
-
-    let actionHTML = `<p class="status-text" style="color:var(--coallia-blue)">Illimité</p>`;
-    if (isSel) {
-      actionHTML = `
-                <div class="qty-controls">
-                    <button class="qty-btn qty-btn-moins">-</button>
-                    <span>${qtyInPanier}</span>
-                    <button class="qty-btn qty-btn-plus">+</button>
-                </div>
-            `;
-    }
-    card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${genericIcons[gen.id]}${gen.name}</h3></div>${actionHTML}</div>`;
-
-    if (isSel) {
-      card.querySelector(".qty-controls")?.addEventListener("click", (e) => e.stopPropagation());
-      card.querySelector(".qty-btn-moins")?.addEventListener("click", (e) => updatePanierGeneric(gen.id, -1, e));
-      card.querySelector(".qty-btn-plus")?.addEventListener("click", (e) => updatePanierGeneric(gen.id, 1, e));
-    }
-    gridGeneric.appendChild(card);
-  });
-  zoneDispo.appendChild(gridGeneric);
+  const genericSection = document.createElement("div");
+  genericSection.id = "generic-materiel-section";
+  zoneDispo.appendChild(genericSection);
+  renderGenericGrid();
 
   const creerCarteEmprunt = (
     idAction: number | string,
