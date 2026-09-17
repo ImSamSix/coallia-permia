@@ -39,6 +39,14 @@ function iconeChevronAccordion(ouvert: boolean): string {
   return `<svg class="acc-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s ease; transform:rotate(${ouvert ? 180 : 0}deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 }
 
+function iconePanier(): string {
+  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 8H6"></path></svg>`;
+}
+
+function iconeAnnulerSelection(): string {
+  return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+}
+
 export function openMateriel(): void {
   document.getElementById("home-menu")?.classList.add("hidden");
   document.getElementById("main-app")?.classList.remove("hidden");
@@ -168,10 +176,10 @@ export function toggleModePanier(): void {
   if (btn) {
     if (modePanier) {
       btn.classList.add("active");
-      btn.textContent = "❌ Annuler la sélection";
+      btn.innerHTML = `<span style="display:inline-flex; align-items:center; gap:7px;">${iconeAnnulerSelection()}Annuler la sélection</span>`;
     } else {
       btn.classList.remove("active");
-      btn.textContent = "🛒 Mode Emprunt Groupé";
+      btn.innerHTML = `<span style="display:inline-flex; align-items:center; gap:7px;">${iconePanier()}Mode Emprunt Groupé</span>`;
       document.getElementById("floating-panier")?.classList.add("hidden");
     }
   }
@@ -185,7 +193,7 @@ export function toggleModePanierRetour(): void {
   if (btn) {
     if (modePanierRetour) {
       btn.classList.add("active");
-      btn.textContent = "❌ Annuler la sélection";
+      btn.innerHTML = `<span style="display:inline-flex; align-items:center; gap:7px;">${iconeAnnulerSelection()}Annuler la sélection</span>`;
     } else {
       btn.classList.remove("active");
       btn.textContent = "📦 Mode Retour Groupé";
