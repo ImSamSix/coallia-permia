@@ -100,10 +100,12 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
       </span>`;
     btn.disabled = true;
 
-    // Laisse le navigateur peindre l'anneau avant de lancer le rendu (lourd
-    // et synchrone) du PDF : sans cette frame d'attente, le clic reste
-    // visuellement figé jusqu'à la fin de toute la génération.
-    await new Promise((resolve) => requestAnimationFrame(resolve));
+    // Laisse le temps à l'anneau de tourner réellement avant de lancer le
+    // rendu (lourd et synchrone) du PDF, qui bloque le thread principal :
+    // une seule frame (~16ms) suffit à peindre l'icône mais pas à la faire
+    // pivoter (elle reste figée sur toute la durée du blocage qui suit).
+    // Ce court délai garantit une rotation visible avant que ça se fige.
+    await new Promise((resolve) => setTimeout(resolve, 150));
   }
 
   // 1. Récupération des données formatées
