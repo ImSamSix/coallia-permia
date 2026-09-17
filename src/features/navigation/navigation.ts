@@ -29,6 +29,10 @@ export function updateDashboardBadges(): void {
   // l'écran Matériel a déjà été ouvert une fois (ancien système "vu/pas vu",
   // qui masquait la pastille dès que le même retard persistant avait été
   // "acquitté" une seule fois — le signalait comme résolu à tort).
+  // ⚠️ Les prêts "génériques" (par quantité, ex. couvertures) vivent dans
+  // state.genericLoans et non dans state.inventory (réservé aux objets
+  // uniques) — sans ce second passage, un retard sur un emprunt générique
+  // n'était jamais compté ici, alors qu'il l'est bien dans l'onglet Empruntés.
   let retards = 0;
   state.inventory
     .filter((i) => i.status !== "available")
@@ -36,6 +40,10 @@ export function updateDashboardBadges(): void {
       const diffHours = (now.getTime() - new Date(item.time ?? 0).getTime()) / 3600000;
       if (diffHours >= 24) retards++;
     });
+  state.genericLoans.forEach((loan) => {
+    const diffHours = (now.getTime() - new Date(loan.time ?? 0).getTime()) / 3600000;
+    if (diffHours >= 24) retards++;
+  });
 
   const badgeMat = document.getElementById("badge-materiel");
   if (badgeMat) {

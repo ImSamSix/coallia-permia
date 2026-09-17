@@ -31,9 +31,14 @@ select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='h
     background: var(--bg-color);
     /* min-height (pas height) + auto : sur mobile, 100vh inclut la zone
        masquée par la barre d'adresse, ce qui poussait visuellement la carte
-       vers le haut de l'écran réellement visible. */
+       vers le haut de l'écran réellement visible.
+       ⚠️ 100svh (small viewport, PAS dvh) : dvh se recalcule en direct
+       quand la barre d'adresse ou le clavier apparaît/disparaît, ce qui
+       faisait "sauter" toute la carte de connexion à chaque fois. svh
+       correspond à la plus petite hauteur possible et ne bouge jamais
+       une fois la page chargée — plus aucun repositionnement surprise. */
     height: auto;
-    min-height: 100dvh;
+    min-height: 100svh;
     padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 24px) 24px;
     overflow-y: auto;
 }
