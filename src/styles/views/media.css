@@ -112,5 +112,15 @@ body.dark-mode .media-btn-retour { background: rgba(255,149,0,0.16); color: #ffb
     padding: 6px 10px;
     box-sizing: border-box;
     box-shadow: inset 0 1px 3px rgba(10, 22, 44, 0.05);
+    transition: filter 0.3s;
+}
+/* ⚠️ La signature enregistrée (item.signature) est TOUJOURS un tracé sombre
+   sur fond blanc, quel que soit le thème — volontairement, pour rester
+   lisible telle quelle dans le PDF/Excel/impression (cf. media.ts). On
+   n'y touche pas : seul son affichage à l'écran est inversé en mode
+   sombre (fond clair -> foncé, trait sombre -> clair), avec un simple
+   filtre CSS qui ne modifie pas l'image sauvegardée. */
+body.dark-mode .media-signature img {
+    filter: invert(1);
 }
 
