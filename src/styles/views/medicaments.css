@@ -2,6 +2,19 @@
 .med-form-card { background: var(--card-color); padding: 25px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: background 0.3s; overflow-y: auto; }
 .form-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-gray); margin-bottom: 8px; text-align: center; text-transform: uppercase; }
 
+/* Titre d'écran mis en avant : kicker vert (couleur de la tuile du menu
+   principal) au-dessus, titre agrandi — sans emoji ni icône. */
+.med-kicker {
+    display: block;
+    text-align: center;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--success);
+    margin-bottom: 5px;
+}
+
 
 /* ========================================================================== */
 /* ⏱️ HORLOGE TEMPS RÉEL : capsule compacte, chiffres stables                  */
