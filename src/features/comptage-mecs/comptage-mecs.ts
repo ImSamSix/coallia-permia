@@ -441,15 +441,15 @@ function afficherRapportFinalMecs(): void {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--success)")}Total Présents :</span><b style="color:var(--success);">${mecsSessionEnCours.presents}</b></div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; font-size:13px;"><span style="display:inline-flex; align-items:center; gap:7px;">${iconePastille("var(--danger)")}Total Absents :</span><b style="color:var(--danger);">${mecsSessionEnCours.absents}</b></div>
 
-        <!-- 👑 Bulles verticales de fin de tournée -->
+        <!-- 👑 Bulles verticales de fin de tournée : chips pastel nichées dans la carte -->
         <div style="border-top:1px solid var(--border-color); padding-top:15px; display:flex; flex-direction:column; gap:10px; width:100%;">
-            <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
+            <div style="background:var(--input-bg); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
                 <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeEnfant(14)}Mineurs</div>
                 <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
                     Présents : <span style="color:var(--success); font-weight:700;">${mecsSessionEnCours.breakdown.mineurs.presents}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${mecsSessionEnCours.breakdown.mineurs.absents}</span>
                 </div>
             </div>
-            <div style="background:var(--card-color); border:1px solid var(--border-color); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
+            <div style="background:var(--input-bg); padding:12px; border-radius:14px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
                 <div style="display:flex; align-items:center; justify-content:center; gap:6px; font-weight:800; font-size:14px; margin-bottom:4px; color:var(--text-dark);">${iconeAdulte(14)}Majeurs</div>
                 <div style="font-size:12.5px; color:var(--text-gray); font-weight:600;">
                     Présents : <span style="color:var(--success); font-weight:700;">${mecsSessionEnCours.breakdown.majeurs.presents}</span> │ Absents : <span style="color:var(--danger); font-weight:700;">${mecsSessionEnCours.breakdown.majeurs.absents}</span>
@@ -472,18 +472,18 @@ function afficherRapportFinalMecs(): void {
         const row = document.createElement("div");
 
         const estMineur = ab.isMajor === false;
-        const cardBg = estMineur ? "rgba(255, 59, 48, 0.05)" : "var(--input-bg)";
-        const cardBorder = estMineur ? "1px solid rgba(255, 59, 48, 0.15)" : "1px solid transparent";
+        const cardBg = estMineur ? "rgba(255, 59, 48, 0.06)" : "var(--card-color)";
+        const cardBorder = estMineur ? "1px solid rgba(255, 59, 48, 0.18)" : "1px solid var(--border-color)";
         const borderLeft = estMineur ? "border-left: 5px solid var(--danger);" : "";
         const alertTag = estMineur
           ? `<span style="display:inline-flex; align-items:center; gap:4px; font-size:10px; font-weight:800; color:var(--danger); background:rgba(255,59,48,0.1); padding:2px 7px; border-radius:6px; margin-left:8px; vertical-align:middle; letter-spacing:0.5px;">${iconeEnfant(10)}MINEUR</span>`
           : "";
 
-        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:8px; font-weight:600;`;
+        row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:8px; font-weight:600; box-shadow:0 3px 10px rgba(10,22,44,0.045);`;
         row.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; text-align:left;">
                 <span style="color:var(--text-dark);">${ab.prenom} ${ab.nom} ${alertTag}</span>
-                <span style="font-size:11px; background:var(--card-color); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700; white-space:nowrap;">${ab.motif}</span>
+                <span style="font-size:11px; background:var(--input-bg); padding:5px 10px; border-radius:8px; border:1px solid var(--border-color); color:var(--danger); font-weight:700; white-space:nowrap;">${ab.motif}</span>
             </div>
             ${construireItineraire(ab.chambre, true)}
         `;
