@@ -1,21 +1,31 @@
 import "@/styles/main.css";
 import { registerSW } from "virtual:pwa-register";
 
+import { initMonitoring } from "@/services/monitoring";
 import { state } from "@/state/store";
 import { getCleAuth, getCleMaitresse } from "@/services/crypto";
 import { dechiffrerCoffreLocal, purgerDonneesAnciennes, definirCallbackApresSauvegarde } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
-import { fetchVault } from "@/services/permia-relay";
-import { vibrer } from "@/services/feedback";
+import { fetchVault, verifierSanteWorker } from "@/services/permia-relay";
+import { retour } from "@/services/feedback";
 import { initTheme } from "@/features/theme/theme";
 import { openMenu } from "@/features/navigation/navigation";
 import { initialiserAutosave, purgerToutAutosave, signalerActivite, verifierSession } from "@/features/session/session";
 import { startClock } from "@/features/medicaments/medicaments";
 import { rafraichirBadgeAttente } from "@/ui/pending-badge";
 import { initApp } from "@/app-init";
+import { iconeCheckSucces, iconeNuageBarre, iconeServeur } from "@/ui/icons";
+
+// Espacé volontairement (3 min, pas 45s) : marge large sur le quota gratuit
+// Cloudflare (Workers + KV), qu'UptimeRobot sollicite déjà en parallèle.
+const INTERVALLE_VERIF_SANTE_MS = 3 * 60 * 1000;
 
 // 🚧 Bascule manuelle d'intervention : coupe l'app entière sur l'écran de maintenance.
 const MODE_MAINTENANCE = false;
+
+// Avant tout le reste : capte aussi les erreurs qui pourraient survenir
+// pendant l'initialisation elle-même.
+initMonitoring();
 
 initApp();
 definirCallbackApresSauvegarde(rafraichirBadgeAttente);
@@ -136,28 +146,80 @@ window.onload = async () => {
     }
   });
 
-  // Gestion du badge hors-ligne
+  // Gestion du badge hors-ligne / serveur indisponible
   const offlineBadge = document.getElementById("offline-badge");
-  if (!navigator.onLine && offlineBadge) offlineBadge.classList.remove("hidden");
+
+  // 🩺 Deux causes bien distinctes peuvent empêcher l'app de synchroniser :
+  // le téléphone n'a plus de réseau (déjà détecté nativement), ou le réseau
+  // fonctionne mais c'est notre propre Worker qui ne répond plus (invisible
+  // sans vérif dédiée). On réutilise la même pastille pour les deux — pas la
+  // peine d'empiler deux bandeaux pour un seul message "ça ne synchronise
+  // pas en ce moment" — mais on retient LAQUELLE est affichée, pour ne
+  // jamais masquer une vraie panne serveur juste parce que le réseau est
+  // revenu, ni l'inverse.
+  let motifBadgeActuel: "hors-ligne" | "serveur-indisponible" | null = null;
+
+  const afficherHorsLigne = () => {
+    if (!offlineBadge) return;
+    motifBadgeActuel = "hors-ligne";
+    offlineBadge.classList.remove("succes");
+    offlineBadge.classList.add("danger");
+    offlineBadge.innerHTML = `<span class="status-pill-icone">${iconeNuageBarre(13)}</span><span>Mode Hors-ligne</span>`;
+    offlineBadge.classList.remove("hidden");
+  };
+
+  const afficherServeurIndisponible = () => {
+    if (!offlineBadge) return;
+    motifBadgeActuel = "serveur-indisponible";
+    offlineBadge.classList.remove("succes");
+    offlineBadge.classList.add("danger");
+    offlineBadge.innerHTML = `<span class="status-pill-icone">${iconeServeur(13)}</span><span>Serveur indisponible</span>`;
+    offlineBadge.classList.remove("hidden");
+    retour("alerte");
+  };
+
+  const masquerBadgeSiMotif = (motif: "hors-ligne" | "serveur-indisponible") => {
+    if (motifBadgeActuel !== motif) return;
+    offlineBadge?.classList.add("hidden");
+    motifBadgeActuel = null;
+  };
+
+  // 🩺 Vérifie que le Worker répond réellement (pas seulement que le
+  // téléphone a du réseau) : sondage régulier + un test immédiat au démarrage.
+  const verifierSanteEtMettreAJourBadge = async () => {
+    if (!navigator.onLine) return; // le badge "hors-ligne" prend déjà le relais
+    const enForme = await verifierSanteWorker();
+    if (enForme) {
+      masquerBadgeSiMotif("serveur-indisponible");
+    } else if (motifBadgeActuel !== "hors-ligne") {
+      afficherServeurIndisponible();
+    }
+  };
+
+  if (!navigator.onLine) afficherHorsLigne();
+  verifierSanteEtMettreAJourBadge();
+  setInterval(verifierSanteEtMettreAJourBadge, INTERVALLE_VERIF_SANTE_MS);
 
   window.addEventListener("offline", () => {
-    if (offlineBadge) {
-      offlineBadge.style.background = "var(--danger)";
-      offlineBadge.innerHTML = "<span>☁️</span> Mode Hors-ligne";
-      offlineBadge.classList.remove("hidden");
-      vibrer([200, 100, 200]);
-    }
+    afficherHorsLigne();
+    retour("alerte");
     rafraichirBadgeAttente(); // 📡 Réagit tout de suite, pas au prochain sondage (10s)
   });
 
   window.addEventListener("online", () => {
     if (getCleMaitresse()) synchroniserDonnees();
     if (offlineBadge) {
-      offlineBadge.style.background = "var(--success)";
-      offlineBadge.innerHTML = "<span>✅</span> Connexion rétablie ! Synchronisation...";
-      vibrer([50, 50]);
+      offlineBadge.classList.remove("danger");
+      offlineBadge.classList.add("succes");
+      offlineBadge.innerHTML = `<span class="status-pill-icone">${iconeCheckSucces(13)}</span><span>Connexion rétablie ! Synchronisation...</span>`;
+      motifBadgeActuel = null;
+      retour("succes");
       setTimeout(() => {
         offlineBadge.classList.add("hidden");
+        // Le réseau est revenu, mais rien ne garantit que notre serveur
+        // réponde déjà : on vérifie tout de suite plutôt que d'attendre le
+        // prochain sondage.
+        verifierSanteEtMettreAJourBadge();
       }, 3000);
     }
     rafraichirBadgeAttente(); // 📡 Masque immédiatement la file d'attente hors-ligne

@@ -9,6 +9,7 @@ import { ouvrirScanner, basculerTorche } from "./scanner";
 import { genererRecap } from "./recap";
 import { telechargerPDF } from "@/features/pdf/pdf";
 import { catNames, genericCatalog, catIcons, genericIcons } from "./catalog";
+import { iconeAlerte } from "@/ui/icons";
 import type { InventoryCategory } from "@/types/inventory";
 
 export type MaterielTab = "dispo" | "emprunt" | "frigos";
@@ -622,7 +623,7 @@ export function renderItems(): void {
             <div class="card-body">
                 <div class="info">
                     <h3>${name}</h3>
-                    <p class="status-text">${isOverdue ? "RETARD ⚠️ (+24h)" : "En cours de prêt"}</p>
+                    <p class="status-text" style="display:inline-flex; align-items:center; gap:5px;">${isOverdue ? `${iconeAlerte(13)}RETARD (+24h)` : "En cours de prêt"}</p>
                 </div>
                 <div class="dot-indicator"></div>
             </div>

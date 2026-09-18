@@ -1,9 +1,9 @@
 import { getCleAuth } from "@/services/crypto";
 import { envoyerPayload } from "@/services/permia-relay";
 import { fermerModals } from "@/ui/modals";
-import { jouerSon } from "@/ui/sound";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 import { attacherEffetAppui } from "@/ui/press-effect";
+import { iconeAlerte, iconeErreurCercle } from "@/ui/icons";
 
 // --- LOGIQUE PHOTO FRIGOS ---
 export function declencherCamera(): void {
@@ -25,7 +25,7 @@ export function initSignalementCamera(): void {
   input.addEventListener("change", function (e) {
     const target = e.target as HTMLInputElement;
     if (target.files && target.files[0]) {
-      vibrer(50);
+      retour("appui");
 
       const file = target.files[0];
       const reader = new FileReader();
@@ -95,6 +95,15 @@ export function effacerDescSig(): void {
   textarea.focus();
 }
 
+/** Affiche la bulle d'erreur du signalement avec l'icône et le retour d'interaction adaptés (avertissement ou échec réseau). */
+function afficherErreurSig(el: HTMLElement, message: string, icone: "alerte" | "erreur"): void {
+  const svg = icone === "alerte" ? iconeAlerte(16) : iconeErreurCercle(16);
+  el.innerHTML = `${svg}<span>${message}</span>`;
+  el.classList.remove("hidden");
+  retour(icone);
+  setTimeout(() => el.classList.add("hidden"), 3000);
+}
+
 // Envoyer le paquet au serveur
 export async function envoyerSignalement(): Promise<void> {
   const frigoSelect = document.getElementById("sig-frigo-select") as HTMLSelectElement;
@@ -129,10 +138,7 @@ export async function envoyerSignalement(): Promise<void> {
 
   // 3. Affichage de la bulle si erreur
   if (hasError) {
-    errorBubble.innerText = "⚠️ Veuillez remplir tous les champs et joindre une photo.";
-    errorBubble.classList.remove("hidden");
-    vibrer([200]);
-    setTimeout(() => errorBubble.classList.add("hidden"), 3000);
+    afficherErreurSig(errorBubble, "Veuillez remplir tous les champs et joindre une photo.", "alerte");
     return;
   }
 
@@ -171,8 +177,7 @@ export async function envoyerSignalement(): Promise<void> {
       frigoSelect.value = "";
       effacerDescSig();
 
-      vibrer([100, 50, 100]);
-      jouerSon("success");
+      retour("succes");
 
       document.getElementById("sig-success-modal")?.classList.remove("hidden");
 
@@ -180,14 +185,10 @@ export async function envoyerSignalement(): Promise<void> {
         document.getElementById("sig-success-modal")?.classList.add("hidden");
       }, 2500);
     } else {
-      errorBubble.innerText = "❌ Erreur serveur. L'image est peut-être trop lourde.";
-      errorBubble.classList.remove("hidden");
-      setTimeout(() => errorBubble.classList.add("hidden"), 3000);
+      afficherErreurSig(errorBubble, "Erreur serveur. L'image est peut-être trop lourde.", "erreur");
     }
   } catch {
-    errorBubble.innerText = "❌ Connexion perdue. Impossible d'envoyer.";
-    errorBubble.classList.remove("hidden");
-    setTimeout(() => errorBubble.classList.add("hidden"), 3000);
+    afficherErreurSig(errorBubble, "Connexion perdue. Impossible d'envoyer.", "erreur");
   }
 
   btn.innerText = "Envoyer";

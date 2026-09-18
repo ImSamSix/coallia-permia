@@ -1,4 +1,4 @@
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 
 const THEME_STORAGE_KEY = "coallia_theme";
 
@@ -11,8 +11,8 @@ export function toggleThemeAnimated(): void {
   const icon = document.getElementById("theme-icon");
   const text = document.getElementById("theme-text");
 
-  // 1. Petite vibration et animation de disparition (ça tourne et ça rétrécit)
-  vibrer(50);
+  // 1. Petit retour tactile et animation de disparition (ça tourne et ça rétrécit)
+  retour("appui");
   if (icon) icon.style.transform = "rotate(-160deg) scale(0.15)";
 
   // 2. On attend la moitié de l'animation pour changer les couleurs et le texte

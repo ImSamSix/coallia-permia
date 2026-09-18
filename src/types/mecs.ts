@@ -1,3 +1,5 @@
+import type { SyncedRecord } from "./common";
+
 export type ComptageType = "Relevé du matin" | "Relevé du soir";
 
 /** Un jeune du catalogue MECS, tel que compilé côté Worker (voir worker/src/mecs-catalog.ts). */
@@ -34,7 +36,7 @@ export interface MecsBreakdown {
   majeurs: MecsBreakdownSide;
 }
 
-export interface MecsSession {
+export interface MecsSession extends SyncedRecord {
   date: string;
   heureDebut: string;
   timestampDebut: number;
@@ -49,5 +51,4 @@ export interface MecsSession {
   duree?: string;
   pdfBase64?: string;
   nomFichier?: string;
-  synced?: boolean;
 }

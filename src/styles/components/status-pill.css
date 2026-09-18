@@ -1,0 +1,83 @@
+/* ========================================== */
+/* PASTILLE DE STATUT — base commune           */
+/* (hors-ligne / reconnexion / envois en       */
+/* attente) : carte flottante douce + icône    */
+/* SVG dans un badge teinté, plutôt qu'un      */
+/* aplat de couleur plein ou un simple point.  */
+/* ========================================== */
+.status-pill {
+    position: fixed;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card-color);
+    border: 1.5px solid var(--border-color);
+    padding: 6px 16px 6px 6px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-dark);
+    box-shadow: 0 10px 26px rgba(10, 22, 44, 0.16);
+    z-index: 10000;
+    white-space: nowrap;
+    transition: top 0.3s cubic-bezier(0.25, 1, 0.5, 1), bottom 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease, background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.status-pill-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: rgba(0, 85, 164, 0.10);
+    color: var(--coallia-blue);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Variantes de couleur : le badge d'icône se teinte, le texte suit */
+.status-pill.danger { color: var(--danger); }
+.status-pill.danger .status-pill-icone { background: rgba(255, 59, 48, 0.14); color: var(--danger); }
+
+.status-pill.succes { color: var(--success); }
+.status-pill.succes .status-pill-icone { background: rgba(52, 199, 89, 0.14); color: var(--success); }
+
+.status-pill.attente { color: var(--warning); }
+.status-pill.attente .status-pill-icone { background: rgba(255, 149, 0, 0.14); color: var(--warning); animation: pulseAttente 1.8s ease-in-out infinite; }
+/* Au-delà de 20 saisies en attente, l'attente devient anormale */
+.status-pill.attente.alerte { color: var(--danger); }
+.status-pill.attente.alerte .status-pill-icone { background: rgba(255, 59, 48, 0.14); color: var(--danger); }
+
+@keyframes pulseAttente {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.45; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .status-pill.attente .status-pill-icone { animation: none; }
+}
+
+/* Ancrage en haut d'écran (hors-ligne / reconnexion) : se rétracte vers le haut */
+.status-pill-top {
+    top: 12px;
+    transform: translateX(-50%);
+}
+.status-pill-top.hidden {
+    top: -60px;
+    opacity: 0;
+    pointer-events: none;
+    display: flex !important;
+}
+
+/* Ancrage en bas d'écran (envois en attente) : se rétracte vers le bas */
+.status-pill-bottom {
+    bottom: 22px;
+    transform: translateX(-50%);
+}
+.status-pill-bottom.hidden {
+    bottom: -60px;
+    opacity: 0;
+    pointer-events: none;
+    display: flex !important;
+}

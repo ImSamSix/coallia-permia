@@ -8,6 +8,8 @@ export interface Env {
   SUPABASE_ANON_KEY: string;
   /** Clé service_role Supabase (écriture des tables permia_*) — `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`. */
   SUPABASE_SERVICE_ROLE_KEY: string;
+  /** Suivi d'erreurs (Sentry) — non sensible, voir [vars] dans wrangler.toml. */
+  SENTRY_DSN: string;
 }
 
 /**

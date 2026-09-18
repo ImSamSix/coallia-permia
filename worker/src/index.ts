@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/cloudflare";
+import type { ErrorEvent as SentryErrorEvent } from "@sentry/cloudflare";
 import { compilerCatalogueJeunes } from "./mecs-catalog";
 import { sauvegarderEtatOperationnel } from "./supabase-backup";
 import type { CloudSyncRequestBody, Env, EtatOperationnelRequestBody, PermiaRequestBody } from "./types";
@@ -18,7 +20,7 @@ function isEtatOperationnel(body: PermiaRequestBody): body is EtatOperationnelRe
   return body.type === "etat_operationnel";
 }
 
-export default {
+const handler = {
   async fetch(request: Request, env: Env): Promise<Response> {
     // 🔒 1. PARAMÈTRES DE SÉCURITÉ
     const DOMAINE_AUTORISE = "https://coallia-permia.pages.dev";
@@ -31,6 +33,27 @@ export default {
     };
 
     if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+    // 🩺 2bis. SUPERVISION EXTERNE (UptimeRobot, etc.) : endpoint public, sans
+    //    clé API et qui ne consomme pas le compteur anti-brute-force — un
+    //    moniteur externe ne doit jamais pouvoir se faire bloquer lui-même.
+    //    Vérifie que le Worker répond ET que le KV (cœur de la persistance)
+    //    est bien accessible, pas juste que le process tourne.
+    const url = new URL(request.url);
+    if (url.pathname === "/health") {
+      try {
+        await env.PERMIA_DB.get("master_vault");
+        return new Response(JSON.stringify({ status: "ok", service: "relais-permia", horodatage: new Date().toISOString() }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ status: "down", erreur: err instanceof Error ? err.message : String(err) }), {
+          status: 503,
+          headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" }
+        });
+      }
+    }
 
     // 🛡️ 3. LE SECRET VIENT DU COFFRE CLOUDFLARE (jamais dans le code source)
     if (!env.MOT_DE_PASSE_PERMIA) {
@@ -80,7 +103,12 @@ export default {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store, max-age=0" }
         });
-      } catch {
+      } catch (err) {
+        // ⚠️ Ce bloc (comme les autres catch ci-dessous) transforme l'erreur en
+        // réponse HTTP propre plutôt que de la laisser remonter : sans ce
+        // signalement explicite, Sentry.withSentry() — qui ne capte que les
+        // exceptions non interceptées — ne verrait jamais ces pannes.
+        Sentry.captureException(err);
         return new Response("Erreur GET KV", { status: 500, headers: corsHeaders });
       }
     }
@@ -139,6 +167,7 @@ export default {
               headers: { ...corsHeaders, "Content-Type": "application/json" }
             });
           } catch (err) {
+            Sentry.captureException(err);
             return new Response("Erreur miroir Supabase : " + (err instanceof Error ? err.message : String(err)), { status: 500, headers: corsHeaders });
           }
         }
@@ -156,11 +185,13 @@ export default {
 
         if (!paResponse.ok) {
           const paError = await paResponse.text();
+          Sentry.captureMessage("Blocage Power Automate : " + paError, "error");
           return new Response("Blocage Power Automate : " + paError, { status: paResponse.status, headers: corsHeaders });
         }
 
         return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
       } catch (err) {
+        Sentry.captureException(err);
         return new Response("Erreur interne du Worker : " + (err instanceof Error ? err.message : String(err)), { status: 500, headers: corsHeaders });
       }
     }
@@ -168,3 +199,26 @@ export default {
     return new Response("Méthode non autorisée", { status: 405, headers: corsHeaders });
   }
 } satisfies ExportedHandler<Env>;
+
+/** Retire du secret embarqué avant tout envoi à Sentry — un DSN n'est pas un accès en lecture, mais la clé d'API Permia, elle, l'est bien. */
+function retirerDonneesSensibles(event: SentryErrorEvent): SentryErrorEvent {
+  const headers = event.request?.headers;
+  if (headers) {
+    delete headers["X-Permia-Key"];
+    delete headers["x-permia-key"];
+    delete headers["Cookie"];
+    delete headers["cookie"];
+  }
+  return event;
+}
+
+export default Sentry.withSentry(
+  (env: Env) => ({
+    dsn: env.SENTRY_DSN,
+    // Suivi d'erreurs uniquement : pas de traçage de performance.
+    tracesSampleRate: 0,
+    sendDefaultPii: false,
+    beforeSend: retirerDonneesSensibles
+  }),
+  handler
+);

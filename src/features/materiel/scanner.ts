@@ -1,6 +1,5 @@
 import { state } from "@/state/store";
-import { jouerSon } from "@/ui/sound";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 import { clicCarteUnique } from "./materiel";
 
 let html5QrCode: Html5Qrcode | null = null;
@@ -73,7 +72,7 @@ export async function basculerTorche(): Promise<void> {
 
     btn?.classList.toggle("active", torcheActive);
     if (label) label.innerText = torcheActive ? "Éteindre le flash" : "Allumer le flash";
-    vibrer(30);
+    retour("appui");
   } catch (e) {
     console.warn("🔦 Éclairage indisponible :", e);
     torcheActive = false;
@@ -129,17 +128,15 @@ function analyserCodeProprement(texte: string): void {
     }
   }
 
-  // 📳 + 🔊 GESTION DES VIBRATIONS ET DES SONS
+  // 📳 + 🔊 GESTION DU RETOUR D'INTERACTION
   if (idTrouve && state.inventory.find((i) => i.id == idTrouve)) {
-    // ✅ SUCCÈS : Son "Bip" + Double vibration
-    jouerSon("success");
-    vibrer([100, 50, 100]);
+    // ✅ SUCCÈS : objet reconnu dans l'inventaire
+    retour("succes");
 
     setTimeout(() => clicCarteUnique(idTrouve as number), 200);
   } else {
-    // ❌ ERREUR : Son grave + Longue vibration
-    jouerSon("error");
-    vibrer([400]);
+    // ❌ ERREUR : code non reconnu
+    retour("erreur");
 
     // On affiche la belle modale personnalisée au lieu de l'alerte du navigateur
     const errEl = document.getElementById("qr-error-text");

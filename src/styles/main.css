@@ -26,14 +26,14 @@
 @import "./components/filters.css";
 @import "./components/hub-badge.css";
 @import "./components/skeleton.css";
-@import "./components/offline-badge.css";
+@import "./components/status-pill.css";
 @import "./components/error-bubbles.css";
 @import "./components/history-links.css";
 @import "./components/logout-modal.css";
 @import "./components/scanner.css";
 @import "./components/annuaire.css";
-@import "./components/pending-badge.css";
 @import "./components/clear-field-btn.css";
+@import "./components/toast.css";
 
 @import "./views/login.css";
 @import "./views/splash.css";

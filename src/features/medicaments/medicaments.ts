@@ -2,8 +2,9 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { demanderConfirmation } from "@/ui/confirm-modal";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
+import { iconeAlerte, iconeCheckSucces } from "@/ui/icons";
 import type { MedLog } from "@/types/medication";
 
 export function openMedicaments(): void {
@@ -89,9 +90,14 @@ export function validerMedicament(): void {
 
   if (error) {
     const errorBubble = document.getElementById("med-error-bubble");
-    errorBubble?.classList.remove("hidden");
+    if (errorBubble) {
+      errorBubble.classList.remove("bulle-succes");
+      errorBubble.classList.add("bulle-erreur");
+      errorBubble.innerHTML = `${iconeAlerte(16)}<span>Veuillez remplir tous les champs obligatoires</span>`;
+      errorBubble.classList.remove("hidden");
+    }
 
-    vibrer([200]); // Petite vibration d'erreur comme pour les transmissions
+    retour("erreur");
 
     setTimeout(() => errorBubble?.classList.add("hidden"), 3000);
     return;
@@ -132,6 +138,7 @@ export function validerMedicament(): void {
         }
 
         document.getElementById("med-alert-modal")?.classList.remove("hidden");
+        retour("alerte");
         return;
       }
     }
@@ -156,6 +163,7 @@ export function validerMedicament(): void {
   state.medLogs.push(dataToExport);
   sauvegarderToutesLesDonnees();
   synchroniserDonnees();
+  retour("succes");
 
   // --- ✨ RÉINITIALISATION DE L'INTERFACE ---
   (document.getElementById("med-nom-jeune") as HTMLInputElement).value = "";
@@ -222,18 +230,16 @@ function executerPurgeMedicaments(): void {
 
   const errorBubble = document.getElementById("med-error-bubble");
   if (errorBubble) {
-    errorBubble.innerText = "✨ Historique médicaments purgé";
-    errorBubble.style.backgroundColor = "var(--success)";
+    errorBubble.classList.remove("bulle-erreur");
+    errorBubble.classList.add("bulle-succes");
+    errorBubble.innerHTML = `${iconeCheckSucces(16)}<span>Historique médicaments purgé</span>`;
     errorBubble.classList.remove("hidden");
 
-    vibrer([100, 50, 100]);
+    retour("succes");
 
     setTimeout(() => {
       errorBubble.classList.add("hidden");
-      setTimeout(() => {
-        errorBubble.innerText = "⚠️ Veuillez remplir tous les champs obligatoires";
-        errorBubble.style.backgroundColor = "var(--danger)";
-      }, 300);
+      setTimeout(() => errorBubble.classList.remove("bulle-succes"), 300);
     }, 3000);
   }
 

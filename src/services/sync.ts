@@ -12,7 +12,25 @@ import { sauvegarderToutesLesDonnees } from "./storage";
  * marque l'entrée comme "synced". C'est un comportement existant, conservé
  * à l'identique plutôt que corrigé silencieusement.
  */
+
+// 🛡️ GARDE ANTI-DOUBLON : cette fonction est déclenchée depuis une bonne
+// dizaine d'endroits indépendants (retour en ligne, minuteur 60s, retour au
+// premier plan, et juste après chaque nouvelle saisie dans 5 modules
+// différents). Sans ce verrou, deux déclencheurs qui se chevauchent peuvent
+// tous les deux filtrer la MÊME entrée `synced: false` avant que la première
+// requête n'ait eu le temps de la marquer comme envoyée, et donc la
+// transmettre deux fois au registre institutionnel (médicament, présence…).
+let synchronisationEnCours = false;
+let resynchronisationDemandee = false;
+
 export async function synchroniserDonnees(): Promise<void> {
+  if (synchronisationEnCours) {
+    // Une synchro tourne déjà : on redemande un passage juste après plutôt
+    // que de risquer un envoi en double en la relançant par-dessus.
+    resynchronisationDemandee = true;
+    return;
+  }
+
   // 🛡️ GARDE : si le coffre est verrouillé, on n'envoie RIEN au serveur
   const cleSync = getCleMaitresse();
   if (!cleSync) {
@@ -22,6 +40,19 @@ export async function synchroniserDonnees(): Promise<void> {
   const cleAuth = getCleAuth();
   if (!cleAuth) return;
 
+  synchronisationEnCours = true;
+  try {
+    await executerSynchronisation(cleAuth);
+  } finally {
+    synchronisationEnCours = false;
+    if (resynchronisationDemandee) {
+      resynchronisationDemandee = false;
+      void synchroniserDonnees();
+    }
+  }
+}
+
+async function executerSynchronisation(cleAuth: string): Promise<void> {
   let changementEffectue = false;
 
   // 1. Envoi Médicaments

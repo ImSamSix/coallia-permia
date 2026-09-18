@@ -1,8 +1,8 @@
 import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { fermerModals } from "@/ui/modals";
-import { jouerSon } from "@/ui/sound";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
+import { afficherToast } from "@/ui/toast";
 import type { AnnuaireRole } from "@/types/annuaire";
 
 export function ouvrirAnnuaire(): void {
@@ -24,7 +24,7 @@ export function startContactTimer(role: AnnuaireRole): void {
   isContactLongPress = false;
   contactTimer = setTimeout(() => {
     isContactLongPress = true; // Empêche l'appel classique de se lancer
-    vibrer([50, 50, 50]);
+    retour("succes");
     ouvrirEditContact(role);
   }, 5000); // 5 secondes
 }
@@ -38,7 +38,7 @@ export function appelerContact(role: AnnuaireRole): void {
 
   const numero = state.annuaireData[role];
   if (!numero || numero.trim() === "") {
-    alert("⚠️ Aucun numéro n'est enregistré pour ce contact. Restez appuyé 5s pour l'ajouter.");
+    afficherToast("Aucun numéro n'est enregistré pour ce contact. Restez appuyé 5s pour l'ajouter.", "erreur");
     return;
   }
   // Lance l'appel téléphonique nativement
@@ -76,8 +76,7 @@ export function validerEditContact(): void {
   document.getElementById("edit-contact-modal")?.classList.add("hidden");
   document.getElementById("annuaire-modal")?.classList.remove("hidden");
 
-  vibrer([100, 50, 100]);
-  jouerSon("success");
+  retour("succes");
 }
 
 function fermerAnnuaire(): void {

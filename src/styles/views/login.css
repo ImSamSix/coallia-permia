@@ -95,22 +95,6 @@ select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='h
     text-align: center;
 }
 
-.auth-erreur {
-    background: rgba(255, 59, 48, 0.10);
-    border: 1.5px solid var(--danger);
-    color: #c0392b;
-    padding: 13px;
-    border-radius: 14px;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 18px;
-    text-align: center;
-    line-height: 1.35;
-}
-body.dark-mode .auth-erreur {
-    color: #ff8a80;
-}
-
 /* MENTION LÉGALE LOGIN */
 .auth-pied {
     background: transparent;

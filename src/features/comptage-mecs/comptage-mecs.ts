@@ -2,8 +2,7 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { securiserTexte } from "@/ui/dom-utils";
-import { jouerSon } from "@/ui/sound";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 import { fermerModals } from "@/ui/modals";
 import { openMenu } from "@/features/navigation/navigation";
 import { telechargerPDF } from "@/features/pdf/pdf";
@@ -179,8 +178,7 @@ export function lancerComptageMecs(): void {
     typeSelect.classList.add("input-error"); // Applique le halo rouge natif de style.css
 
     errorBubble?.classList.remove("hidden");
-    vibrer(35);
-    jouerSon("error"); // Bip sonore d'erreur
+    retour("erreur");
 
     // Restauration automatique de l'interface après 3 secondes
     setTimeout(() => {
@@ -207,7 +205,12 @@ export function lancerComptageMecs(): void {
       mineurs: { presents: 0, absents: 0 },
       majeurs: { presents: 0, absents: 0 }
     },
-    listeAbsents: []
+    listeAbsents: [],
+    // 🛡️ Sans ce champ explicite, la session reste `synced: undefined` :
+    // le badge "en attente" ne la compte jamais (=== false uniquement) et
+    // purgerDonneesAnciennes() ne la protège plus contre la purge à 4 jours
+    // si elle n'a toujours pas atteint le registre institutionnel.
+    synced: false
   };
 
   mecsIndexActuel = 0;
@@ -384,7 +387,7 @@ export function annulerDerniereCarteMecs(): void {
     mecsSessionEnCours.listeAbsents.pop();
   }
 
-  vibrer(40);
+  retour("annulation");
   majDashboardComptage();
   genererCarteJeuneMecs();
 }
@@ -420,7 +423,7 @@ function enregistrerPresenceMecs(isPresent: boolean): void {
     else mecsSessionEnCours.breakdown.mineurs.presents++;
 
     historiqueMecs.push(true);
-    vibrer(30);
+    retour("appui");
 
     mecsIndexActuel++;
     majDashboardComptage();
@@ -464,7 +467,7 @@ export function validerMotifAbsenceMecs(motif: string): void {
   });
 
   historiqueMecs.push(false);
-  vibrer([60, 40]);
+  retour("appui");
 
   document.getElementById("comptage-absence-modal")?.classList.add("hidden");
 
@@ -562,8 +565,7 @@ export function cloreComptageMecs(): void {
   // 👑 RETOUR IMMÉDIAT : la génération du PDF (d'autant plus longue qu'il y a
   // de jeunes signalés absents) et la sauvegarde continuent en tâche de fond
   // — le professionnel n'a pas à attendre pour retrouver la main.
-  jouerSon("success");
-  vibrer([50, 50]);
+  retour("succes");
   retourSaisieComptage();
 
   // ⚠️ Le retour à l'accueil déclenche l'animation d'entrée du menu (fondu
@@ -608,8 +610,7 @@ async function finaliserComptageEnArrierePlan(session: MecsSession): Promise<voi
 // --- EXTRACTION ET VISUALISATION DU DERNIER APPEL (PRISE DE SERVICE) ---
 export function voirDernierComptage(): void {
   if (!state.mecsComptageLogs || state.mecsComptageLogs.length === 0) {
-    vibrer(100); // Micro-vibration de signalement
-    jouerSon("error"); // Bip d'avertissement sonore
+    retour("alerte");
 
     document.getElementById("comptage-empty-modal")?.classList.remove("hidden");
     return;
@@ -702,8 +703,7 @@ export function verifierAnnulationComptage(): void {
   if (workspaceHidden) {
     retourSaisieComptage();
   } else {
-    vibrer(150);
-    jouerSon("error");
+    retour("alerte");
     document.getElementById("comptage-cancel-modal")?.classList.remove("hidden");
   }
 }
@@ -768,8 +768,7 @@ export function validerAbsenceAutreMecs(): void {
     input?.classList.add("input-error"); // Ajoute le halo rouge natif de style.css
     errorBubble?.classList.remove("hidden");
 
-    vibrer(200); // Vibreur haptique standard de 200ms
-    jouerSon("error"); // Bruit d'avertissement sonore
+    retour("erreur");
 
     // Nettoyage automatique au bout de 3 secondes pour préserver la lisibilité
     setTimeout(() => {

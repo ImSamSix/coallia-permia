@@ -1,11 +1,11 @@
 import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
-import { jouerSon } from "@/ui/sound";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 import { fermerModals } from "@/ui/modals";
 import { demanderConfirmation } from "@/ui/confirm-modal";
 import { attacherEffetAppui } from "@/ui/press-effect";
+import { iconeCheckSucces } from "@/ui/icons";
 import type { CadenasState, ContenuState, FrigoEvalTemp, FrigoLog, HygieneState } from "@/types/frigo";
 
 /** Lien "Consulter l'historique des frigos" (SharePoint) — URL encodée en base64 dans l'ancien code, conservée à l'identique. */
@@ -211,7 +211,7 @@ export function ajouterResidentFrigo(): void {
 
   sauvegarderToutesLesDonnees();
   renderListeJeunesFrigo();
-  vibrer(50);
+  retour("succes");
 
   input.value = "";
   input.style.height = "54px";
@@ -286,13 +286,12 @@ export function validerEvalFrigo(): void {
     hasError = true;
   }
 
-  // 3. Afficher l'alerte, vibrer et bloquer l'envoi
+  // 3. Afficher l'alerte, déclencher le retour d'erreur et bloquer l'envoi
   if (hasError) {
     const errorBubble = document.getElementById("frigo-error-bubble");
     errorBubble?.classList.remove("hidden");
 
-    vibrer(200); // Bzzzt d'erreur
-    jouerSon("error"); // Bruit d'erreur
+    retour("erreur");
 
     setTimeout(() => {
       errorBubble?.classList.add("hidden");
@@ -347,7 +346,7 @@ export function validerEvalFrigo(): void {
   renderFrigos();
   fermerModals();
 
-  vibrer([50, 50]);
+  retour("succes");
 }
 
 function setErreurContainer(id: string): void {
@@ -413,22 +412,22 @@ function executerPurgeFrigos(): void {
   renderFrigos(); // Recharge l'affichage instantanément
 
   // Effets visuels et sonores de succès
-  vibrer([100, 50, 100]);
-  jouerSon("success");
+  retour("succes");
 
-  // Animation de la bulle pour confirmer
+  // Animation de la bulle pour confirmer : on capture le vrai balisage
+  // d'origine (icône + titre) plutôt qu'un texte figé, pour ne pas le perdre
+  // définitivement après le premier passage.
   const badge = document.getElementById("badge-etat-frigos");
   if (badge) {
-    const originalText = "📊 État actuel des frigos";
-    badge.innerText = "✨ Évaluations purgées !";
-    badge.style.background = "var(--success)";
-    badge.style.color = "white";
+    const contenuOriginal = badge.innerHTML;
+    badge.innerHTML = `
+      <div style="width: 56px; height: 56px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; background: rgba(52, 199, 89, 0.14); border-radius: 18px; color: var(--success);">${iconeCheckSucces(26)}</div>
+      <h2 class="section-title" style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; color: var(--success);">Évaluations purgées !</h2>
+    `;
 
     // Retour à la normale après 3 secondes
     setTimeout(() => {
-      badge.innerText = originalText;
-      badge.style.background = "var(--card-color)";
-      badge.style.color = "var(--text-dark)";
+      badge.innerHTML = contenuOriginal;
     }, 3000);
   }
 

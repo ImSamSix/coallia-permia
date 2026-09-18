@@ -3,8 +3,7 @@ import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { securiserTexte } from "@/ui/dom-utils";
 import { fermerModals } from "@/ui/modals";
-import { jouerSon } from "@/ui/sound";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 import { attacherEffetAppui } from "@/ui/press-effect";
 import { openMenu } from "@/features/navigation/navigation";
 import type { MediaKey, MediaLog } from "@/types/media";
@@ -204,8 +203,7 @@ export function validerPretMedia(): void {
     if (isCanvasBlank()) sigContainer?.classList.add("input-error"); // 👑 Allume la signature en rouge
 
     errorBubble?.classList.remove("hidden");
-    vibrer(200);
-    jouerSon("error");
+    retour("erreur");
     return;
   }
 
@@ -262,8 +260,7 @@ export function validerPretMedia(): void {
   fermerModals();
   renderMediaItems();
 
-  vibrer([50, 50]);
-  jouerSon("success");
+  retour("succes");
 }
 
 export function validerRetourMedia(key: MediaKey): void {
@@ -303,8 +300,7 @@ export function validerRetourMedia(key: MediaKey): void {
 
   renderMediaItems();
 
-  vibrer([50, 50]);
-  jouerSon("success");
+  retour("succes");
 }
 
 /** Câble l'écran Prêts Multimédia et sa modale de signature. */

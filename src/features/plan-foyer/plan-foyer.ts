@@ -13,7 +13,7 @@
 
 import { state } from "@/state/store";
 import { securiserTexte as echapper } from "@/ui/dom-utils";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
 
 let batPlan = "Capitainerie";
@@ -155,7 +155,7 @@ export function basculerApt(apt: string): void {
     carte.classList.add("ouvert");
     const corps = detail.querySelector(".plan-apt-detail-corps") as HTMLElement;
     detail.style.height = corps.offsetHeight + "px";
-    vibrer(20);
+    retour("appui");
     // On attend la fin de l'animation d'ouverture pour mesurer la position
     // définitive de la carte, puis on ne remonte l'écran que si elle dépasse.
     detail.addEventListener("transitionend", () => assurerVisibiliteCarte(carte), { once: true });

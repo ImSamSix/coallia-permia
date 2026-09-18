@@ -54,3 +54,18 @@ export function pushEtatOperationnel(cleAuth: string, payload: Omit<EtatOperatio
 export function envoyerPayload(cleAuth: string, payload: PowerAutomatePayload): Promise<Response> {
   return fetch(URL_RELAIS, { method: "POST", headers: headersJson(cleAuth), body: JSON.stringify(payload) });
 }
+
+/**
+ * Vérification de santé du Worker : endpoint public, sans clé (même principe
+ * que côté UptimeRobot). Sert à distinguer "le téléphone n'a plus de réseau"
+ * (déjà couvert par les événements offline/online) de "le réseau fonctionne
+ * mais notre propre serveur ne répond plus" — invisible sans cette vérif.
+ */
+export async function verifierSanteWorker(): Promise<boolean> {
+  try {
+    const reponse = await fetch(`${URL_RELAIS}/health`, { method: "GET", cache: "no-store" });
+    return reponse.ok;
+  } catch {
+    return false;
+  }
+}

@@ -1,12 +1,11 @@
 import { state } from "@/state/store";
 import { getCleMaitresse } from "@/services/crypto";
-import { getFeedbackMode, setFeedbackMode, vibrer, type FeedbackMode } from "@/services/feedback";
+import { getFeedbackMode, setFeedbackMode, retour, type FeedbackMode } from "@/services/feedback";
 import { ouvrirLogout } from "@/features/session/session";
 import { ouvrirPainModal } from "@/features/pain/pain";
 import { ouvrirAnnuaire } from "@/features/annuaire/annuaire";
 import { toggleThemeAnimated } from "@/features/theme/theme";
 import { clicEasterEggAccueil } from "@/ui/easter-egg";
-import { jouerSon } from "@/ui/sound";
 import { attacherEffetAppui } from "@/ui/press-effect";
 
 /**
@@ -158,10 +157,9 @@ export function initFeedbackModeUI(): void {
 function choisirFeedbackMode(mode: FeedbackMode): void {
   setFeedbackMode(mode);
   initFeedbackModeUI();
-  // Chacune de ces deux fonctions s'auto-filtre sur le mode qu'on vient de
-  // définir : une seule des deux produira effectivement quelque chose.
-  jouerSon("success");
-  vibrer(40);
+  // Démonstration immédiate avec le retour "succès" standard de l'app : la
+  // personne ressent exactement ce qu'elle retrouvera partout ailleurs.
+  retour("succes");
 }
 
 /** 🔍 ÉCRAN 404 — page ou vue introuvable. */

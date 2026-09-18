@@ -1,6 +1,5 @@
 import { state } from "@/state/store";
-import { jouerSon } from "@/ui/sound";
-import { vibrer } from "@/services/feedback";
+import { retour } from "@/services/feedback";
 
 export type RapportType = "materiel" | "comptage";
 
@@ -338,8 +337,7 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
         </span>`;
       btn.style.backgroundColor = "var(--success)";
     }
-    vibrer([100, 50, 100]);
-    jouerSon("success");
+    retour("succes");
 
     setTimeout(() => {
       if (btn) {

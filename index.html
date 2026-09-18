@@ -9,7 +9,7 @@
     <meta name="author" content="Sami Charles Hassen Harigua - Créateur de Permia">
     <meta name="copyright" content="© 2026 Permia - Propriété intellectuelle de Sami Charles Hassen Harigua">
     <meta name="robots" content="noindex, nofollow">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://relais-permia.imsamsix.workers.dev; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://relais-permia.imsamsix.workers.dev https://o4512080131784704.ingest.de.sentry.io; script-src 'self' https://cdnjs.cloudflare.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none';">
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
@@ -26,12 +26,13 @@
 </head>
 <body>
 
-<div id="offline-badge" class="offline-badge hidden" role="status" aria-live="polite">
-    <span>☁️</span>  Hors-ligne
+<div id="offline-badge" class="status-pill status-pill-top hidden" role="status" aria-live="polite">
+    <span class="status-pill-icone" id="offline-badge-icone"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6"></path><path d="M5.06 8.06A6.5 6.5 0 0 0 7 21h11a4.5 4.5 0 0 0 1.28-.18"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg></span>
+    <span id="offline-badge-texte">Hors-ligne</span>
 </div>
 
-<div id="pending-badge" class="pending-badge hidden" role="status" aria-live="polite">
-    <span class="pending-point"></span>
+<div id="pending-badge" class="status-pill status-pill-bottom attente hidden" role="status" aria-live="polite">
+    <span class="status-pill-icone" id="pending-badge-icone"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.24"></path><path d="M12 12v9"></path><path d="m16 16-4-4-4 4"></path></svg></span>
     <span id="pending-texte">0 en attente</span>
 </div>
 
@@ -142,7 +143,7 @@
     <div class="cgu-hero">
         <div class="cgu-hero-top">
             <span class="cgu-kicker">Document contractuel</span>
-            <span class="cgu-badge">v5.0</span>
+            <span class="cgu-badge">v6.0</span>
         </div>
         <h1>Conditions générales d'utilisation</h1>
         <p class="cgu-hero-sub">Charte de responsabilité institutionnelle de l'application Permia</p>
@@ -150,12 +151,12 @@
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1m4 0h1M9 13h1m4 0h1M9 17h1m4 0h1"></path></svg>
             <span>Coallia Guillaudot</span>
             <span class="cgu-point">·</span>
-            <span>Mise à jour du 14/08/2026</span>
+            <span>Mise à jour du 18/09/2026</span>
         </div>
     </div>
 
     <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 1 : Objet, Périmètre et Force Probante</h3>
-    <p style="margin-top: 0; margin-bottom: 20px;">Permia est la solution numérique exclusive de gestion de permanence mise à la disposition des professionnels habilités de Coallia. Elle dématérialise et centralise le registre des médicaments, l'inventaire matériel, les transmissions professionnelles, le suivi des prêts multimédias (ordinateurs, manettes), le contrôle de présence réglementaire des résidents (MECS), l'évaluation sanitaire des réfrigérateurs ainsi que l'état des stocks d'urgence (pain). Toutes les saisies horodatées, signatures numériques collectées et rapports de contrôle générés dans l'application font foi, constituent des documents institutionnels opposables. Elles engagent la responsabilité professionnelle de l'agent identifié comme leur auteur déclaré, sous réserve du caractère déclaratif de l'identification décrit à l'article 2.</p>
+    <p style="margin-top: 0; margin-bottom: 20px;">Permia est la solution numérique exclusive de gestion de permanence mise à la disposition des professionnels habilités de Coallia. Elle dématérialise et centralise le registre des médicaments, l'inventaire matériel (prêts et retours, évaluation sanitaire des réfrigérateurs avec signalement photographique en cas d'anomalie), le suivi des prêts multimédias (ordinateurs, manettes, télécommandes), le contrôle de présence réglementaire des résidents (MECS) avec génération de rapports PDF, ainsi que l'état des stocks d'urgence (pain). Elle met également à disposition, comme outils de référence rapide, l'annuaire d'urgence de la structure et le plan de répartition du foyer par bâtiment. Toutes les saisies horodatées, signatures numériques collectées et rapports de contrôle générés dans l'application font foi, constituent des documents institutionnels opposables. Elles engagent la responsabilité professionnelle de l'agent identifié comme leur auteur déclaré, sous réserve du caractère déclaratif de l'identification décrit à l'article 2.</p>
 
     <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 2 : Accès, Confidentialité et Secret Professionnel Strict</h3>
     <p style="margin-top: 0; margin-bottom: 20px;">L'accès à Permia s'effectue au moyen d'un code de service mutualisé, sur l'appareil de permanence mis à disposition par la structure. Ce code est confidentiel et incessible : il ne doit être communiqué à aucune personne extérieure au service. L'identification du professionnel est <b>déclarative</b> : chaque utilisateur s'engage à renseigner son propre prénom à la connexion et demeure responsable de l'exactitude des saisies effectuées durant son créneau de permanence. Conformément aux dispositions du Code pénal relatives au <b>secret professionnel</b>, l'utilisateur a l'obligation absolue de ne divulguer, copier ou exporter aucune donnée nominative, médicale, comportementale ou relative à la localisation des jeunes (chambres, bâtiments) en dehors du strict cadre opérationnel de la continuité de service de la structure.</p>
@@ -170,13 +171,13 @@
     <br>• Aux <b>contrôles des frigos et signalements photos</b>, qui doivent refléter fidèlement l'état de salubrité constaté. Toute omission volontaire, falsification ou déclaration abusive constitue une faute professionnelle grave.</p>
 
     <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 5 : Protection des Données (RGPD), Signatures et Chiffrement de Bout en Bout</h3>
-    <p style="margin-top: 0; margin-bottom: 20px;">Conformément au Règlement Général sur la Protection des Données (RGPD), l'application applique un chiffrement AES-256 des données d'activité, dont la clé est dérivée du code de service par une fonction lente (PBKDF2) et n'existe que sur l'appareil. Les journaux sauvegardés sur le serveur de synchronisation y sont stockés sous forme chiffrée et illisible par l'hébergeur. Le code de service ne transite jamais en clair sur le réseau. Les signatures numériques de prêt et les photographies de signalement technique sont acheminées via un canal sécurisé vers l'environnement Microsoft 365 de la structure (Power Automate / Excel), le relais technique étant assuré par Cloudflare (Union européenne). Dans une démarche de minimisation (Privacy by Design), <b>l'ensemble des journaux d'activité conservés sur l'appareil (transmissions, médication, contrôles sanitaires, prêts, relevés de présence) est purgé automatiquement au-delà de 96 heures</b>, la conservation de long terme étant assurée par les registres institutionnels de la structure.</p>
+    <p style="margin-top: 0; margin-bottom: 20px;">Conformément au Règlement Général sur la Protection des Données (RGPD), l'application applique un chiffrement AES-256 des données d'activité, dont la clé est dérivée du code de service par une fonction lente (PBKDF2) et n'existe que sur l'appareil. Les journaux sauvegardés sur le serveur de synchronisation y sont stockés sous forme chiffrée et illisible par l'hébergeur. Le code de service ne transite jamais en clair sur le réseau. Les signatures numériques de prêt et les photographies de signalement technique sont acheminées via un canal sécurisé (HTTPS, clé d'accès dédiée) vers l'environnement Microsoft 365 de la structure (Power Automate / Excel), le relais technique étant assuré par l'infrastructure Cloudflare. Un service tiers de supervision technique (Sentry, hébergé dans l'Union européenne) reçoit uniquement des messages d'erreur applicative et des traces d'exécution en cas d'incident, à l'exclusion de toute donnée nominative, médicale ou comportementale concernant les résidents. Dans une démarche de minimisation (Privacy by Design), <b>l'ensemble des journaux d'activité conservés sur l'appareil (médication, contrôles sanitaires, prêts, relevés de présence) est purgé automatiquement au-delà de 96 heures</b>, la conservation de long terme étant assurée par les registres institutionnels de la structure.</p>
     
     <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 6 : Droits des Personnes Concernées et Responsable de Traitement</h3>
     <p style="margin-top: 0; margin-bottom: 20px;">Le responsable de traitement au sens du RGPD est <b>l'établissement Coallia</b>, qui définit seul les finalités et les moyens du traitement. Permia constitue un outil technique mis à sa disposition. Les traitements réalisés ont pour finalité la continuité de l'accompagnement socio-éducatif, la traçabilité réglementaire de la médication et la sécurité des personnes hébergées ; ils reposent sur l'exécution des missions d'intérêt public confiées à la structure. Les personnes concernées, ou leurs représentants légaux, disposent d'un droit d'accès, de rectification, de limitation et d'opposition sur les données les concernant. Ces demandes doivent être adressées à la direction de l'établissement ou à son délégué à la protection des données, selon les modalités affichées au sein de la structure.</p>
 
     <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 7 : Continuité des Flux, Tâches de Fond et Responsabilité Technique</h3>
-    <p style="margin-top: 0; margin-bottom: 20px;">Le concepteur met en œuvre les moyens techniques nécessaires pour assurer la mise en file d'attente locale et la synchronisation automatique en tâche de fond des logs historiques vers les tableaux de suivi d'entreprise. Cependant, en cas d'indisponibilité du réseau ou de blocage technique des services tiers (Microsoft Power Automate, Cloudflare Workers), le professionnel doit veiller au maintien des cahiers de rapport alternatifs de la structure pour pallier toute rupture de traçabilité. Le concepteur décline toute responsabilité quant aux conséquences d'une panne réseau empêchant la mise à jour immédiate des registres de suivi distants.</p>
+    <p style="margin-top: 0; margin-bottom: 20px;">L'application est conçue pour fonctionner intégralement hors connexion : chaque saisie est immédiatement chiffrée et conservée sur l'appareil, puis mise en file d'attente et synchronisée automatiquement dès le retour du réseau, sans perte ni double envoi. La disponibilité du serveur de relais fait l'objet d'une supervision technique continue (surveillance externe indépendante et détection automatique d'anomalies applicatives), permettant un signalement rapide de toute panne au concepteur. Cependant, en cas d'indisponibilité prolongée du réseau ou de blocage technique des services tiers (Microsoft Power Automate, Cloudflare), le professionnel doit veiller au maintien des cahiers de rapport alternatifs de la structure pour pallier toute rupture de traçabilité. Le concepteur décline toute responsabilité quant aux conséquences d'une panne réseau ou d'un service tiers empêchant la mise à jour immédiate des registres de suivi distants.</p>
 
     <h3 style="color: var(--coallia-blue); margin-bottom: 8px; font-size: 16px;">Article 8 : Propriété Intellectuelle Exclusive</h3>
     <p style="margin-top: 0; margin-bottom: 20px;">L'architecture système, la charte graphique et ergonomique (UI/UX), le code source d'infrastructure (moteurs cinématiques, algorithmes de chiffrement, scripts de routage) ainsi que le nom de domaine de l'application "Permia" sont la <b>propriété intellectuelle exclusive de leur concepteur, Sami Charles Hassen Harigua</b>. L'utilisation par l'établissement est concédée à titre de mise à disposition fonctionnelle strictement limitée à l'exercice de ses missions d'accompagnement social. Toute reproduction, ingénierie inverse, extraction de base de données ou revente du code est formellement interdite sous peine de poursuites.</p>
@@ -195,7 +196,7 @@
             <h1 class="auth-titre">Espace Permanence</h1>
             <p class="auth-sous">Identifiez-vous pour ouvrir votre session</p>
 
-            <div id="error-bubble" class="auth-erreur hidden" role="alert" aria-live="assertive">⚠️ Veuillez remplir tous les champs</div>
+            <div id="error-bubble" class="bulle-erreur hidden" role="alert" aria-live="assertive"></div>
 
             <label for="prenom-pro" class="champ-label">Prénom</label>
             <div class="champ-auth">
@@ -462,7 +463,7 @@
             </div>
             
             <div class="med-form-card">
-                <div id="med-error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Veuillez remplir tous les champs obligatoires</div>
+                <div id="med-error-bubble" class="bulle-erreur hidden" role="alert" aria-live="assertive"></div>
                 
                 <label class="form-label">Identité du jeune *</label>
                 <input type="text" id="med-nom-jeune" placeholder="Prénom et Nom" autocomplete="off" style="text-align: center;">
@@ -535,7 +536,7 @@
             <h3 class="cpt-titre">Nouveau relevé</h3>
             <p class="cpt-sous">Tournée de présence réglementaire</p>
 
-            <div id="comptage-error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 11px 15px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 16px; text-align: center;">⚠️ Veuillez sélectionner un type de relevé</div>
+            <div id="comptage-error-bubble" class="bulle-erreur hidden" role="alert" aria-live="assertive"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span>Veuillez sélectionner un type de relevé</span></div>
 
             <label class="form-label cpt-label">Type de relevé *</label>
             <select id="comptage-type-select" class="cpt-select">
@@ -831,13 +832,15 @@
 
 <div id="qr-error-modal" class="modal-overlay hidden">
         <div class="modal-card" style="padding: 40px 20px;">
-            <div style="font-size: 50px; margin-bottom: 10px;">❌</div>
+            <div class="modal-icon-badge alerte">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            </div>
             <h3 style="color: var(--danger); margin-bottom: 15px;">QR Code inconnu</h3>
             <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">
                 Cet équipement n'est pas reconnu dans l'inventaire de la permanence.<br><br>
                 <span style="font-size: 13px; color: var(--text-gray);">Code lu : <b id="qr-error-text"></b></span>
             </p>
-            <button class="btn-secondary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer;" data-close-modal>J'ai compris</button>
+            <button class="btn-primary" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 16px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer;" data-close-modal>J'ai compris</button>
         </div>
     </div>
 
@@ -853,7 +856,9 @@
 </div> 
         <div id="recap-empty-modal" class="modal-overlay hidden">
         <div class="modal-card" style="padding: 40px 20px;">
-            <div style="margin-bottom: 10px; display: flex; justify-content: center;"><svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></div>
+            <div class="modal-icon-badge succes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+            </div>
             <h3 style="color: var(--success); margin-bottom: 15px;">Tout est en ordre</h3>
             <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">
                 Bonne nouvelle : Aucun matériel n'est actuellement emprunté.<br><br>
@@ -876,7 +881,9 @@
 
 <div id="trans-recap-empty-modal" class="modal-overlay hidden">
         <div class="modal-card" style="padding: 40px 20px;">
-            <div style="font-size: 50px; margin-bottom: 10px;">📭</div>
+            <div class="modal-icon-badge info">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
+            </div>
             <h3 style="color: var(--coallia-blue); margin-bottom: 15px;">R.A.S</h3>
             <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">
                Aucune transmission n'a été rédigée pour le moment sur ce cycle.<br><br>
@@ -891,7 +898,7 @@
         <h3 id="eval-frigo-title" style="color: var(--coallia-blue); margin-bottom: 5px;">Évaluer le Frigo</h3>
         <p class="modal-subtitle" style="margin-bottom: 20px;">Relevé rapide de l'état</p>
 
-        <div id="frigo-error-bubble" class="hidden" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Veuillez évaluer les 3 critères obligatoires</div>
+        <div id="frigo-error-bubble" class="bulle-erreur hidden"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span>Veuillez évaluer les 3 critères obligatoires</span></div>
 
         <label class="form-label" style="text-align: center;">État du cadenas *</label>
         <div id="cad-container" style="display: flex; gap: 8px; margin-bottom: 15px; padding: 4px; border-radius: 14px; border: 1px solid transparent; transition: 0.3s;">
@@ -950,7 +957,7 @@
         <h3 style="color: var(--danger); margin-bottom: 5px;">Signaler un problème</h3>
         <p class="modal-subtitle" style="margin-bottom: 20px;">Joindre une preuve visuelle</p>
         
-        <div id="sig-error-bubble" class="hidden" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Veuillez remplir tous les champs</div>
+        <div id="sig-error-bubble" class="bulle-erreur hidden"></div>
 
         <label class="form-label">Preuve visuelle *</label>
         <div id="sig-photo-container" style="position: relative; width: 100%; height: 180px; margin-bottom: 15px; border-radius: 14px; overflow: hidden; border: 2px dashed var(--coallia-blue); display: flex; align-items: center; justify-content: center; background: var(--input-bg); transition: 0.3s;">
@@ -958,7 +965,7 @@
             
             <button id="btn-reprendre-photo" style="background: transparent; border: none; color: var(--coallia-blue); cursor: pointer; display: none; transition: transform 0.2s;"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg></button>
             
-            <button id="btn-effacer-photo" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(2px);">✕</button>
+            <button id="btn-effacer-photo" aria-label="Supprimer la photo" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(2px);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
         </div>
 
         <label class="form-label">Frigo concerné *</label>
@@ -990,7 +997,9 @@
 
 <div id="sig-success-modal" class="modal-overlay hidden">
     <div class="modal-card" style="padding: 40px 20px;">
-        <div style="margin-bottom: 10px; display: flex; justify-content: center;"><svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></div>
+        <div class="modal-icon-badge succes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+        </div>
         <h3 style="color: var(--success); margin-bottom: 10px;">Signalement transmis</h3>
         <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">La photo et les détails ont bien été envoyés dans le dossier sécurisé de l'équipe.</p>
     </div>
@@ -1056,7 +1065,7 @@
         <div class="ann-entete">
             <div class="ann-kicker">Contacts de permanence</div>
             <h3 class="ann-titre">Annuaire d'urgence</h3>
-            <div class="ann-fermer" id="ann-fermer" role="button" aria-label="Fermer l'annuaire">✕</div>
+            <div class="ann-fermer" id="ann-fermer" role="button" aria-label="Fermer l'annuaire"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></div>
         </div>
 
         <div class="ann-corps">
@@ -1169,7 +1178,9 @@
 
 <div id="comptage-cancel-modal" class="modal-overlay hidden" style="z-index: 3500;">
     <div class="modal-card" style="max-width: 340px; padding: 30px 20px;">
-        <div style="font-size: 50px; margin-bottom: 10px;">⚠️</div>
+        <div class="modal-icon-badge alerte">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
         <h3 style="color: var(--danger); font-weight: 800;">Abandonner la tournée ?</h3>
         <p class="modal-subtitle" style="font-size: 14px; color: var(--text-gray); line-height: 1.5; margin-bottom: 20px;">
             Attention, si vous quittez maintenant, toutes les présences déjà pointées sur ce contrôle seront définitivement perdues.
@@ -1183,7 +1194,9 @@
 
 <div id="comptage-empty-modal" class="modal-overlay hidden" style="z-index: 3600;">
     <div class="modal-card" style="max-width: 340px; padding: 40px 20px;">
-        <div style="font-size: 50px; margin-bottom: 10px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));">📭</div>
+        <div class="modal-icon-badge info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
+        </div>
         <h3 style="color: var(--coallia-blue); margin-bottom: 12px; font-weight: 800; font-size: 20px;">Aucun historique</h3>
         <p class="modal-subtitle" style="font-size: 14px; color: var(--text-gray); line-height: 1.5; margin-bottom: 25px;">
             Aucun contrôle de présence n'a été enregistré ou validé sur cet appareil pour le moment.
@@ -1204,9 +1217,9 @@
         <!-- 👑 LE VRAI BOUTON RETOUR OFFICIEL APPIGNÉ EN HAUT À GAUCHE -->
 <!-- 👑 PASTILLE CROIX PREMIUM : Alignée à droite et ultra-réactive -->
 <div id="absence-modal-back-btn"
-     style="position: absolute; top: 20px; right: 20px; background: var(--input-bg); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; color: var(--text-gray); font-weight: 800; transition: 0.2s; user-select: none; -webkit-user-select: none;">
-    ✕
-</div>        
+     style="position: absolute; top: 20px; right: 20px; background: var(--input-bg); width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-gray); transition: 0.2s; user-select: none; -webkit-user-select: none;">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+</div>
         <!-- Titre et sous-titre ajustés pour laisser la place au bouton retour -->
         <h3 style="color: var(--danger); font-weight: 800; font-size: 21px; margin: 10px 0 5px 0; text-align: center;">Motif de l'absence</h3>
         <p class="modal-subtitle" id="absence-modal-subtitle" style="margin-bottom: 25px; font-size: 13.5px; text-align: center;"></p>
@@ -1230,7 +1243,7 @@
 
         <!-- Zone de saisie personnalisée (Autre) -->
         <div id="absence-autre-container" class="hidden" style="width: 100%;">
-            <div id="absence-error-bubble" class="hidden" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; text-align: center;">⚠️ Veuillez préciser la raison de l'absence</div>
+            <div id="absence-error-bubble" class="bulle-erreur hidden"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span>Veuillez préciser la raison de l'absence</span></div>
             <div style="position: relative; width: 100%; margin-bottom: 20px;">
                 <textarea id="absence-autre-obs" placeholder="Précisez la raison ici..." rows="1" style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 14px; min-height: 54px; box-sizing: border-box; text-align: left; outline: none;"></textarea>
                 <button id="absence-autre-obs-effacer" class="btn-effacer-champ" style="padding: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></button>
@@ -1282,7 +1295,7 @@
         <h3 id="media-modal-title" style="color: var(--coallia-blue); margin-bottom: 4px; font-weight: 800;">Prêt équipement</h3>
         <p id="media-modal-desc" class="modal-subtitle" style="margin-bottom: 20px;"></p>
         
-        <div id="media-error-bubble" class="hidden" role="alert" aria-live="assertive" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Nom du jeune et signature obligatoires</div>
+        <div id="media-error-bubble" class="bulle-erreur hidden" role="alert" aria-live="assertive"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span>Nom du jeune et signature obligatoires</span></div>
         
         <label class="form-label">Identité du jeune *</label>
         <input type="text" id="media-jeune-name" placeholder="Prénom et Nom" autocomplete="off" style="text-align: center; margin-bottom: 15px;">

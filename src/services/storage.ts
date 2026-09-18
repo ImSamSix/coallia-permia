@@ -1,7 +1,8 @@
 import { state } from "@/state/store";
 import { chiffrer, getCleAuth, getCleMaitresse, tenterDechiffrement } from "./crypto";
 import { pushCloudSync, pushEtatOperationnel } from "./permia-relay";
-import { vibrer } from "./feedback";
+import { retour } from "./feedback";
+import { iconeAlerte } from "@/ui/icons";
 import type { VaultData } from "@/types/vault";
 import type { MediaKey } from "@/types/media";
 
@@ -64,10 +65,12 @@ export function sauvegarderToutesLesDonnees(): void {
 
     const badge = document.getElementById("offline-badge");
     if (badge) {
-      badge.innerText = "⚠️ Mémoire pleine — sauvegarde locale impossible";
+      badge.classList.remove("succes");
+      badge.classList.add("danger");
+      badge.innerHTML = `<span class="status-pill-icone">${iconeAlerte(13)}</span><span>Mémoire pleine — sauvegarde locale impossible</span>`;
       badge.classList.remove("hidden");
     }
-    vibrer([200, 100, 200]);
+    retour("alerte");
     // On NE s'arrête pas : l'envoi cloud reste la meilleure chance de conserver les données.
   }
 

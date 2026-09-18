@@ -28,6 +28,7 @@ import { initPlanFoyerListeners } from "@/features/plan-foyer/plan-foyer";
 import { initFermetureModals } from "@/ui/modals";
 import { initAutoResizeListeners } from "@/ui/dom-utils";
 import { initConfirmModalListeners } from "@/ui/confirm-modal";
+import { initSwipeBack } from "@/ui/swipe-back";
 
 import { openMateriel } from "@/features/materiel/materiel";
 import { openMedicaments } from "@/features/medicaments/medicaments";
@@ -47,6 +48,7 @@ export function initApp(): void {
   initFermetureModals();
   initAutoResizeListeners();
   initConfirmModalListeners();
+  initSwipeBack();
 
   initCguListeners();
   initLoginListeners();

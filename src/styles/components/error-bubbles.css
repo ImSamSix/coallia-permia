@@ -1,14 +1,43 @@
 /* ========================================== */
-/* CENTRAGE PARFAIT DE TOUTES LES BULLES      */
+/* BULLES D'ALERTE / SUCCÈS — style unifié     */
+/* Remplace les anciens blocs pleins rouges +  */
+/* emojis par un ton discret (fond teinté,     */
+/* bordure fine) + icône SVG, dans toute       */
+/* l'app (connexion, comptage, frigos, prêts…) */
 /* ========================================== */
-#error-bubble,
-#med-error-bubble,
-#trans-error-bubble,
-#frigo-error-bubble,
-#sig-error-bubble {
+.bulle-erreur,
+.bulle-succes {
     display: flex;
-    align-items: center;        
-    justify-content: center;    
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 16px;
     text-align: center;
+    line-height: 1.35;
+}
+.bulle-erreur svg,
+.bulle-succes svg {
+    flex-shrink: 0;
 }
 
+.bulle-erreur {
+    background: rgba(255, 59, 48, 0.10);
+    border: 1.5px solid var(--danger);
+    color: #c0392b;
+}
+body.dark-mode .bulle-erreur {
+    color: #ff8a80;
+}
+
+.bulle-succes {
+    background: rgba(52, 199, 89, 0.10);
+    border: 1.5px solid var(--success);
+    color: #1f8a44;
+}
+body.dark-mode .bulle-succes {
+    color: #6fe39a;
+}

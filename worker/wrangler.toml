@@ -1,6 +1,9 @@
 name = "relais-permia"
 main = "src/index.ts"
 compatibility_date = "2024-11-01"
+# Requis par @sentry/cloudflare : isolation du contexte entre requêtes
+# concurrentes via AsyncLocalStorage (node:async_hooks).
+compatibility_flags = ["nodejs_compat"]
 
 # KV : coffre chiffré ("master_vault" + historique). Le catalogue MECS ne
 # vient plus de KV (clé "mecs_database" désormais inutilisée) : il est lu en
@@ -9,9 +12,11 @@ compatibility_date = "2024-11-01"
 binding = "PERMIA_DB"
 id = "de37fd13b37c4ee7a097cbc21b4a1eca"
 
-# Non sensible : l'URL du projet ne donne accès à rien sans la clé anon.
+# Non sensibles : l'URL du projet Supabase ne donne accès à rien sans la clé
+# anon, et un DSN Sentry n'autorise que l'ENVOI d'événements (pas la lecture).
 [vars]
 SUPABASE_URL = "https://jgfwnatspdjvnxmbsgls.supabase.co"
+SENTRY_DSN = "https://3559cde2453da83b94c0b9bb765230d9@o4512080131784704.ingest.de.sentry.io/4512108352110672"
 
 # Secrets (NE JAMAIS les mettre ici en clair) — à définir via :
 #   wrangler secret put MOT_DE_PASSE_PERMIA

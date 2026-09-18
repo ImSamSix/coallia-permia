@@ -25,7 +25,7 @@ export function afficherBanniereAmour(): void {
 
   document.body.appendChild(banner);
 
-  jouerSon("success");
+  jouerSon("succes");
 
   setTimeout(() => {
     banner.style.animation = "slideUpBanner 0.5s ease-in forwards";
