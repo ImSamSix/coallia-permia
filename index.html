@@ -409,12 +409,14 @@
 </div>
 
             <div id="view-frigos" class="tab-content hidden">
-               <div class="actions-header" style="justify-content: center; margin-top: 20px; margin-bottom: 20px;">
-                <span id="badge-etat-frigos" class="pro-badge"
-                      style="background: var(--card-color); font-size: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; display: inline-flex; align-items: center; gap: 8px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="5" y1="10" x2="19" y2="10"></line><line x1="9" y1="5" x2="9" y2="7"></line><line x1="9" y1="13" x2="9" y2="15"></line></svg>
-                    État actuel des frigos
-                </span>
+               <div class="actions-header" style="justify-content: center; margin-top: 15px; margin-bottom: 25px;">
+                <div id="badge-etat-frigos"
+                      style="text-align: center; cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;">
+                    <div style="width: 56px; height: 56px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; background: rgba(0, 85, 164, 0.08); border-radius: 18px; color: var(--coallia-blue);">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="5" y1="10" x2="19" y2="10"></line><line x1="9" y1="5" x2="9" y2="7"></line><line x1="9" y1="13" x2="9" y2="15"></line></svg>
+                    </div>
+                    <h2 class="section-title" style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; color: var(--text-dark);">État actuel des frigos</h2>
+                </div>
                </div>
                 
                 <div id="list-frigos" class="items-grid">
