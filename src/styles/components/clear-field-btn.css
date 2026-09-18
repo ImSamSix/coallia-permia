@@ -1,0 +1,29 @@
+/* ========================================================================== */
+/* 🗑️ BOUTON "EFFACER" DES BULLES DE TEXTE — icône discrète, sans le contour  */
+/* blanc figé (illisible en dark mode) ni le saut au clic.                    */
+/* ========================================================================== */
+
+.btn-effacer-champ {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-gray);
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+/* Le bouton est centré verticalement en absolu (translateY(-50%)) : la règle
+   générique "button:active { transform: scale(0.96) !important; }" écraserait
+   ce translateY et le ferait sauter en haut de l'encart avant de revenir.
+   On recombine les deux transforms pour qu'il se contracte sur place. */
+.btn-effacer-champ:active {
+    transform: translateY(-50%) scale(0.9) !important;
+}

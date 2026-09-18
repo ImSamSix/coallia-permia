@@ -33,6 +33,7 @@
 @import "./components/scanner.css";
 @import "./components/annuaire.css";
 @import "./components/pending-badge.css";
+@import "./components/clear-field-btn.css";
 
 @import "./views/login.css";
 @import "./views/splash.css";
