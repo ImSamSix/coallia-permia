@@ -33,6 +33,15 @@ let selectedActionType: ActionType | null = null;
 let selectedItemId: number | string | null = null;
 let modalQty = 1;
 
+// 🔍 Normalisation identique à la recherche du Plan du foyer : insensible
+// aux accents et à la casse, pour un fonctionnement cohérent dans toute l'app.
+function normaliserRecherche(texte: string): string {
+  return texte
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase();
+}
+
 // Chevron fin (même tracé que les sélecteurs de l'app) remplaçant les ▲/▼ :
 // pointe vers le bas au repos, pivote à 180° une fois la carte ouverte.
 function iconeChevronAccordion(ouvert: boolean): string {
@@ -621,19 +630,38 @@ export function renderItems(): void {
   if (residents.length === 0) {
     zoneEmprunt.innerHTML = `<p style="text-align:center; color:var(--text-gray); margin-top:30px; font-weight:600;">Aucun matériel en cours de prêt.</p>`;
   } else {
-    // 🔍 FILTRAGE DE RECHERCHE INTELLIGENTE
+    // 🔍 Même logique que la recherche du Plan du foyer : normalisation
+    // insensible aux accents, correspondance par mot (préfixe) plutôt que
+    // sous-chaîne, classée par pertinence puis ordre alphabétique. En
+    // dessous de 2 caractères, on affiche la liste complète sans filtrer.
     const searchInput = document.getElementById("search-emprunt") as HTMLInputElement | null;
-    const searchTerm = searchInput ? searchInput.value.trim().toUpperCase() : "";
+    const termeBrut = searchInput ? searchInput.value.trim() : "";
+    const q = normaliserRecherche(termeBrut);
+    const rechercheActive = q.length >= 2;
 
-    // On ne garde que les résidents dont le nom contient ce qui est tapé
-    const filteredResidents = residents.filter((jeune) => jeune.includes(searchTerm));
+    document.getElementById("search-emprunt-vider")?.classList.toggle("hidden", termeBrut.length === 0);
 
-    if (filteredResidents.length === 0) {
-      zoneEmprunt.innerHTML = `<p style="text-align:center; color:var(--text-gray); margin-top:30px; font-weight:600;">Aucun résultat pour "${securiserTexte(searchInput?.value ?? "")}".</p>`;
+    let residentsAffiches: string[];
+    if (rechercheActive) {
+      residentsAffiches = residents
+        .map((jeune) => {
+          const mots = normaliserRecherche(jeune).split(/[\s'-]+/);
+          const rang = mots.findIndex((mot) => mot.startsWith(q));
+          return { jeune, rang };
+        })
+        .filter((r) => r.rang !== -1)
+        .sort((a, b) => a.rang - b.rang || a.jeune.localeCompare(b.jeune, "fr"))
+        .map((r) => r.jeune);
     } else {
-      filteredResidents.forEach((jeune) => {
+      residentsAffiches = residents;
+    }
+
+    if (residentsAffiches.length === 0) {
+      zoneEmprunt.innerHTML = `<p style="text-align:center; color:var(--text-gray); margin-top:30px; font-weight:600;">Aucun résultat pour "${securiserTexte(termeBrut)}".</p>`;
+    } else {
+      residentsAffiches.forEach((jeune) => {
         // Pour la recherche : on ouvre l'accordéon automatiquement si on fait une recherche précise
-        const isOpen = residentAccordions[jeune] === true || searchTerm.length > 1;
+        const isOpen = residentAccordions[jeune] === true || rechercheActive;
 
         const title = document.createElement("div");
         title.className = "resident-title";
@@ -684,6 +712,11 @@ export function initMaterielListeners(): void {
   document.getElementById("btn-bilan")?.addEventListener("click", genererRecap);
   document.getElementById("btn-mode-panier-retour")?.addEventListener("click", toggleModePanierRetour);
   document.getElementById("search-emprunt")?.addEventListener("input", renderItems);
+  document.getElementById("search-emprunt-vider")?.addEventListener("click", () => {
+    const input = document.getElementById("search-emprunt") as HTMLInputElement | null;
+    if (input) input.value = "";
+    renderItems();
+  });
 
   document.getElementById("badge-etat-frigos")?.addEventListener("mousedown", startResetFrigoEvalTimer);
   document.getElementById("badge-etat-frigos")?.addEventListener("mouseup", stopResetFrigoEvalTimer);
