@@ -8,6 +8,15 @@ interface LigneEmprunt {
   pro: string;
 }
 
+// Couleurs figées en HEX (et non var(--xxx)) : ce contenu alimente aussi le
+// PDF via html2canvas, qui ne résout pas les variables CSS de façon fiable.
+function svgPersonneRecap(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>`;
+}
+function svgColisRecap(taille: number, couleur: string): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="${couleur}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.73Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>`;
+}
+
 /** Récapitulatif du matériel emprunté (bilan de fin de service), base du PDF "materiel". */
 export function genererRecap(): void {
   let totalItems = 0;
@@ -42,8 +51,8 @@ export function genererRecap(): void {
   for (const jeune in grouped) {
     htmlText += `
         <div style="margin-bottom: 15px; page-break-inside: avoid; font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-            <div style="background: #0055a4; color: white; padding: 10px 15px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 13px; text-transform: uppercase;">
-                👤 ${jeune}
+            <div style="background: #0055a4; color: white; padding: 10px 15px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 13px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
+                ${svgPersonneRecap(13, "#ffffff")}${jeune}
             </div>
             <div style="background: #ffffff; border: 1px solid #e0e0e0; border-top: none; padding: 12px; border-radius: 0 0 8px 8px;">
                 <ul style="margin: 0; padding-left: 20px; color: #333; font-size: 13px; line-height: 1.6;">`;
@@ -63,8 +72,9 @@ export function genererRecap(): void {
     htmlText += `</ul></div></div>`;
   }
 
-  htmlText += `<div style="text-align: right; font-weight: bold; font-size: 15px; color: #111; margin-top: 20px; border-top: 2px solid #0055a4; padding-top: 12px;">
-        📦 Total : ${totalItems} objet(s) emprunté(s)
+  const texteTotal = totalItems === 1 ? "1 objet emprunté" : `${totalItems} objets empruntés`;
+  htmlText += `<div style="text-align: right; font-weight: bold; font-size: 15px; color: #111; margin-top: 20px; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <span style="display: inline-flex; align-items: center; gap: 7px;">${svgColisRecap(15, "#0055a4")}Total : ${texteTotal}</span>
     </div>`;
 
   const content = document.getElementById("recap-content");
