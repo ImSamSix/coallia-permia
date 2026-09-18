@@ -34,14 +34,21 @@
 
 /* 4. Libération complète de la grille interne */
 #main-app #list-frigos {
-    overflow: visible !important;  
+    overflow: visible !important;
     flex: none !important;
-    padding-bottom: 20px !important;
 }
 
 /* 5. Sécurité anti-écrabouillage des cartes sur iPhone/Android */
 #list-frigos .item-card {
     flex-shrink: 0 !important;
     min-height: 240px !important;
+}
+
+/* 6. La dernière carte ne garde pas sa marge de séparation inter-cartes :
+   sinon elle s'additionne au margin-top forcé (history-links.css) du bouton
+   "Consulter l'historique" et l'espace ne correspond plus à celui du menu
+   Traçabilité médicaments (qui n'a qu'une seule carte, sans cette marge). */
+#list-frigos .item-card:last-child {
+    margin-bottom: 0 !important;
 }
 
