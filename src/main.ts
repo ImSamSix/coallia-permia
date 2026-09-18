@@ -147,6 +147,7 @@ window.onload = async () => {
       offlineBadge.classList.remove("hidden");
       vibrer([200, 100, 200]);
     }
+    rafraichirBadgeAttente(); // 📡 Réagit tout de suite, pas au prochain sondage (10s)
   });
 
   window.addEventListener("online", () => {
@@ -159,6 +160,7 @@ window.onload = async () => {
         offlineBadge.classList.add("hidden");
       }, 3000);
     }
+    rafraichirBadgeAttente(); // 📡 Masque immédiatement la file d'attente hors-ligne
   });
 
   // ==========================================================================

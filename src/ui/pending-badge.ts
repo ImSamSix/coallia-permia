@@ -13,6 +13,16 @@ export function rafraichirBadgeAttente(): void {
     return;
   }
 
+  // 📡 Avec une connexion, une saisie ne reste "en attente" que quelques
+  // instants (synchronisation quasi immédiate) : afficher la bulle quand
+  // même donnerait l'impression, à tort, que l'app peine à envoyer les
+  // données. Elle ne sert donc plus qu'à signaler un vrai mode hors-ligne
+  // (réseau coupé ou avion) — c'est là qu'une file d'attente a un sens.
+  if (navigator.onLine) {
+    badge.classList.add("hidden");
+    return;
+  }
+
   const n = compterEnAttente();
   if (n === 0) {
     badge.classList.add("hidden");
