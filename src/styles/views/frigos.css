@@ -52,3 +52,12 @@
     margin-bottom: 0 !important;
 }
 
+/* 7. Le bouton "+" (ajouter un jeune) est centré verticalement en absolu via
+   translateY(-50%). La règle générique "button:active { transform: scale(0.96)
+   !important; }" (base.css) écrasait ce translateY au clic : le bouton
+   perdait son recentrage et "sautait" en haut de l'encart avant de revenir.
+   On recombine les deux transforms pour qu'il se contracte sur place. */
+#btn-ajouter-resident:active {
+    transform: translateY(-50%) scale(0.9) !important;
+}
+

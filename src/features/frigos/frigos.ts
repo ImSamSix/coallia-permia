@@ -184,7 +184,7 @@ export function voirJeunesFrigo(id: number): void {
   frigoJeunesEnCours = id;
 
   const titre = document.getElementById("jeunes-frigo-title");
-  if (titre) titre.innerText = "Frigo " + id + " — Jeunes";
+  if (titre) titre.innerText = "Frigo " + id + " : Jeunes";
 
   const input = document.getElementById("new-resident-name") as HTMLTextAreaElement | null;
   if (input) {
