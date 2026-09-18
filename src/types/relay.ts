@@ -43,6 +43,7 @@ export interface EtatFrigoLigne {
   contenu: string | null;
   time: string | null;
   pro: string | null;
+  residents: string[];
 }
 
 /** État courant d'un équipement multimédia, pour le miroir Supabase lisible hors coffre. */

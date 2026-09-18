@@ -29,9 +29,15 @@ create table if not exists public.permia_frigos (
   contenu text,                   -- 'ok' | 'sort'
   time timestamptz,
   pro text,
+  residents jsonb not null default '[]'::jsonb,  -- noms des jeunes assignés à ce frigo
   updated_at timestamptz not null default now()
 );
 alter table public.permia_frigos enable row level security;
+
+-- Migration additive pour une table permia_frigos déjà créée avant l'ajout
+-- de la colonne "residents" (le create table if not exists ci-dessus ne
+-- touche pas une table existante) :
+alter table public.permia_frigos add column if not exists residents jsonb not null default '[]'::jsonb;
 
 create table if not exists public.permia_media (
   id text primary key,            -- 'manette' | 'telecommande' | 'ordinateur1' | 'ordinateur2'

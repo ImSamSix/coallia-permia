@@ -100,7 +100,7 @@ export function renderFrigos(): void {
 
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h3 style="margin: 0 0 10px 0; font-size: 22px; color: var(--text-dark); font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">${f.name}</h3>
-                    <button class="btn-voir-jeunes" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 16px; font-size: 13px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 7px;">${iconUsers()}Voir les jeunes</button>
+                    <button class="btn-voir-jeunes" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 16px; font-size: 13px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 7px;">${iconUsers()}Gérer les jeunes</button>
                 </div>
 
                 <div style="display: flex; justify-content: space-evenly; background: var(--input-bg); padding: 18px 5px; border-radius: 18px; margin-bottom: 25px;">
@@ -135,29 +135,94 @@ export function renderFrigos(): void {
 let frigoEnCoursEval: number | null = null;
 let evalTemp: FrigoEvalTemp = { cad: null, hyg: null, cont: null };
 
-/** Modale "Jeunes affectés à ce frigo" (dernière définition de l'ancien script.js — la première était provisoire et a été remplacée). */
-export function voirJeunesFrigo(id: number): void {
-  const titre = document.getElementById("jeunes-frigo-title");
-  if (titre) titre.innerText = "Frigo " + id + " - Jeunes";
+// 👑 Frigo actuellement ouvert dans la modale "Gérer les jeunes" — évite de
+// faire re-choisir le frigo dans un menu déroulant séparé (ancien mode admin
+// secret à 5s d'appui long, pas assez découvrable) : on gère directement
+// depuis la carte du frigo concerné.
+let frigoJeunesEnCours: number | null = null;
+
+function iconRetirer(): string {
+  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+}
+
+function renderListeJeunesFrigo(): void {
+  if (frigoJeunesEnCours === null) return;
   const container = document.getElementById("liste-jeunes-frigo");
   if (!container) return;
 
-  const frigo = state.frigosData[id - 1];
+  const frigo = state.frigosData[frigoJeunesEnCours - 1];
   if (!frigo.residents) frigo.residents = [];
-  const liste = frigo.residents;
+  container.innerHTML = "";
 
-  if (liste.length === 0) {
-    container.innerHTML = "<i style='color: var(--text-gray); display: block; text-align: center;'>Aucun jeune n'est assigné à ce frigo pour le moment.</i>";
-  } else {
-    let html = "<ul style='padding-left: 20px; margin: 0; padding-right: 5px;'>";
-    liste.forEach((nom) => {
-      html += `<li style="margin-bottom: 8px; word-break: break-word; overflow-wrap: break-word; hyphens: auto; line-height: 1.4;">${nom}</li>`;
-    });
-    html += "</ul>";
-    container.innerHTML = html;
+  if (frigo.residents.length === 0) {
+    container.innerHTML = `<span style="color:var(--text-gray); font-size:13px; font-style:italic; width:100%; text-align:center;">Aucun jeune assigné à ce frigo pour le moment.</span>`;
+    return;
   }
 
+  frigo.residents.forEach((nom, index) => {
+    const tag = document.createElement("div");
+    tag.style.cssText =
+      "background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 20px; font-size: 14px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-width: 100%;";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.style.cssText = "flex: 1; word-break: break-word; overflow-wrap: break-word; hyphens: auto;";
+    nameSpan.textContent = nom;
+
+    const closeSpan = document.createElement("span");
+    closeSpan.onclick = () => supprimerResidentFrigo(index);
+    closeSpan.style.cssText = "cursor: pointer; color: var(--danger); flex-shrink: 0; display: flex; align-items: center;";
+    closeSpan.innerHTML = iconRetirer();
+
+    tag.appendChild(nameSpan);
+    tag.appendChild(closeSpan);
+    container.appendChild(tag);
+  });
+}
+
+/** Modale "Gérer les jeunes" d'un frigo précis : voir, ajouter et retirer, sans étape de sélection intermédiaire. */
+export function voirJeunesFrigo(id: number): void {
+  frigoJeunesEnCours = id;
+
+  const titre = document.getElementById("jeunes-frigo-title");
+  if (titre) titre.innerText = "Frigo " + id + " — Jeunes";
+
+  const input = document.getElementById("new-resident-name") as HTMLTextAreaElement | null;
+  if (input) {
+    input.value = "";
+    input.style.height = "54px";
+  }
+
+  renderListeJeunesFrigo();
   document.getElementById("jeunes-frigo-modal")?.classList.remove("hidden");
+}
+
+export function ajouterResidentFrigo(): void {
+  if (frigoJeunesEnCours === null) return;
+  const input = document.getElementById("new-resident-name") as HTMLTextAreaElement;
+  const nom = input.value.trim();
+  if (!nom) {
+    input.focus();
+    return;
+  }
+
+  const frigo = state.frigosData[frigoJeunesEnCours - 1];
+  if (!frigo.residents) frigo.residents = [];
+  frigo.residents.push(nom);
+
+  sauvegarderToutesLesDonnees();
+  renderListeJeunesFrigo();
+  vibrer(50);
+
+  input.value = "";
+  input.style.height = "54px";
+  input.focus();
+}
+
+export function supprimerResidentFrigo(index: number): void {
+  if (frigoJeunesEnCours === null) return;
+  state.frigosData[frigoJeunesEnCours - 1].residents.splice(index, 1);
+  sauvegarderToutesLesDonnees();
+  renderListeJeunesFrigo();
 }
 
 export function ouvrirEvalFrigo(id: number): void {
@@ -301,118 +366,6 @@ export function effacerObsFrigo(): void {
 }
 
 // ==========================================
-// 20. MODE ADMIN FRIGOS (SECRET)
-// ==========================================
-let frigoPressTimer: ReturnType<typeof setTimeout>;
-
-export function startFrigoTimer(): void {
-  frigoPressTimer = setTimeout(() => {
-    ouvrirAdminFrigos();
-  }, 5000);
-}
-
-export function cancelFrigoTimer(): void {
-  clearTimeout(frigoPressTimer);
-}
-
-export function ouvrirAdminFrigos(): void {
-  vibrer([50, 50, 50]);
-
-  // On remet le sélecteur à zéro ("Sélectionner un frigo...")
-  const select = document.getElementById("admin-frigo-select") as HTMLSelectElement;
-  select.value = "";
-
-  // On remet la bulle de texte à sa taille de base
-  const inputName = document.getElementById("new-resident-name") as HTMLTextAreaElement;
-  inputName.value = "";
-  inputName.style.height = "54px";
-
-  renderAdminList();
-  document.getElementById("admin-frigo-modal")?.classList.remove("hidden");
-}
-
-export function renderAdminList(): void {
-  const selectVal = (document.getElementById("admin-frigo-select") as HTMLSelectElement).value;
-  const container = document.getElementById("admin-resident-list");
-  if (!container) return;
-  container.innerHTML = "";
-
-  // Si aucun frigo n'est sélectionné
-  if (!selectVal) {
-    container.innerHTML = `<span style="color:var(--text-gray); font-size:13px; font-style:italic; width:100%; text-align:center;">Veuillez d'abord sélectionner un frigo.</span>`;
-    return;
-  }
-
-  const frigoId = parseInt(selectVal);
-  const frigo = state.frigosData[frigoId - 1];
-  if (!frigo.residents) frigo.residents = [];
-  const liste = frigo.residents;
-
-  if (liste.length === 0) {
-    container.innerHTML = `<span style="color:var(--text-gray); font-size:13px; font-style:italic; width:100%; text-align:center;">Aucun jeune assigné à ce frigo.</span>`;
-    return;
-  }
-
-  // Création des tags avec un beau design qui gère les noms longs
-  liste.forEach((nom, index) => {
-    const tag = document.createElement("div");
-    tag.style.cssText =
-      "background: var(--card-color); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 20px; font-size: 14px; color: var(--text-dark); display: flex; align-items: center; gap: 8px; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-width: 100%;";
-
-    const nameSpan = document.createElement("span");
-    nameSpan.style.cssText = "flex: 1; word-break: break-word; overflow-wrap: break-word; hyphens: auto;";
-    nameSpan.textContent = nom;
-
-    const closeSpan = document.createElement("span");
-    closeSpan.onclick = () => supprimerResidentAdmin(frigoId, index);
-    closeSpan.style.cssText = "cursor: pointer; color: var(--danger); font-weight: 800; font-size: 16px; margin-left: 4px; flex-shrink: 0;";
-    closeSpan.textContent = "✕";
-
-    tag.appendChild(nameSpan);
-    tag.appendChild(closeSpan);
-
-    container.appendChild(tag);
-  });
-}
-
-export function ajouterResidentAdmin(): void {
-  const select = document.getElementById("admin-frigo-select") as HTMLSelectElement;
-  const selectVal = select.value;
-  const input = document.getElementById("new-resident-name") as HTMLTextAreaElement;
-  const nom = input.value.trim();
-
-  // Sécurité : il faut choisir un frigo
-  if (!selectVal) {
-    select.style.border = "1px solid var(--danger)";
-    setTimeout(() => (select.style.border = "1px solid transparent"), 2000);
-    vibrer(200);
-    return;
-  }
-
-  const frigoId = parseInt(selectVal);
-
-  if (nom) {
-    const frigo = state.frigosData[frigoId - 1];
-    if (!frigo.residents) frigo.residents = [];
-    frigo.residents.push(nom);
-
-    sauvegarderToutesLesDonnees();
-    renderAdminList();
-
-    // Vider le champ et le remettre à la bonne taille
-    input.value = "";
-    input.style.height = "54px";
-    input.focus();
-  }
-}
-
-export function supprimerResidentAdmin(frigoId: number, index: number): void {
-  state.frigosData[frigoId - 1].residents.splice(index, 1);
-  sauvegarderToutesLesDonnees();
-  renderAdminList();
-}
-
-// ==========================================
 // 23. COMMANDE SECRÈTE : RESET ÉVALUATIONS FRIGOS (5s)
 // ==========================================
 let resetFrigoEvalTimer: ReturnType<typeof setTimeout>;
@@ -482,18 +435,7 @@ function executerPurgeFrigos(): void {
   console.log("🤫 Nettoyage des évaluations frigos effectué.");
 }
 
-/** Câble le mode admin secret sur l'onglet Frigos (appui long 5s). */
-export function initFrigoTabLongPress(): void {
-  const btnFrigoTab = document.getElementById("tab-btn-frigos");
-  if (!btnFrigoTab) return;
-  btnFrigoTab.addEventListener("mousedown", startFrigoTimer);
-  btnFrigoTab.addEventListener("touchstart", startFrigoTimer);
-  btnFrigoTab.addEventListener("mouseup", cancelFrigoTimer);
-  btnFrigoTab.addEventListener("mouseleave", cancelFrigoTimer);
-  btnFrigoTab.addEventListener("touchend", cancelFrigoTimer);
-}
-
-/** Câble les modales frigos (évaluation + mode admin). */
+/** Câble les modales frigos (évaluation + gestion des jeunes). */
 export function initFrigoModalListeners(): void {
   // ⚠️ On cible .btn-eval (pas [id^="cad-"] etc.) : les conteneurs
   // #cad-container/#hyg-container/#cont-container correspondaient aussi à
@@ -509,8 +451,7 @@ export function initFrigoModalListeners(): void {
   document.getElementById("eval-frigo-obs-effacer")?.addEventListener("click", effacerObsFrigo);
   document.getElementById("btn-valider-eval-frigo")?.addEventListener("click", validerEvalFrigo);
 
-  document.getElementById("admin-frigo-select")?.addEventListener("change", renderAdminList);
-  document.getElementById("btn-ajouter-resident")?.addEventListener("click", ajouterResidentAdmin);
+  document.getElementById("btn-ajouter-resident")?.addEventListener("click", ajouterResidentFrigo);
 
   attacherEffetAppui(document.getElementById("btn-jeunes-frigo-fermer"), 0.95);
 }

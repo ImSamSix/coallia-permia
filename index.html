@@ -913,9 +913,18 @@
 </div>
 
 <div id="jeunes-frigo-modal" class="modal-overlay hidden">
-    <div class="modal-card">
-        <h3 id="jeunes-frigo-title" style="color: var(--coallia-blue); margin-bottom: 15px;">Jeunes</h3>
-        <div id="liste-jeunes-frigo" style="text-align: left; background: var(--input-bg); padding: 15px; border-radius: 12px; max-height: 250px; overflow-y: auto; color: var(--text-dark); margin-bottom: 20px; font-weight: 600; font-size: 14px; line-height: 1.8;">
+    <div class="modal-card" style="max-width: 380px;">
+        <h3 id="jeunes-frigo-title" style="color: var(--coallia-blue); margin-bottom: 5px;">Jeunes</h3>
+        <p class="modal-subtitle" style="margin-bottom: 20px;">Qui utilise ce frigo ?</p>
+
+        <div style="position: relative; width: 100%; margin-bottom: 20px;">
+            <textarea id="new-resident-name" placeholder="Nom du jeune..." rows="1" style="width: 100%; padding: 16px 55px 16px 16px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; font-size: 16px; resize: none; color: var(--text-dark); min-height: 56px; box-sizing: border-box; overflow: hidden; display: block; margin: 0; outline: none; text-align: center;"></textarea>
+            <button id="btn-ajouter-resident" aria-label="Ajouter ce jeune" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--coallia-blue); color: white; border: none; border-radius: 10px; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,85,164,0.3);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+        </div>
+
+        <div id="liste-jeunes-frigo" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; min-height: 50px; max-height: 220px; overflow-y: auto; justify-content: center; padding-right: 5px;">
             </div>
         <button id="btn-jeunes-frigo-fermer" data-close-modal style="width: 100%; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 700; color: var(--danger); background: rgba(255, 59, 48, 0.1); border: none; cursor: pointer; outline: none; transition: transform 0.2s;">Fermer</button>
     </div>
@@ -970,42 +979,6 @@
         <div style="margin-bottom: 10px; display: flex; justify-content: center;"><svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></div>
         <h3 style="color: var(--success); margin-bottom: 10px;">Signalement transmis</h3>
         <p class="modal-subtitle" style="font-size: 15px; color: var(--text-dark);">La photo et les détails ont bien été envoyés dans le dossier sécurisé de l'équipe.</p>
-    </div>
-</div>
-
-
-<div id="admin-frigo-modal" class="modal-overlay hidden">
-    <div class="modal-card" style="max-width: 380px;">
-        <h3 style="color: var(--coallia-blue); margin-bottom: 5px;">Gestion Jeunes</h3>
-        <p class="modal-subtitle" style="margin-bottom: 25px;">Qui utilise quel frigo ?</p>
-
-        <label class="form-label" style="text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Choisir le frigo à gérer *</label>
-        <div style="position: relative; width: 100%; margin-bottom: 20px;">
-            <select id="admin-frigo-select" style="margin: 0; cursor: pointer; text-align: center; text-align-last: center;">
-                <option value="" disabled selected>Sélectionner un frigo...</option>
-                <option value="1">Frigo 1</option>
-                <option value="2">Frigo 2</option>
-                <option value="3">Frigo 3</option>
-                <option value="4">Frigo 4</option>
-                <option value="5">Frigo 5</option>
-                <option value="6">Frigo 6</option>
-            </select>
-        </div>
-
-        <label class="form-label" style="text-align: center; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Ajouter à ce frigo</label>
-        <div style="position: relative; width: 100%; margin-bottom: 25px;">
-            <textarea id="new-resident-name" placeholder="Nom du jeune..." rows="1" style="width: 100%; padding: 16px 55px 16px 16px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; font-size: 16px; resize: none; color: var(--text-dark); min-height: 56px; box-sizing: border-box; overflow: hidden; display: block; margin: 0; outline: none; text-align: center;"></textarea>
-            
-            <button id="btn-ajouter-resident" aria-label="Ajouter ce jeune au frigo sélectionné" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: var(--coallia-blue); color: white; border: none; border-radius: 10px; font-size: 22px; font-weight: bold; width: 36px; height: 36px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 5px rgba(0,85,164,0.3); padding: 0 0 2px 0;">+</button>
-        </div>
-
-        <div id="admin-resident-list" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; min-height: 50px; max-height: 200px; overflow-y: auto; justify-content: center; padding-right: 5px;">
-        </div>
-
-        <div class="modal-buttons">
-            <button class="btn-secondary" data-close-modal>Annuler</button>
-            <button class="btn-primary" data-close-modal>Terminer</button>
-        </div>
     </div>
 </div>
 

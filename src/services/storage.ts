@@ -96,7 +96,8 @@ export function sauvegarderToutesLesDonnees(): void {
           hygiene: f.hyg,
           contenu: f.cont,
           time: versIso(f.time),
-          pro: f.pro
+          pro: f.pro,
+          residents: f.residents || []
         })),
         media: (Object.keys(state.mediaData) as MediaKey[]).map((key) => {
           const m = state.mediaData[key];

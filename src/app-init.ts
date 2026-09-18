@@ -18,7 +18,7 @@ import { initNavigationListeners } from "@/features/navigation/navigation";
 import { initSessionListeners } from "@/features/session/session";
 import { initMaterielListeners } from "@/features/materiel/materiel";
 import { initMedicamentsListeners } from "@/features/medicaments/medicaments";
-import { initFrigoTabLongPress, initFrigoModalListeners } from "@/features/frigos/frigos";
+import { initFrigoModalListeners } from "@/features/frigos/frigos";
 import { initSignalementCamera, initSignalementListeners } from "@/features/frigos/signalement";
 import { initPainListeners } from "@/features/pain/pain";
 import { initComptageListeners } from "@/features/comptage-mecs/comptage-mecs";
@@ -56,7 +56,6 @@ export function initApp(): void {
 
   initMaterielListeners();
   initMedicamentsListeners();
-  initFrigoTabLongPress();
   initFrigoModalListeners();
   initSignalementCamera();
   initSignalementListeners();
