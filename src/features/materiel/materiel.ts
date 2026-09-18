@@ -203,8 +203,17 @@ export function toggleAccordion(cat: InventoryCategory): void {
 }
 
 export function toggleResident(jeune: string): void {
-  residentAccordions[jeune] = !residentAccordions[jeune];
-  renderItems();
+  const ouverture = !residentAccordions[jeune];
+  residentAccordions[jeune] = ouverture;
+
+  // 🔍 Les noms viennent de données utilisateur (accents, apostrophes...) :
+  // on compare le dataset plutôt que d'injecter "jeune" dans un sélecteur CSS.
+  const wrapper = Array.from(document.querySelectorAll<HTMLElement>(".accordion-content-wrapper")).find((el) => el.dataset.jeune === jeune);
+  const title = Array.from(document.querySelectorAll<HTMLElement>(".resident-title")).find((el) => el.dataset.jeune === jeune);
+  const chevron = title?.querySelector<HTMLElement>(".acc-chevron");
+
+  wrapper?.classList.toggle("open", ouverture);
+  if (chevron) chevron.style.transform = `rotate(${ouverture ? 180 : 0}deg)`;
 }
 
 // ==========================================
@@ -683,32 +692,42 @@ export function renderItems(): void {
 
         const title = document.createElement("div");
         title.className = "resident-title";
+        title.dataset.jeune = jeune;
         title.onclick = () => toggleResident(jeune);
         title.innerHTML = `<span style="display:inline-flex; align-items:center; gap:8px;">${iconePersonne()}Matériel prêté à : <b>${securiserTexte(jeune)}</b></span>${iconeChevronAccordion(isOpen)}`;
         zoneEmprunt.appendChild(title);
 
-        if (isOpen) {
-          const gridCartes = document.createElement("div");
-          gridCartes.className = "items-grid";
+        // 👑 Même technique que les accordéons Disponibles (grid-template-rows
+        // 0fr → 1fr) : le wrapper reste toujours dans le DOM, seule sa classe
+        // "open" change au clic pour une transition fluide sans reconstruire
+        // la liste (voir toggleResident()).
+        const wrapper = document.createElement("div");
+        wrapper.className = `accordion-content-wrapper ${isOpen ? "open" : ""}`;
+        wrapper.dataset.jeune = jeune;
+        const content = document.createElement("div");
+        content.className = "accordion-content";
+        const gridCartes = document.createElement("div");
+        gridCartes.className = "items-grid";
 
-          groupedLoans[jeune].forEach((emprunt) => {
-            const isGeneric = emprunt.type === "generic";
-            if (isGeneric) {
-              const loan = emprunt.data as (typeof state.genericLoans)[number];
-              const diffHours = (now.getTime() - new Date(loan.time ?? 0).getTime()) / 3600000;
-              const isOverdue = diffHours >= 24;
-              const carteDOM = creerCarteEmprunt(loan.loanId, `${loan.name} (x${loan.qty})`, "borrowed", isOverdue, loan.jeune, loan.pro, loan.time, true);
-              gridCartes.appendChild(carteDOM);
-            } else {
-              const item = emprunt.data as (typeof state.inventory)[number];
-              const diffHours = (now.getTime() - new Date(item.time ?? 0).getTime()) / 3600000;
-              const isOverdue = diffHours >= 24;
-              const carteDOM = creerCarteEmprunt(item.id, item.name, "borrowed", isOverdue, item.jeune, item.pro, item.time, false);
-              gridCartes.appendChild(carteDOM);
-            }
-          });
-          zoneEmprunt.appendChild(gridCartes);
-        }
+        groupedLoans[jeune].forEach((emprunt) => {
+          const isGeneric = emprunt.type === "generic";
+          if (isGeneric) {
+            const loan = emprunt.data as (typeof state.genericLoans)[number];
+            const diffHours = (now.getTime() - new Date(loan.time ?? 0).getTime()) / 3600000;
+            const isOverdue = diffHours >= 24;
+            const carteDOM = creerCarteEmprunt(loan.loanId, `${loan.name} (x${loan.qty})`, "borrowed", isOverdue, loan.jeune, loan.pro, loan.time, true);
+            gridCartes.appendChild(carteDOM);
+          } else {
+            const item = emprunt.data as (typeof state.inventory)[number];
+            const diffHours = (now.getTime() - new Date(item.time ?? 0).getTime()) / 3600000;
+            const isOverdue = diffHours >= 24;
+            const carteDOM = creerCarteEmprunt(item.id, item.name, "borrowed", isOverdue, item.jeune, item.pro, item.time, false);
+            gridCartes.appendChild(carteDOM);
+          }
+        });
+        content.appendChild(gridCartes);
+        wrapper.appendChild(content);
+        zoneEmprunt.appendChild(wrapper);
       });
     }
   }
@@ -734,6 +753,18 @@ export function initMaterielListeners(): void {
     const input = document.getElementById("search-emprunt") as HTMLInputElement | null;
     if (input) input.value = "";
     renderItems();
+  });
+
+  // 👑 Bouton "remonter en haut" : apparaît dès qu'on a scrollé dans la liste
+  // des emprunts, ramène en douceur en haut au clic (même logique que le
+  // rapport de comptage).
+  const listeEmprunt = document.getElementById("list-emprunt");
+  const btnRemonterEmprunt = document.getElementById("btn-scroll-top-emprunt");
+  listeEmprunt?.addEventListener("scroll", () => {
+    btnRemonterEmprunt?.classList.toggle("visible", listeEmprunt.scrollTop > 200);
+  });
+  btnRemonterEmprunt?.addEventListener("click", () => {
+    listeEmprunt?.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   document.getElementById("badge-etat-frigos")?.addEventListener("mousedown", startResetFrigoEvalTimer);
