@@ -22,3 +22,22 @@
     transform: scale(0.9);
 }
 
+/* 🚦 Code couleur façon feu tricolore : le choix lui-même indique la
+   gravité (vert = ok, jaune/orange = à surveiller, rouge = problème),
+   en pastel pour rester dans l'esprit visuel des badges de l'app. */
+.btn-eval[data-eval="success"].selected {
+    background: rgba(52, 199, 89, 0.12);
+    border-color: var(--success);
+    color: var(--success);
+}
+.btn-eval[data-eval="warning"].selected {
+    background: rgba(255, 149, 0, 0.12);
+    border-color: var(--warning);
+    color: var(--warning);
+}
+.btn-eval[data-eval="danger"].selected {
+    background: rgba(255, 59, 48, 0.12);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
