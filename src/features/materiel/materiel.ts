@@ -48,6 +48,10 @@ function iconeChevronAccordion(ouvert: boolean): string {
   return `<svg class="acc-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s ease; transform:rotate(${ouvert ? 180 : 0}deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 }
 
+function iconePersonne(): string {
+  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+}
+
 function iconePanier(): string {
   // 👑 Même taille (14px) que iconeAnnulerSelection() : le bouton bascule
   // entre les deux libellés, une taille différente changeait sa hauteur
@@ -672,7 +676,7 @@ export function renderItems(): void {
         const title = document.createElement("div");
         title.className = "resident-title";
         title.onclick = () => toggleResident(jeune);
-        title.innerHTML = `<span>📦 MATÉRIEL DE : <b>${securiserTexte(jeune)}</b></span> <span>${isOpen ? "▲" : "▼"}</span>`;
+        title.innerHTML = `<span style="display:inline-flex; align-items:center; gap:8px;">${iconePersonne()}MATÉRIEL DE : <b>${securiserTexte(jeune)}</b></span>${iconeChevronAccordion(isOpen)}`;
         zoneEmprunt.appendChild(title);
 
         if (isOpen) {
