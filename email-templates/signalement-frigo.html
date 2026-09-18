@@ -6,11 +6,11 @@
 .text-main { color:#1c1c1e; }
 .text-muted { color:#5b6169; }
 .text-accent { color:#0055a4; }
-.text-green { color:#1e8e5a; }
-.text-red { color:#d64545; }
+.text-warn { color:#b25e00; }
 .block-bg { background-color:#f5f5f8; }
 .border-soft { border-color:#e4e4ea !important; }
 .border-soft2 { border-color:#ececef !important; }
+.border-warn { border-color:#e9a94d !important; }
 .footer-bg { background-color:#f5f5f8; }
 .footer-text { color:#8a8f98; }
 .footer-copy { color:#a0a4ab; }
@@ -19,11 +19,11 @@
 .text-main { color:#f2f2f2 !important; }
 .text-muted { color:#a8adb4 !important; }
 .text-accent { color:#5aa9e6 !important; }
-.text-green { color:#34c778 !important; }
-.text-red { color:#ff6b6b !important; }
+.text-warn { color:#ffb454 !important; }
 .block-bg { background-color:#2c2c2e !important; }
 .border-soft { border-color:#3a3a3c !important; }
 .border-soft2 { border-color:#3a3a3c !important; }
+.border-warn { border-color:#7a5424 !important; }
 .footer-bg { background-color:#242426 !important; }
 .footer-text { color:#9a9ea5 !important; }
 .footer-copy { color:#75787d !important; }
@@ -32,11 +32,11 @@
 [data-ogsc] .text-main { color:#f2f2f2 !important; }
 [data-ogsc] .text-muted { color:#a8adb4 !important; }
 [data-ogsc] .text-accent { color:#5aa9e6 !important; }
-[data-ogsc] .text-green { color:#34c778 !important; }
-[data-ogsc] .text-red { color:#ff6b6b !important; }
+[data-ogsc] .text-warn { color:#ffb454 !important; }
 [data-ogsc] .block-bg { background-color:#2c2c2e !important; }
 [data-ogsc] .border-soft { border-color:#3a3a3c !important; }
 [data-ogsc] .border-soft2 { border-color:#3a3a3c !important; }
+[data-ogsc] .border-warn { border-color:#7a5424 !important; }
 [data-ogsc] .footer-bg { background-color:#242426 !important; }
 [data-ogsc] .footer-text { color:#9a9ea5 !important; }
 [data-ogsc] .footer-copy { color:#75787d !important; }
@@ -60,20 +60,20 @@
 </tr>
 
 <tr>
-<td class="text-accent" style="padding:22px 28px 0 28px; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; letter-spacing:1.4px; text-transform:uppercase; color:#0055a4;">
-Contrôle de présence
+<td class="text-warn" style="padding:22px 28px 0 28px; font-family:Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; letter-spacing:1.4px; text-transform:uppercase; color:#b25e00;">
+Signalement frigo
 </td>
 </tr>
 
 <tr>
 <td class="text-main" style="padding:8px 28px 0 28px; font-family:Arial, Helvetica, sans-serif; font-size:22px; font-weight:bold; color:#1c1c1e;">
-Relevé de présence effectué
+Anomalie signalée sur un réfrigérateur
 </td>
 </tr>
 
 <tr>
 <td class="text-muted" style="padding:12px 28px 0 28px; font-family:Arial, Helvetica, sans-serif; font-size:15px; line-height:22px; color:#5b6169;">
-Un relevé de présence vient d'être effectué. Voici la synthèse de la tournée et l'état des effectifs.
+Un problème a été signalé lors d'un contrôle sanitaire. Voici le détail du signalement.
 </td>
 </tr>
 
@@ -82,14 +82,14 @@ Un relevé de présence vient d'être effectué. Voici la synthèse de la tourn�
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="block-bg" bgcolor="#f5f5f8" style="width:100%; background-color:#f5f5f8;">
 <tr>
 <td class="text-accent" style="padding:16px 20px 8px 20px; font-family:Arial, Helvetica, sans-serif; font-size:11px; font-weight:bold; letter-spacing:1.2px; text-transform:uppercase; color:#0055a4;">
-Synthèse de la tournée
+Détails du signalement
 </td>
 </tr>
 <tr>
 <td class="text-main border-soft" style="padding:10px 20px 16px 20px; border-top:1px solid #e4e4ea; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:27px; color:#1c1c1e;">
-<span class="text-muted" style="color:#5b6169;">Date : </span><b>@{triggerBody()?['date']}</b><br>
-<span class="text-muted" style="color:#5b6169;">Créneau : </span><b>de @{replace(triggerBody()?['heureDebut'], ':', 'h')} à @{replace(triggerBody()?['heureFin'], ':', 'h')}</b><br>
-<span class="text-muted" style="color:#5b6169;">Contrôle effectué par : </span><b>@{triggerBody()?['professionnel']}</b>
+<span class="text-muted" style="color:#5b6169;">Réfrigérateur : </span><b>@{triggerBody()?['nomFrigo']}</b><br>
+<span class="text-muted" style="color:#5b6169;">Date : </span><b>@{triggerBody()?['date']} à @{replace(triggerBody()?['heure'], ':', 'h')}</b><br>
+<span class="text-muted" style="color:#5b6169;">Signalé par : </span><b>@{triggerBody()?['educateur']}</b>
 </td>
 </tr>
 </table>
@@ -100,15 +100,13 @@ Synthèse de la tournée
 <td style="padding:14px 28px 0 28px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="block-bg" bgcolor="#f5f5f8" style="width:100%; background-color:#f5f5f8;">
 <tr>
-<td class="text-accent" style="padding:16px 20px 8px 20px; font-family:Arial, Helvetica, sans-serif; font-size:11px; font-weight:bold; letter-spacing:1.2px; text-transform:uppercase; color:#0055a4;">
-État des effectifs
+<td class="text-warn border-warn" style="padding:16px 20px 8px 20px; border-left:3px solid #e9a94d; font-family:Arial, Helvetica, sans-serif; font-size:11px; font-weight:bold; letter-spacing:1.2px; text-transform:uppercase; color:#b25e00;">
+Description du problème
 </td>
 </tr>
 <tr>
-<td class="text-main border-soft" style="padding:10px 20px 16px 20px; border-top:1px solid #e4e4ea; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:27px; color:#1c1c1e;">
-<span class="text-muted" style="color:#5b6169;">Effectif total : </span><b>@{triggerBody()?['totalJeunes']}</b><br>
-<span class="text-muted" style="color:#5b6169;">Présents : </span><b class="text-green" style="color:#1e8e5a;">@{triggerBody()?['presents']}</b><br>
-<span class="text-muted" style="color:#5b6169;">Absents : </span><b class="text-red" style="color:#d64545;">@{triggerBody()?['absents']}</b>
+<td class="text-main border-warn" style="padding:2px 20px 16px 20px; border-left:3px solid #e9a94d; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:22px; color:#1c1c1e;">
+@{triggerBody()?['description']}
 </td>
 </tr>
 </table>
@@ -117,7 +115,7 @@ Synthèse de la tournée
 
 <tr>
 <td class="text-muted border-soft2" style="padding:24px 28px 26px 28px; border-top:1px solid #ececef; font-family:Arial, Helvetica, sans-serif; font-size:12.5px; line-height:19px; color:#8a8f98;">
-Le relevé détaillé, incluant la répartition mineurs/majeurs et la liste nominative des absents avec leurs motifs, est joint à ce message.
+La photo illustrant le problème est jointe à ce message pour constater les faits.
 </td>
 </tr>
 
