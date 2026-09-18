@@ -138,7 +138,13 @@ export async function envoyerSignalement(): Promise<void> {
 
   const now = new Date();
   const btn = document.getElementById("btn-envoyer-sig") as HTMLButtonElement;
-  btn.innerText = "⏳ Envoi en cours...";
+  // Anneau de chargement animé (@keyframes spinSmooth, déjà global) plutôt
+  // qu'un emoji sablier : même principe que le bouton de génération de PDF.
+  btn.innerHTML = `
+    <span style="display:inline-flex; align-items:center; justify-content:center; gap:7px; white-space:nowrap;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" style="flex-shrink:0; animation: spinSmooth 0.8s linear infinite;"><circle cx="12" cy="12" r="9" stroke-dasharray="28 100"></circle></svg>
+      Envoi...
+    </span>`;
   btn.disabled = true;
 
   const base64Data = photoBase64Temp.split(",")[1];
