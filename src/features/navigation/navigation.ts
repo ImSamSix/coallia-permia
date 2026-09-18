@@ -81,6 +81,13 @@ export function openMenu(): void {
   document.querySelectorAll(".view").forEach((el) => el.classList.add("hidden"));
   document.getElementById("home-menu")?.classList.remove("hidden");
 
+  // 🔝 Remise à zéro du défilement : la zone scrollable garde sa position
+  // même une fois masquée (display:none), donc revenir à l'accueil après
+  // l'avoir quitté en ayant scrollé rouvrait la page à la même hauteur au
+  // lieu de repartir du haut.
+  const contenuAccueil = document.querySelector<HTMLElement>("#home-menu .content");
+  if (contenuAccueil) contenuAccueil.scrollTop = 0;
+
   const prenom = localStorage.getItem("coallia_pro_prenom") || "";
 
   // 👑 PERSONNALISATION TEMPORELLE (Horaires Réels Coallia)
