@@ -5,7 +5,7 @@ import { securiserTexte } from "@/ui/dom-utils";
 import { jouerSon } from "@/ui/sound";
 import { vibrer } from "@/services/feedback";
 import { fermerModals } from "@/ui/modals";
-import { updateDashboardBadges } from "@/features/navigation/navigation";
+import { openMenu } from "@/features/navigation/navigation";
 import { telechargerPDF } from "@/features/pdf/pdf";
 import { attacherEffetAppui } from "@/ui/press-effect";
 import type { ComptageType, MecsSession } from "@/types/mecs";
@@ -157,9 +157,11 @@ export function openComptageMenu(): void {
 }
 
 export function retourSaisieComptage(): void {
-  document.getElementById("comptage-app")?.classList.add("hidden");
-  document.getElementById("home-menu")?.classList.remove("hidden");
-  updateDashboardBadges();
+  // 👑 Délègue entièrement à openMenu() (au lieu de dupliquer juste une partie
+  // de son travail) : garantit qu'un retour depuis le comptage bénéficie des
+  // mêmes traitements qu'un retour normal à l'accueil (remise à zéro du
+  // défilement, message de bienvenue, pastilles du tableau de bord...).
+  openMenu();
 }
 
 // Lancement d'une session de pointage
