@@ -372,7 +372,7 @@
 
 <button id="main-photo-btn" class="scan-main-btn hidden">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 5px; flex-shrink: 0;"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
-    Signaler un problème (Photo)
+    Signaler un problème
 </button>
 
 <input type="file" id="input-camera-cache" accept="image/*" capture="environment" style="display: none;">
@@ -923,21 +923,21 @@
 
 <div id="signalement-modal" class="modal-overlay hidden">
     <div class="modal-card" style="max-width: 380px;">
-        <h3 style="color: var(--danger); margin-bottom: 5px;">🚨 Signaler un problème</h3>
+        <h3 style="color: var(--danger); margin-bottom: 5px;">Signaler un problème</h3>
         <p class="modal-subtitle" style="margin-bottom: 20px;">Joindre une preuve visuelle</p>
         
         <div id="sig-error-bubble" class="hidden" style="background-color: var(--danger); color: white; padding: 10px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-bottom: 15px; text-align: center;">⚠️ Veuillez remplir tous les champs</div>
 
-        <label class="form-label">📸 Preuve visuelle *</label>
+        <label class="form-label">Preuve visuelle *</label>
         <div id="sig-photo-container" style="position: relative; width: 100%; height: 180px; margin-bottom: 15px; border-radius: 14px; overflow: hidden; border: 2px dashed var(--coallia-blue); display: flex; align-items: center; justify-content: center; background: var(--input-bg); transition: 0.3s;">
             <div id="photo-preview" style="width: 100%; height: 100%; background-size: cover; background-position: center; display: none;"></div>
             
-            <button id="btn-reprendre-photo" style="background: transparent; border: none; font-size: 50px; cursor: pointer; display: none; transition: transform 0.2s;">📷</button>
+            <button id="btn-reprendre-photo" style="background: transparent; border: none; color: var(--coallia-blue); cursor: pointer; display: none; transition: transform 0.2s;"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg></button>
             
             <button id="btn-effacer-photo" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(2px);">✕</button>
         </div>
 
-        <label class="form-label">❄️ Frigo concerné *</label>
+        <label class="form-label">Frigo concerné *</label>
         <div style="position: relative; width: 100%; margin-bottom: 15px;">
             <select id="sig-frigo-select" style="margin: 0; cursor: pointer; text-align: center; text-align-last: center;">
                 <option value="" disabled selected>Sélectionner le frigo...</option>
@@ -950,7 +950,7 @@
             </select>
         </div>
         
-        <label class="form-label">✍️ Description *</label>
+        <label class="form-label">Description *</label>
         <div style="position: relative; width: 100%; margin-bottom: 25px;">
             <textarea id="sig-desc" placeholder="Détaillez le problème rencontré..." style="width: 100%; padding: 15px 55px 15px 15px; border-radius: 14px; background: var(--input-bg); border: 1px solid transparent; font-family: 'Inter', sans-serif; resize: none; color: var(--text-dark); font-size: 14px; min-height: 80px; box-sizing: border-box; overflow: hidden; display: block; margin: 0; outline: none;"></textarea>
             
