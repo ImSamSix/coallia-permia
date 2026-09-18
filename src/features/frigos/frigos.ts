@@ -13,6 +13,40 @@ export function ouvrirHistoriqueFrigos(): void {
   window.open(atob("aHR0cHM6Ly9jb2FsbGlhb3JnLnNoYXJlcG9pbnQuY29tLzp4Oi9zL0NvYWxsaWFfUGVybWlhL0lRQ2FJNHZ4V21oeFJMMlEwcGZTRklqNUFVM0NfSDBQYXZEU2xEdWZuWnowVVhvP2U9MTVXcmlT"), "_blank");
 }
 
+// 🎨 Icônes SVG des cartes frigo — même tracé que les boutons d'évaluation
+// correspondants, coloré selon l'état (vert/orange/rouge/gris) pour rester
+// intuitif d'un coup d'œil, sans avoir à lire le libellé sous l'icône.
+function iconLockPresent(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>`;
+}
+function iconLockOpen(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 7.75-1.5"></path></svg>`;
+}
+function iconLockBroken(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path><line x1="3" y1="3" x2="21" y2="21"></line></svg>`;
+}
+function iconSparkle(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>`;
+}
+function iconAlerteTriangle(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+}
+function iconVirus(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"></circle><line x1="17" y1="12" x2="21.3" y2="12"></line><circle cx="21.3" cy="12" r="1.6"></circle><line x1="14.5" y1="16.3" x2="16.7" y2="20.1"></line><circle cx="16.7" cy="20.1" r="1.6"></circle><line x1="9.5" y1="16.3" x2="7.3" y2="20.1"></line><circle cx="7.3" cy="20.1" r="1.6"></circle><line x1="7" y1="12" x2="2.7" y2="12"></line><circle cx="2.7" cy="12" r="1.6"></circle><line x1="9.5" y1="7.7" x2="7.3" y2="3.9"></line><circle cx="7.3" cy="3.9" r="1.6"></circle><line x1="14.5" y1="7.7" x2="16.7" y2="3.9"></line><circle cx="16.7" cy="3.9" r="1.6"></circle></svg>`;
+}
+function iconCheck(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>`;
+}
+function iconTag(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r="1.5"></circle></svg>`;
+}
+function iconInconnu(): string {
+  return `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+}
+function iconUsers(): string {
+  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`;
+}
+
 // ==========================================
 // 19. GESTION DES FRIGOS (DASHBOARD & ÉVALUATION)
 // ==========================================
@@ -29,9 +63,28 @@ export function renderFrigos(): void {
     const isRecent = f.time && now.getTime() - f.time < UNE_SEMAINE;
     const statusColor = isCheck && isRecent ? "var(--coallia-blue)" : "var(--warning)";
 
-    const emojiCad = f.cad === "ok" ? "🔒" : f.cad === "open" ? "🔓" : f.cad === "lost" ? "❌" : "❓";
-    const emojiHyg = f.hyg === "clean" ? "✨" : f.hyg === "med" ? "⚠️" : f.hyg === "dirty" ? "☣️" : "❓";
-    const emojiCont = f.cont === "ok" ? "✅" : f.cont === "sort" ? "🏷️" : "❓";
+    const iconCad =
+      f.cad === "ok"
+        ? { svg: iconLockPresent(), couleur: "var(--success)" }
+        : f.cad === "open"
+          ? { svg: iconLockOpen(), couleur: "var(--warning)" }
+          : f.cad === "lost"
+            ? { svg: iconLockBroken(), couleur: "var(--danger)" }
+            : { svg: iconInconnu(), couleur: "var(--text-gray)" };
+    const iconHyg =
+      f.hyg === "clean"
+        ? { svg: iconSparkle(), couleur: "var(--success)" }
+        : f.hyg === "med"
+          ? { svg: iconAlerteTriangle(), couleur: "var(--warning)" }
+          : f.hyg === "dirty"
+            ? { svg: iconVirus(), couleur: "var(--danger)" }
+            : { svg: iconInconnu(), couleur: "var(--text-gray)" };
+    const iconCont =
+      f.cont === "ok"
+        ? { svg: iconCheck(), couleur: "var(--success)" }
+        : f.cont === "sort"
+          ? { svg: iconTag(), couleur: "var(--danger)" }
+          : { svg: iconInconnu(), couleur: "var(--text-gray)" };
 
     const lastTime = f.time ? new Date(f.time).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "Jamais évalué";
     const lastPro = f.pro ? f.pro : "-";
@@ -47,20 +100,20 @@ export function renderFrigos(): void {
 
                 <div style="text-align: center; margin-bottom: 20px;">
                     <h3 style="margin: 0 0 10px 0; font-size: 22px; color: var(--text-dark); font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">${f.name}</h3>
-                    <button class="btn-voir-jeunes" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 16px; font-size: 13px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s;">👥 Voir les jeunes</button>
+                    <button class="btn-voir-jeunes" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 16px; font-size: 13px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 7px;">${iconUsers()}Voir les jeunes</button>
                 </div>
 
                 <div style="display: flex; justify-content: space-evenly; background: var(--input-bg); padding: 18px 5px; border-radius: 18px; margin-bottom: 25px;">
                     <div style="text-align: center;">
-                        <div style="font-size: 28px; margin-bottom: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${emojiCad}</div>
+                        <div style="margin-bottom: 6px; color: ${iconCad.couleur}; display: flex; justify-content: center;">${iconCad.svg}</div>
                         <div style="font-size: 10px; color: var(--text-gray); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Cadenas</div>
                     </div>
                     <div style="text-align: center;">
-                        <div style="font-size: 28px; margin-bottom: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${emojiHyg}</div>
+                        <div style="margin-bottom: 6px; color: ${iconHyg.couleur}; display: flex; justify-content: center;">${iconHyg.svg}</div>
                         <div style="font-size: 10px; color: var(--text-gray); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Hygiène</div>
                     </div>
                     <div style="text-align: center;">
-                        <div style="font-size: 28px; margin-bottom: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">${emojiCont}</div>
+                        <div style="margin-bottom: 6px; color: ${iconCont.couleur}; display: flex; justify-content: center;">${iconCont.svg}</div>
                         <div style="font-size: 10px; color: var(--text-gray); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">Contenu</div>
                     </div>
                 </div>
