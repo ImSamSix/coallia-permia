@@ -181,7 +181,10 @@ export function retourAccueilDepuis404(): void {
 
 /** Câble la barre supérieure de l'accueil, le message de bienvenue et l'écran 404. */
 export function initNavigationListeners(): void {
-  document.getElementById("pro-badge-home")?.addEventListener("click", ouvrirMenuPro);
+  // 👑 Le bouton Options est désormais présent sur tous les écrans (à droite,
+  // sauf sur l'accueil où il reste à gauche) : un seul sélecteur générique
+  // plutôt qu'un addEventListener par écran.
+  document.querySelectorAll(".options-badge").forEach((btn) => btn.addEventListener("click", ouvrirMenuPro));
   document.getElementById("btn-pain-modal")?.addEventListener("click", ouvrirPainModal);
   document.getElementById("btn-logout")?.addEventListener("click", ouvrirLogout);
   document.getElementById("welcome-message")?.addEventListener("click", clicEasterEggAccueil);

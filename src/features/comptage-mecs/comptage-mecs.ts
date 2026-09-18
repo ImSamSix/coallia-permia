@@ -125,6 +125,16 @@ function construireItineraire(chambreTexte: string, mini = false, sansCadre = fa
   return `<div style="display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; background:var(--input-bg); color:var(--text-dark); border:1px solid var(--border-color); border-radius:14px; padding:${padding}; font-weight:800; font-size:${fontSize}; width:100%; box-sizing:border-box;">${morceaux.join("")}</div>`;
 }
 
+/** Le bouton Options est masqué pendant la tournée et sur le récap final :
+ * y accéder depuis là (Options → Plan du foyer → Accueil) contournerait la
+ * protection du bouton retour (masqué lui aussi dans ces deux écrans) et
+ * ferait perdre un relevé en cours qui n'a pas encore été enregistré. */
+function syncOptionsBtnComptage(): void {
+  const workspaceVisible = !document.getElementById("comptage-workspace")?.classList.contains("hidden");
+  const reportVisible = !document.getElementById("comptage-report-screen")?.classList.contains("hidden");
+  document.getElementById("comptage-options-btn")?.classList.toggle("hidden", workspaceVisible || reportVisible);
+}
+
 // --- INTERFACE COMMANDE COMPTAGE ---
 export function openComptageMenu(): void {
   document.getElementById("home-menu")?.classList.add("hidden");
@@ -143,6 +153,7 @@ export function openComptageMenu(): void {
     backBtn.onclick = retourSaisieComptage;
     backBtn.classList.remove("hidden");
   }
+  syncOptionsBtnComptage();
 }
 
 export function retourSaisieComptage(): void {
@@ -205,11 +216,13 @@ export function lancerComptageMecs(): void {
 
   // ⚠️ Le bouton retour est masqué pendant toute la tournée (et jusqu'à la
   // clôture) : impossible de l'interrompre par erreur une fois lancée, il
-  // faut aller jusqu'au bout ou saisir "Terminer et Enregistrer".
+  // faut aller jusqu'au bout ou saisir "Terminer et Enregistrer". Le bouton
+  // Options subit la même restriction (voir syncOptionsBtnComptage).
   const backBtn = document.getElementById("comptage-back-btn") as HTMLButtonElement | null;
   if (backBtn) {
     backBtn.classList.add("hidden");
   }
+  syncOptionsBtnComptage();
 
   majDashboardComptage();
   genererCarteJeuneMecs();
@@ -463,6 +476,7 @@ function afficherRapportFinalMecs(): void {
   if (!mecsSessionEnCours) return;
   document.getElementById("comptage-workspace")?.classList.add("hidden");
   document.getElementById("comptage-report-screen")?.classList.remove("hidden");
+  syncOptionsBtnComptage();
 
   // Rapport toujours réaffiché depuis le haut, bouton "remonter" repos au départ
   const reportScroll = document.getElementById("comptage-report-scroll");
@@ -678,6 +692,7 @@ function retourSetupDepuisLast(): void {
     backBtn.innerText = "← Accueil";
     backBtn.onclick = retourSaisieComptage;
   }
+  syncOptionsBtnComptage();
 }
 
 export function verifierAnnulationComptage(): void {
@@ -704,7 +719,9 @@ export function confirmerAbandonTournee(): void {
   if (backBtn) {
     backBtn.innerText = "← Accueil";
     backBtn.onclick = retourSaisieComptage; // Quitte le module comptage
+    backBtn.classList.remove("hidden");
   }
+  syncOptionsBtnComptage();
 }
 
 // --- LOGIQUE ÉCRAN COMPTAGE : ALTERNATIVE AUTRE MOTIF ---
