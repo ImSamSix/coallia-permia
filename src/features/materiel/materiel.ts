@@ -48,8 +48,16 @@ function iconeChevronAccordion(ouvert: boolean): string {
   return `<svg class="acc-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; transition:transform 0.2s ease; transform:rotate(${ouvert ? 180 : 0}deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 }
 
-function iconePersonne(): string {
-  return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+function iconePersonne(taille = 15): string {
+  return `<svg width="${taille}" height="${taille}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
+}
+
+function iconeCle(): string {
+  return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="7.5" cy="15.5" r="5.5"></circle><path d="M21 2l-9.6 9.6"></path><path d="m15.5 7.5 3 3L22 7l-3-3"></path></svg>`;
+}
+
+function iconeHorloge(): string {
+  return `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
 }
 
 function iconePanier(): string {
@@ -610,9 +618,9 @@ export function renderItems(): void {
                 <div class="dot-indicator"></div>
             </div>
             <div class="card-footer">
-                <div class="row"><span>👤 Jeune :</span> <b>${securiserTexte(jeune)}</b></div>
-                <div class="row"><span>🔑 Professionnel ·le:</span> <b>${securiserTexte(pro)}</b></div>
-                <div class="row"><span>🕒 Heure de prêt :</span> <b>${heure}</b></div>
+                <div class="row"><span style="display:inline-flex; align-items:center; gap:6px;">${iconePersonne(13)}Jeune :</span> <b>${securiserTexte(jeune)}</b></div>
+                <div class="row"><span style="display:inline-flex; align-items:center; gap:6px;">${iconeCle()}Professionnel ·le:</span> <b>${securiserTexte(pro)}</b></div>
+                <div class="row"><span style="display:inline-flex; align-items:center; gap:6px;">${iconeHorloge()}Heure de prêt :</span> <b>${heure}</b></div>
             </div>
         `;
     return card;
@@ -676,7 +684,7 @@ export function renderItems(): void {
         const title = document.createElement("div");
         title.className = "resident-title";
         title.onclick = () => toggleResident(jeune);
-        title.innerHTML = `<span style="display:inline-flex; align-items:center; gap:8px;">${iconePersonne()}MATÉRIEL DE : <b>${securiserTexte(jeune)}</b></span>${iconeChevronAccordion(isOpen)}`;
+        title.innerHTML = `<span style="display:inline-flex; align-items:center; gap:8px;">${iconePersonne()}Matériel prêté à : <b>${securiserTexte(jeune)}</b></span>${iconeChevronAccordion(isOpen)}`;
         zoneEmprunt.appendChild(title);
 
         if (isOpen) {
