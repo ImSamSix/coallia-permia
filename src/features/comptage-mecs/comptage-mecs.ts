@@ -796,11 +796,6 @@ function effacerAbsenceAutreObs(): void {
 
 const MOTIFS_ABSENCE: Record<string, string> = {
   "btn-absence-autorisee": "Absence autorisée",
-  "btn-absence-formation": "Formation",
-  "btn-absence-stage": "Stage",
-  "btn-absence-travail": "Travail",
-  "btn-absence-sport": "Sport",
-  "btn-absence-hopital": "Hospitalisation",
   "btn-absence-absent": "Absent",
   "btn-absence-fugue": "Fugue"
 };
