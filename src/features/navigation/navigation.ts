@@ -5,7 +5,6 @@ import { ouvrirLogout } from "@/features/session/session";
 import { ouvrirPainModal } from "@/features/pain/pain";
 import { ouvrirAnnuaire } from "@/features/annuaire/annuaire";
 import { toggleThemeAnimated } from "@/features/theme/theme";
-import { clicEasterEggAccueil } from "@/ui/easter-egg";
 import { attacherEffetAppui } from "@/ui/press-effect";
 import { securiserTexte } from "@/ui/dom-utils";
 
@@ -188,7 +187,6 @@ export function initNavigationListeners(): void {
   document.querySelectorAll(".options-badge").forEach((btn) => btn.addEventListener("click", ouvrirMenuPro));
   document.getElementById("btn-pain-modal")?.addEventListener("click", ouvrirPainModal);
   document.getElementById("btn-logout")?.addEventListener("click", ouvrirLogout);
-  document.getElementById("welcome-message")?.addEventListener("click", clicEasterEggAccueil);
   document.getElementById("btn-404-retour")?.addEventListener("click", retourAccueilDepuis404);
   document.getElementById("btn-maintenance-refresh")?.addEventListener("click", () => window.location.reload());
 
