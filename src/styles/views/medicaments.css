@@ -2,6 +2,20 @@
 .med-form-card { background: var(--card-color); padding: 25px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: background 0.3s; overflow-y: auto; }
 .form-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-gray); margin-bottom: 8px; text-align: center; text-transform: uppercase; }
 
+/* Quand les deux zones "Autre" (médicament + symptôme) sont ouvertes, le
+   formulaire dépasse la hauteur de l'écran. Plutôt que de faire défiler
+   uniquement la carte (ce qui masquait le bouton "Consulter la
+   traçabilité"), on laisse la carte prendre toute sa hauteur naturelle et
+   c'est la zone de contenu entière qui défile : le bouton reste juste en
+   dessous du formulaire, avec le même espacement qu'avant. */
+#med-app .content {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+#med-app .med-form-card {
+    overflow-y: visible;
+}
+
 /* Titre d'écran mis en avant : kicker bleu Coallia au-dessus, titre
    agrandi — sans emoji ni icône. */
 .med-kicker {
