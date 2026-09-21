@@ -543,8 +543,8 @@ function afficherRapportFinalMecs(): void {
         row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:9px; font-weight:600; box-shadow:0 3px 10px rgba(10,22,44,0.045);`;
         row.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; text-align:left;">
-                <span style="color:var(--text-dark); display:inline-flex; align-items:center;">${ab.prenom} ${ab.nom} ${alertTag}</span>
-                <span style="font-size:11px; background:rgba(255,59,48,0.09); padding:5px 10px; border-radius:8px; color:var(--danger); font-weight:700; white-space:nowrap; flex-shrink:0;">${ab.motif}</span>
+                <span style="color:var(--text-dark); display:inline-flex; align-items:center;">${securiserTexte(ab.prenom)} ${securiserTexte(ab.nom)} ${alertTag}</span>
+                <span style="font-size:11px; background:rgba(255,59,48,0.09); padding:5px 10px; border-radius:8px; color:var(--danger); font-weight:700; white-space:nowrap; flex-shrink:0;">${securiserTexte(ab.motif)}</span>
             </div>
             ${construireItineraire(ab.chambre, true, true)}
         `;
@@ -674,8 +674,8 @@ export function voirDernierComptage(): void {
         row.style.cssText = `background:${cardBg}; border:${cardBorder}; ${borderLeft} padding:12px; border-radius:12px; font-size:13px; display:flex; flex-direction:column; gap:9px; font-weight:600; box-shadow:0 3px 10px rgba(10,22,44,0.045);`;
         row.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; text-align:left;">
-                    <span style="color:var(--text-dark); display:inline-flex; align-items:center;">${ab.prenom} ${ab.nom} ${alertTag}</span>
-                    <span style="font-size:11px; background:rgba(255,59,48,0.09); padding:5px 10px; border-radius:8px; color:var(--danger); font-weight:700; white-space:nowrap; flex-shrink:0;">${ab.motif}</span>
+                    <span style="color:var(--text-dark); display:inline-flex; align-items:center;">${securiserTexte(ab.prenom)} ${securiserTexte(ab.nom)} ${alertTag}</span>
+                    <span style="font-size:11px; background:rgba(255,59,48,0.09); padding:5px 10px; border-radius:8px; color:var(--danger); font-weight:700; white-space:nowrap; flex-shrink:0;">${securiserTexte(ab.motif)}</span>
                 </div>
                 ${construireItineraire(ab.chambre, true, true)}
             `;

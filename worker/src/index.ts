@@ -12,6 +12,17 @@ async function genererCleServeur(motDePasse: string): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/** Comparaison à temps constant : évite qu'un écart de latence réseau (même
+ * infime) ne laisse fuiter, caractère par caractère, le badge attendu. */
+function comparerEnTempsConstant(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 function isCloudSync(body: PermiaRequestBody): body is CloudSyncRequestBody {
   return body.type === "cloud_sync";
 }
@@ -77,8 +88,8 @@ const handler = {
     }
 
     // 🛡️ 4. VÉRIFICATION DYNAMIQUE DU BADGE
-    const apiKey = request.headers.get("X-Permia-Key");
-    if (apiKey !== CLE_API_ATTENDUE) {
+    const apiKey = request.headers.get("X-Permia-Key") || "";
+    if (!comparerEnTempsConstant(apiKey, CLE_API_ATTENDUE)) {
       // On incrémente le compteur, qui s'effacera seul au bout de 15 minutes
       await env.PERMIA_DB.put(cleThrottle, String(echecs + 1), { expirationTtl: FENETRE_SECONDES });
       return new Response("Accès refusé : Connexion non autorisée.", { status: 403, headers: corsHeaders });

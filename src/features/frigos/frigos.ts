@@ -6,6 +6,7 @@ import { fermerModals } from "@/ui/modals";
 import { demanderConfirmation } from "@/ui/confirm-modal";
 import { attacherEffetAppui } from "@/ui/press-effect";
 import { iconeCheckSucces } from "@/ui/icons";
+import { securiserTexte } from "@/ui/dom-utils";
 import type { CadenasState, ContenuState, FrigoEvalTemp, FrigoLog, HygieneState } from "@/types/frigo";
 
 /** Lien "Consulter l'historique des frigos" (SharePoint) — URL encodée en base64 dans l'ancien code, conservée à l'identique. */
@@ -99,7 +100,7 @@ export function renderFrigos(): void {
             <div class="card-body" style="padding: 25px 20px; display: flex; flex-direction: column; align-items: stretch;">
 
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <h3 style="margin: 0 0 10px 0; font-size: 22px; color: var(--text-dark); font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">${f.name}</h3>
+                    <h3 style="margin: 0 0 10px 0; font-size: 22px; color: var(--text-dark); font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">${securiserTexte(f.name)}</h3>
                     <button class="btn-voir-jeunes" style="background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-dark); padding: 8px 16px; font-size: 13px; border-radius: 20px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 7px;">${iconUsers()}Gérer les jeunes</button>
                 </div>
 
@@ -123,7 +124,7 @@ export function renderFrigos(): void {
 
             <div class="card-footer" style="background: var(--footer-bg); padding: 14px 20px; font-size: 11px; color: var(--text-gray); display: flex; justify-content: space-between; border-top: 1px solid var(--border-color);">
                 <span>Le <b style="color: var(--text-dark);">${lastTime}</b></span>
-                <span>Par <b style="color: var(--text-dark);">${lastPro}</b></span>
+                <span>Par <b style="color: var(--text-dark);">${securiserTexte(lastPro)}</b></span>
             </div>
         `;
     card.querySelector(".btn-voir-jeunes")?.addEventListener("click", () => voirJeunesFrigo(f.id));

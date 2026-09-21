@@ -1,5 +1,6 @@
 import { state } from "@/state/store";
 import { retour } from "@/services/feedback";
+import { securiserTexte } from "@/ui/dom-utils";
 
 export type RapportType = "materiel" | "comptage";
 
@@ -125,7 +126,7 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
   const p2 = (n: number) => String(n).padStart(2, "0");
   const refDoc =
     `PRM-${maintenant.getFullYear()}${p2(maintenant.getMonth() + 1)}${p2(maintenant.getDate())}` + `-${p2(maintenant.getHours())}${p2(maintenant.getMinutes())}`;
-  const auteurDoc = localStorage.getItem("coallia_pro_prenom") || "—";
+  const auteurDoc = securiserTexte(localStorage.getItem("coallia_pro_prenom") || "—");
 
   if (type === "materiel") {
     contenuHTML = document.getElementById("recap-content")?.innerHTML ?? "";
@@ -152,8 +153,8 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
         absentsHTML += `
                         <div style="background:${cardBg}; border:${cardBorder}; ${borderLeft} border-radius:12px; padding:12px 14px; margin-bottom:8px; box-sizing:border-box; font-family:'Helvetica Neue', Arial, sans-serif; page-break-inside:avoid; break-inside:avoid;">
                             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:9px;">
-                                <span style="color:#111; font-size:13px; font-weight:700; display:inline-flex; align-items:center;">${ab.prenom} ${ab.nom}${alertTag}</span>
-                                <span style="font-size:10.5px; background:rgba(211,47,47,0.08); padding:4px 10px; border-radius:7px; color:#d32f2f; font-weight:700; white-space:nowrap; flex-shrink:0;">${ab.motif}</span>
+                                <span style="color:#111; font-size:13px; font-weight:700; display:inline-flex; align-items:center;">${securiserTexte(ab.prenom)} ${securiserTexte(ab.nom)}${alertTag}</span>
+                                <span style="font-size:10.5px; background:rgba(211,47,47,0.08); padding:4px 10px; border-radius:7px; color:#d32f2f; font-weight:700; white-space:nowrap; flex-shrink:0;">${securiserTexte(ab.motif)}</span>
                             </div>
                             ${itinerairePdf(ab.chambre)}
                         </div>
@@ -184,7 +185,7 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
                         </td>
                         <td style="padding:12px 14px; width:26%; vertical-align:top; border-radius:0 0 11px 0;">
                             <div style="font-size:8.5px; color:#6b7f9c; font-weight:800; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:4px;">Contrôle effectué par</div>
-                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${dernierLog.professionnel}</div>
+                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${securiserTexte(dernierLog.professionnel)}</div>
                         </td>
                     </tr>
                 </table>

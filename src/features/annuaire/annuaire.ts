@@ -10,11 +10,6 @@ export function ouvrirAnnuaire(): void {
   document.getElementById("annuaire-modal")?.classList.remove("hidden");
 }
 
-export function retourMenuPro(): void {
-  fermerModals(); // Ferme l'annuaire
-  document.getElementById("pro-menu-modal")?.classList.remove("hidden");
-}
-
 // --- LOGIQUE D'APPUI LONG ET ÉDITION ANNUAIRE ---
 let contactTimer: ReturnType<typeof setTimeout>;
 let isContactLongPress = false;

@@ -7,6 +7,7 @@ import { ouvrirAnnuaire } from "@/features/annuaire/annuaire";
 import { toggleThemeAnimated } from "@/features/theme/theme";
 import { clicEasterEggAccueil } from "@/ui/easter-egg";
 import { attacherEffetAppui } from "@/ui/press-effect";
+import { securiserTexte } from "@/ui/dom-utils";
 
 /**
  * ⚠️ CORRECTIF DE MIGRATION : la section "3. Calcul des transmissions" de
@@ -87,7 +88,9 @@ export function openMenu(): void {
   const contenuAccueil = document.querySelector<HTMLElement>("#home-menu .content");
   if (contenuAccueil) contenuAccueil.scrollTop = 0;
 
-  const prenom = localStorage.getItem("coallia_pro_prenom") || "";
+  // 🛡️ Échappé une fois ici : ce prénom vient d'un champ de saisie libre au
+  // login et part directement en innerHTML plus bas (message de bienvenue).
+  const prenom = securiserTexte(localStorage.getItem("coallia_pro_prenom") || "");
 
   // 👑 PERSONNALISATION TEMPORELLE (Horaires Réels Coallia)
   const now = new Date();

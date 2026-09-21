@@ -1,5 +1,6 @@
 import { state } from "@/state/store";
 import { retour } from "@/services/feedback";
+import { securiserTexte } from "@/ui/dom-utils";
 
 interface LigneEmprunt {
   name: string;
@@ -53,7 +54,7 @@ export function genererRecap(): void {
     htmlText += `
         <div style="margin-bottom: 15px; page-break-inside: avoid; font-family: 'Inter', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
             <div style="background: #0055a4; color: white; padding: 10px 15px; border-radius: 8px 8px 0 0; font-weight: bold; font-size: 13px; text-transform: uppercase; display: flex; align-items: center; gap: 8px;">
-                ${svgPersonneRecap(13, "#ffffff")}${jeune}
+                ${svgPersonneRecap(13, "#ffffff")}${securiserTexte(jeune)}
             </div>
             <div style="background: #ffffff; border: 1px solid #e0e0e0; border-top: none; padding: 12px; border-radius: 0 0 8px 8px;">
                 <ul style="margin: 0; padding-left: 20px; color: #333; font-size: 13px; line-height: 1.6;">`;
@@ -67,7 +68,7 @@ export function genererRecap(): void {
       const datePret = new Date(emprunt.time as string | number | Date).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
       const heurePret = new Date(emprunt.time as string | number | Date).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 
-      htmlText += `<li style="margin-bottom: 6px;">${alertTag}<b style="color: #222;">${emprunt.name}</b> <br><span style="color: #888; font-size: 11px; margin-left: 2px;">Prêté le ${datePret} à ${heurePret} par ${emprunt.pro}</span></li>`;
+      htmlText += `<li style="margin-bottom: 6px;">${alertTag}<b style="color: #222;">${securiserTexte(emprunt.name)}</b> <br><span style="color: #888; font-size: 11px; margin-left: 2px;">Prêté le ${datePret} à ${heurePret} par ${securiserTexte(emprunt.pro)}</span></li>`;
     });
 
     htmlText += `</ul></div></div>`;

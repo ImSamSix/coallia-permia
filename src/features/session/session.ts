@@ -91,18 +91,6 @@ export function initialiserAutosave(): void {
   });
 }
 
-/** Vide la mémoire une fois le message envoyé. */
-export function purgerAutosave(typeFormulaire: "trans"): void {
-  let champsAVider: string[] = [];
-  if (typeFormulaire === "trans") {
-    champsAVider = ["trans-type", "trans-titre", "trans-desc"];
-  }
-
-  champsAVider.forEach((id) => {
-    localStorage.removeItem("autosave_" + id);
-  });
-}
-
 /** 🛡️ SÉCURITÉ RGPD : Efface TOUS les brouillons en clair du localStorage. */
 export function purgerToutAutosave(): void {
   champsASauvegarder.forEach((id) => {

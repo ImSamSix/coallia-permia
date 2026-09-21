@@ -5,6 +5,7 @@ import { demanderConfirmation } from "@/ui/confirm-modal";
 import { retour } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
 import { iconeAlerte, iconeCheckSucces } from "@/ui/icons";
+import { securiserTexte } from "@/ui/dom-utils";
 import type { MedLog } from "@/types/medication";
 
 export function openMedicaments(): void {
@@ -129,7 +130,7 @@ export function validerMedicament(): void {
         const alertText = document.getElementById("med-alert-text");
         if (alertText) {
           alertText.innerHTML = `
-                    <b>${nomJeune}</b> a déjà pris du Doliprane/Paracétamol récemment.<br><br>
+                    <b>${securiserTexte(nomJeune)}</b> a déjà pris du Doliprane/Paracétamol récemment.<br><br>
                     Prochaine prise autorisée à :<br>
                     <span style="display:inline-block; margin-top:15px; font-size: 26px; font-weight: 800; color: var(--text-dark); background: var(--input-bg); padding: 10px 20px; border-radius: 12px;">
                         ${heurePossible}
