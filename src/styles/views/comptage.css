@@ -208,8 +208,9 @@
     flex-shrink: 0;
     padding-top: 14px;
     /* Marge de respiration supplémentaire en bas : évite que les coins du
-       bouton ne touchent le bord de l'écran / la barre de geste mobile. */
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
+       bouton ne touchent le bord de l'écran / la barre de geste mobile.
+       +19px (~0,5cm) pour éloigner davantage le bouton du bord. */
+    padding-bottom: calc(max(8px, env(safe-area-inset-bottom)) + 19px);
 }
 
 .cpt-scroll-top {
