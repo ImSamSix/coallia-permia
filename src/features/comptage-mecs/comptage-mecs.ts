@@ -7,6 +7,9 @@ import { fermerModals } from "@/ui/modals";
 import { openMenu } from "@/features/navigation/navigation";
 import { telechargerPDF } from "@/features/pdf/pdf";
 import { attacherEffetAppui } from "@/ui/press-effect";
+import { afficherToast } from "@/ui/toast";
+import { getCleAuth } from "@/services/crypto";
+import { fetchVault } from "@/services/permia-relay";
 import type { ComptageType, MecsSession } from "@/types/mecs";
 
 // Variables d'état volatiles pour la session de comptage en cours
@@ -19,6 +22,12 @@ let touchEndX = 0;
 // absent), dans l'ordre où elles ont été prises : permet de revenir sur la
 // carte précédente en cas d'erreur de saisie sans casser le comptage.
 let historiqueMecs: boolean[] = [];
+
+// 🛡️ Verrou anti double-appui : entre le geste (bouton ou swipe) et
+// l'enregistrement, l'animation d'éjection dure ~250ms. Sans ce verrou, un
+// second appui pendant ce délai était appliqué au jeune SUIVANT, compté
+// présent sans que sa carte ait jamais été vue.
+let decisionEnCours = false;
 
 /* ==========================================================================
    Icônes SVG (remplacent les emojis) — currentColor : héritent la couleur
@@ -163,8 +172,26 @@ export function retourSaisieComptage(): void {
   openMenu();
 }
 
+/**
+ * Le catalogue des jeunes n'est jamais persisté localement (données de
+ * mineurs) : après un rechargement de page hors-ligne, il est vide. On tente
+ * de le récupérer à la demande avant de lancer une tournée.
+ */
+async function assurerCatalogueJeunes(): Promise<boolean> {
+  if (state.mecsJeunesCatalog.length > 0) return true;
+  const cleAuth = getCleAuth();
+  if (!cleAuth || !navigator.onLine) return false;
+  try {
+    const data = await fetchVault(cleAuth);
+    if (data.mecsCatalog) state.mecsJeunesCatalog = data.mecsCatalog;
+  } catch {
+    // Serveur injoignable : le relevé reste bloqué, voir l'appelant.
+  }
+  return state.mecsJeunesCatalog.length > 0;
+}
+
 // Lancement d'une session de pointage
-export function lancerComptageMecs(): void {
+export async function lancerComptageMecs(): Promise<void> {
   const typeSelect = document.getElementById("comptage-type-select") as HTMLSelectElement;
   const errorBubble = document.getElementById("comptage-error-bubble");
   const typeComptage = typeSelect.value as ComptageType | "";
@@ -186,6 +213,13 @@ export function lancerComptageMecs(): void {
       typeSelect.classList.remove("input-error");
     }, 3000);
     return; // Bloque l'exécution de la suite du script
+  }
+
+  // 🛡️ Sans liste des jeunes, la tournée serait vide et le rapport afficherait
+  // à tort "Aucun absent. L'établissement est complet." : on bloque.
+  if (!(await assurerCatalogueJeunes())) {
+    afficherToast("Liste des jeunes indisponible : reconnectez-vous au réseau puis réessayez.", "erreur");
+    return;
   }
 
   const pro = localStorage.getItem("coallia_pro_prenom") || "Inconnu";
@@ -215,6 +249,7 @@ export function lancerComptageMecs(): void {
 
   mecsIndexActuel = 0;
   historiqueMecs = [];
+  decisionEnCours = false;
 
   document.getElementById("comptage-setup-screen")?.classList.add("hidden");
   document.getElementById("comptage-workspace")?.classList.remove("hidden");
@@ -279,6 +314,7 @@ function genererCarteJeuneMecs(): void {
   const holder = document.getElementById("comptage-card-holder");
   if (!holder) return;
   holder.innerHTML = "";
+  decisionEnCours = false; // nouvelle carte (ou retour au centre) : un geste est à nouveau accepté
 
   if (mecsIndexActuel >= state.mecsJeunesCatalog.length) {
     afficherRapportFinalMecs();
@@ -298,9 +334,9 @@ function genererCarteJeuneMecs(): void {
   card.innerHTML = `
         <div style="width:100%; margin-bottom:24px;">${construireItineraire(jeune.chambre)}</div>
 
-        <div style="width:100px; height:100px; flex-shrink:0; border-radius:50%; background:rgba(0,85,164,0.06); border:3px solid var(--coallia-blue); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; color:var(--coallia-blue); margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">${jeune.initiales}</div>
-        <h2 style="font-size:22px; font-weight:800; margin:0 0 5px 0; color:var(--text-dark); line-height:1.15;">${jeune.prenom} ${jeune.nom}</h2>
-        <p style="margin:0 0 15px 0; font-size:15px; color:var(--text-gray); font-weight:600;">${jeune.age} ans</p>
+        <div style="width:100px; height:100px; flex-shrink:0; border-radius:50%; background:rgba(0,85,164,0.06); border:3px solid var(--coallia-blue); display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:800; color:var(--coallia-blue); margin-bottom:20px; box-shadow:0 4px 10px rgba(0,0,0,0.03);">${securiserTexte(jeune.initiales)}</div>
+        <h2 style="font-size:22px; font-weight:800; margin:0 0 5px 0; color:var(--text-dark); line-height:1.15;">${securiserTexte(jeune.prenom)} ${securiserTexte(jeune.nom)}</h2>
+        <p style="margin:0 0 15px 0; font-size:15px; color:var(--text-gray); font-weight:600;">${Number(jeune.age)} ans</p>
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:800; padding:6px 14px; border-radius:20px; color:white; background:${colorStatut};">${tagStatut}</span>
     `;
 
@@ -308,6 +344,7 @@ function genererCarteJeuneMecs(): void {
   card.addEventListener(
     "touchstart",
     (e) => {
+      if (decisionEnCours) return;
       touchStartX = e.changedTouches[0].screenX;
       // On coupe la transition pendant que le doigt bouge pour coller au mouvement
       card.style.transition = "none";
@@ -318,6 +355,7 @@ function genererCarteJeuneMecs(): void {
   card.addEventListener(
     "touchmove",
     (e) => {
+      if (decisionEnCours) return;
       const currentX = e.changedTouches[0].screenX;
       const deltaX = currentX - touchStartX;
       const rotation = deltaX * 0.08; // Calcule une rotation légère proportionnelle au mouvement
@@ -331,6 +369,7 @@ function genererCarteJeuneMecs(): void {
   card.addEventListener(
     "touchend",
     (e) => {
+      if (decisionEnCours) return;
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchEndX - touchStartX;
 
@@ -339,10 +378,12 @@ function genererCarteJeuneMecs(): void {
 
       if (diff > 80) {
         // Swipe à Droite -> Présent
+        decisionEnCours = true;
         card.classList.add("swipe-right-animation");
         setTimeout(() => enregistrerPresenceMecs(true), 250);
       } else if (diff < -80) {
         // Swipe à Gauche -> Absent
+        decisionEnCours = true;
         card.classList.add("swipe-left-animation");
         setTimeout(() => enregistrerPresenceMecs(false), 250);
       } else {
@@ -369,7 +410,7 @@ function majBoutonAnnulerMecs(): void {
 // absent) sans avoir à interrompre toute la tournée. Rétablit les compteurs,
 // retire l'éventuelle entrée d'absence, et réaffiche la carte du jeune.
 export function annulerDerniereCarteMecs(): void {
-  if (!mecsSessionEnCours || historiqueMecs.length === 0) return;
+  if (!mecsSessionEnCours || historiqueMecs.length === 0 || decisionEnCours) return;
 
   const etaitPresent = historiqueMecs.pop();
   mecsIndexActuel--;
@@ -394,6 +435,8 @@ export function annulerDerniereCarteMecs(): void {
 
 // Intercepteur pour appliquer l'animation d'éjection lors du clic sur les boutons du bas
 export function animerEtValiderBouton(isPresent: boolean): void {
+  if (decisionEnCours) return;
+  decisionEnCours = true;
   const card = document.getElementById("tinder-card-actuelle");
   if (card) {
     // Force la transition d'éjection animée
@@ -434,7 +477,7 @@ function enregistrerPresenceMecs(isPresent: boolean): void {
     if (subtitleEl) {
       subtitleEl.innerHTML = `
                 <div style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 12px; letter-spacing: -0.3px;">
-                    ${jeune.prenom} ${jeune.nom}
+                    ${securiserTexte(jeune.prenom)} ${securiserTexte(jeune.nom)}
                 </div>
                 <div style="margin-bottom: 5px;">
                     ${construireItineraire(jeune.chambre, true)}
@@ -452,7 +495,9 @@ function enregistrerPresenceMecs(isPresent: boolean): void {
 // Validation du motif d'absence (Zéro confirmation intermédiaire)
 export function validerMotifAbsenceMecs(motif: string): void {
   const jeune = state.mecsJeunesCatalog[mecsIndexActuel];
-  if (!mecsSessionEnCours || !jeune) return;
+  const modale = document.getElementById("comptage-absence-modal");
+  // 🛡️ Motif accepté une seule fois, tant que la modale du jeune courant est ouverte
+  if (!mecsSessionEnCours || !jeune || !modale || modale.classList.contains("hidden")) return;
 
   mecsSessionEnCours.absents++;
   if (jeune.isMajor) mecsSessionEnCours.breakdown.majeurs.absents++;
@@ -499,7 +544,7 @@ function afficherRapportFinalMecs(): void {
   const reportMeta = document.getElementById("report-meta");
   if (reportMeta) {
     reportMeta.innerHTML = `
-        Tournée effectuée le <b>${mecsSessionEnCours.date}</b> de <b>${mecsSessionEnCours.heureDebut}</b> à <b>${heureFin}</b><br>
+        Tournée effectuée le <b>${securiserTexte(mecsSessionEnCours.date)}</b> de <b>${securiserTexte(mecsSessionEnCours.heureDebut)}</b> à <b>${securiserTexte(heureFin)}</b><br>
         Par : <b>${securiserTexte(mecsSessionEnCours.professionnel)}</b> · Session : <b>${securiserTexte(mecsSessionEnCours.type)}</b>
     `;
   }
@@ -561,6 +606,9 @@ export function cloreComptageMecs(): void {
   // Ajoute la session actuelle à l'historique global
   const session = mecsSessionEnCours;
   state.mecsComptageLogs.push(session);
+  // La tournée est close : plus rien ne doit pouvoir la ré-enregistrer.
+  mecsSessionEnCours = null;
+  historiqueMecs = [];
 
   // 👑 RETOUR IMMÉDIAT : la génération du PDF (d'autant plus longue qu'il y a
   // de jeunes signalés absents) et la sauvegarde continuent en tâche de fond
@@ -635,7 +683,7 @@ export function voirDernierComptage(): void {
   const meta = document.getElementById("last-view-meta");
   if (meta) {
     meta.innerHTML = `
-        Tournée du <b>${dernierLog.date}</b> de <b>${dernierLog.heureDebut}</b> à <b>${dernierLog.heureFin || "--:--"}</b><br>
+        Tournée du <b>${securiserTexte(dernierLog.date)}</b> de <b>${securiserTexte(dernierLog.heureDebut)}</b> à <b>${securiserTexte(dernierLog.heureFin || "--:--")}</b><br>
         Par : <b>${securiserTexte(dernierLog.professionnel)}</b> · Session : <b>${securiserTexte(dernierLog.type)}</b>
     `;
   }
@@ -694,34 +742,6 @@ function retourSetupDepuisLast(): void {
     // 👑 On remet le libellé officiel de sortie de module
     backBtn.innerText = "← Accueil";
     backBtn.onclick = retourSaisieComptage;
-  }
-  syncOptionsBtnComptage();
-}
-
-export function verifierAnnulationComptage(): void {
-  const workspaceHidden = document.getElementById("comptage-workspace")?.classList.contains("hidden");
-  if (workspaceHidden) {
-    retourSaisieComptage();
-  } else {
-    retour("alerte");
-    document.getElementById("comptage-cancel-modal")?.classList.remove("hidden");
-  }
-}
-
-export function confirmerAbandonTournee(): void {
-  fermerModals();
-  mecsSessionEnCours = null;
-  mecsIndexActuel = 0;
-  historiqueMecs = [];
-  document.getElementById("comptage-workspace")?.classList.add("hidden");
-  document.getElementById("comptage-setup-screen")?.classList.remove("hidden");
-
-  // 👑 Le bouton redevient une sortie vers l'accueil général
-  const backBtn = document.getElementById("comptage-back-btn") as HTMLButtonElement | null;
-  if (backBtn) {
-    backBtn.innerText = "← Accueil";
-    backBtn.onclick = retourSaisieComptage; // Quitte le module comptage
-    backBtn.classList.remove("hidden");
   }
   syncOptionsBtnComptage();
 }
@@ -803,7 +823,7 @@ const MOTIFS_ABSENCE: Record<string, string> = {
 /** Câble l'écran de relevé de présence : lancement, workspace, absences, rapport. */
 export function initComptageListeners(): void {
   const backBtn = document.getElementById("comptage-back-btn") as HTMLButtonElement | null;
-  if (backBtn) backBtn.onclick = verifierAnnulationComptage;
+  if (backBtn) backBtn.onclick = retourSaisieComptage;
 
   document.getElementById("btn-lancer-comptage")?.addEventListener("click", lancerComptageMecs);
   document.getElementById("btn-voir-dernier-comptage")?.addEventListener("click", voirDernierComptage);
@@ -833,6 +853,4 @@ export function initComptageListeners(): void {
   document.getElementById("btn-absence-autre-retour")?.addEventListener("pointerdown", fermerAbsenceAutreSaisie);
   document.getElementById("btn-absence-autre-confirmer")?.addEventListener("pointerdown", validerAbsenceAutreMecs);
   document.getElementById("absence-autre-obs-effacer")?.addEventListener("click", effacerAbsenceAutreObs);
-
-  document.getElementById("comptage-cancel-confirmer")?.addEventListener("click", confirmerAbandonTournee);
 }

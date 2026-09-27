@@ -47,6 +47,8 @@ export default defineConfig({
   ],
   build: {
     outDir: "dist",
-    sourcemap: true
+    // Pas de source maps publiées : elles ne servent à rien en production
+    // (non envoyées à Sentry) et exposeraient le code source commenté.
+    sourcemap: false
   }
 });

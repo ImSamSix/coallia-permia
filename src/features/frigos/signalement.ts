@@ -4,6 +4,7 @@ import { fermerModals } from "@/ui/modals";
 import { retour } from "@/services/feedback";
 import { attacherEffetAppui } from "@/ui/press-effect";
 import { iconeAlerte, iconeErreurCercle } from "@/ui/icons";
+import { afficherToast } from "@/ui/toast";
 
 // --- LOGIQUE PHOTO FRIGOS ---
 export function declencherCamera(): void {
@@ -66,6 +67,10 @@ export function initSignalementCamera(): void {
 
           // Ouvrir la modale automatiquement
           document.getElementById("signalement-modal")?.classList.remove("hidden");
+        };
+        img.onerror = function () {
+          // Format que le navigateur ne sait pas décoder (ex. HEIC sur certains Android)
+          afficherToast("Photo illisible. Reprenez-la avec l'appareil photo.", "erreur");
         };
         img.src = event.target?.result as string;
       };

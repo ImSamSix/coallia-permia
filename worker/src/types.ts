@@ -4,9 +4,7 @@ export interface Env {
   URL_POWER_AUTOMATE: string;
   /** URL du projet Supabase partagé avec Habita (non sensible, en clair dans wrangler.toml [vars]). */
   SUPABASE_URL: string;
-  /** Clé anon Supabase (lecture du catalogue MECS) — `wrangler secret put SUPABASE_ANON_KEY`. */
-  SUPABASE_ANON_KEY: string;
-  /** Clé service_role Supabase (écriture des tables permia_*) — `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`. */
+  /** Clé service_role Supabase (lecture du catalogue MECS + écriture des tables permia_*) — `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`. */
   SUPABASE_SERVICE_ROLE_KEY: string;
   /** Suivi d'erreurs (Sentry) — non sensible, voir [vars] dans wrangler.toml. */
   SENTRY_DSN: string;

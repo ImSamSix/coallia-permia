@@ -171,11 +171,15 @@ export function afficherPage404(): void {
 }
 
 export function retourAccueilDepuis404(): void {
+  history.replaceState(null, "", "/"); // l'URL erronée ne doit pas réafficher la 404 au prochain rechargement
   document.getElementById("notfound-app")?.classList.add("hidden");
   if (getCleMaitresse()) {
     openMenu();
   } else {
-    document.getElementById("login-screen")?.classList.remove("hidden");
+    const loginScreen = document.getElementById("login-screen");
+    loginScreen?.classList.remove("hidden");
+    // La carte de connexion est invisible tant qu'elle n'a pas joué son entrée (cf. login.css)
+    setTimeout(() => loginScreen?.querySelector(".auth-card")?.classList.add("auth-card-entrance"), 30);
   }
 }
 

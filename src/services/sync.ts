@@ -2,15 +2,16 @@ import { state } from "@/state/store";
 import { getCleAuth, getCleMaitresse } from "./crypto";
 import { envoyerPayload } from "./permia-relay";
 import { sauvegarderToutesLesDonnees } from "./storage";
+import type { PowerAutomatePayload } from "@/types/relay";
 
 /**
  * Synchronisation 100% invisible : chaque journal non encore transmis est
- * poussé vers le Worker (qui relaie à Power Automate). Comme dans l'ancien
- * script.js, l'échec réseau interrompt (`break`) uniquement la catégorie en
- * cours — les catégories suivantes sont quand même tentées — et l'envoi ne
- * vérifie pas le code HTTP : toute réponse reçue (même une erreur serveur)
- * marque l'entrée comme "synced". C'est un comportement existant, conservé
- * à l'identique plutôt que corrigé silencieusement.
+ * poussé vers le Worker (qui relaie à Power Automate). Une entrée n'est
+ * marquée "synced" que si le Worker a réellement accepté l'envoi (HTTP 2xx) :
+ * sinon elle reste en attente et sera retentée au prochain passage — une
+ * erreur serveur ne doit jamais faire disparaître un registre réglementaire.
+ * Un échec interrompt uniquement la catégorie en cours (les suivantes sont
+ * quand même tentées), sauf un refus d'accès qui arrête tout.
  */
 
 // 🛡️ GARDE ANTI-DOUBLON : cette fonction est déclenchée depuis une bonne
@@ -52,26 +53,51 @@ export async function synchroniserDonnees(): Promise<void> {
   }
 }
 
-async function executerSynchronisation(cleAuth: string): Promise<void> {
-  let changementEffectue = false;
+type ResultatEnvoi = "envoye" | "reessayer" | "acces-refuse";
 
-  // 1. Envoi Médicaments
-  const medLogsAEnvoyer = state.medLogs.filter((log) => !log.synced);
-  for (const log of medLogsAEnvoyer) {
-    try {
-      await envoyerPayload(cleAuth, { type: "medicament", ...log });
-      log.synced = true;
-      changementEffectue = true;
-    } catch {
-      break;
-    }
+async function envoyer(cleAuth: string, payload: PowerAutomatePayload): Promise<ResultatEnvoi> {
+  try {
+    const reponse = await envoyerPayload(cleAuth, payload);
+    if (reponse.ok) return "envoye";
+    // 🛑 Code refusé / trop de tentatives : insister ferait grimper le compteur
+    // anti-force brute du Worker et finirait par bloquer le téléphone.
+    if (reponse.status === 401 || reponse.status === 403 || reponse.status === 429) return "acces-refuse";
+    return "reessayer";
+  } catch {
+    return "reessayer"; // réseau indisponible
   }
+}
 
-  // 3. Envoi Suivi Frigos
-  const frigoLogsAEnvoyer = state.frigoLogs.filter((log) => !log.synced);
-  for (const log of frigoLogsAEnvoyer) {
-    try {
-      await envoyerPayload(cleAuth, {
+/**
+ * Envoie une catégorie de journaux dans l'ordre. Renvoie false si l'accès a
+ * été refusé (la synchronisation entière doit alors s'arrêter).
+ */
+async function envoyerCategorie<T extends { synced: boolean }>(
+  cleAuth: string,
+  journaux: T[],
+  versPayload: (log: T) => PowerAutomatePayload,
+  apresEnvoi: (log: T) => void = () => {}
+): Promise<{ changement: boolean; accesRefuse: boolean }> {
+  let changement = false;
+  for (const log of journaux.filter((l) => !l.synced)) {
+    const resultat = await envoyer(cleAuth, versPayload(log));
+    if (resultat === "acces-refuse") return { changement, accesRefuse: true };
+    if (resultat === "reessayer") break;
+    log.synced = true;
+    apresEnvoi(log);
+    changement = true;
+  }
+  return { changement, accesRefuse: false };
+}
+
+async function executerSynchronisation(cleAuth: string): Promise<void> {
+  const categories: (() => Promise<{ changement: boolean; accesRefuse: boolean }>)[] = [
+    // 1. Médicaments
+    () => envoyerCategorie(cleAuth, state.medLogs, (log) => ({ type: "medicament", ...log })),
+
+    // 2. Suivi Frigos
+    () =>
+      envoyerCategorie(cleAuth, state.frigoLogs, (log) => ({
         type: "frigo_eval",
         date: log.date,
         heure: log.heure,
@@ -82,56 +108,42 @@ async function executerSynchronisation(cleAuth: string): Promise<void> {
         hygiene: log.hygiene,
         contenu: log.contenu,
         observations: log.observations
-      });
-      log.synced = true;
-      changementEffectue = true;
-    } catch {
-      break;
-    }
-  }
+      })),
 
-  // 4. Envoi Suivi Pain (Boîte Noire)
-  const painLogsAEnvoyer = state.painLogs.filter((log) => !log.synced);
-  for (const log of painLogsAEnvoyer) {
-    try {
-      await envoyerPayload(cleAuth, {
+    // 3. Suivi Pain (Boîte Noire)
+    () =>
+      envoyerCategorie(cleAuth, state.painLogs, (log) => ({
         type: "pain",
         educateur: log.educateur,
         date: log.date,
         heure: log.heure,
         quantite_restante: log.quantite_restante,
         observations: log.observations
-      });
-      log.synced = true;
-      changementEffectue = true;
-    } catch {
-      break;
-    }
-  }
+      })),
 
-  // 5. Envoi Bilan Comptage MECS (Boîte Noire)
-  const mecsLogsAEnvoyer = state.mecsComptageLogs.filter((log) => !log.synced);
-  for (const log of mecsLogsAEnvoyer) {
-    try {
-      await envoyerPayload(cleAuth, { ...log, type: "comptage_mecs" });
-      log.synced = true;
-      // 🧹 Le PDF a été transmis : on le retire du coffre pour ne pas saturer l'appareil
-      delete log.pdfBase64;
-      delete log.nomFichier;
-      changementEffectue = true;
-    } catch {
-      break;
-    }
-  }
+    // 4. Bilan Comptage MECS (Boîte Noire)
+    () =>
+      envoyerCategorie(
+        cleAuth,
+        state.mecsComptageLogs,
+        (log) => ({ ...log, type: "comptage_mecs" }),
+        (log) => {
+          // 🧹 Le PDF a été transmis : on le retire du coffre pour ne pas saturer l'appareil
+          delete log.pdfBase64;
+          delete log.nomFichier;
+        }
+      ),
 
-  // 6. Envoi Historique Multimédia (Power Automate)
-  const mediaLogsAEnvoyer = state.mediaLogs.filter((log) => !log.synced);
-  for (const log of mediaLogsAEnvoyer) {
-    try {
-      await envoyerPayload(cleAuth, { type: "multimedia_log", ...log });
-      log.synced = true;
-      changementEffectue = true;
-    } catch {
+    // 5. Historique Multimédia
+    () => envoyerCategorie(cleAuth, state.mediaLogs, (log) => ({ type: "multimedia_log", ...log }))
+  ];
+
+  let changementEffectue = false;
+  for (const envoyerSuivante of categories) {
+    const { changement, accesRefuse } = await envoyerSuivante();
+    changementEffectue = changementEffectue || changement;
+    if (accesRefuse) {
+      console.warn("🛑 Synchronisation interrompue : accès refusé par le serveur.");
       break;
     }
   }

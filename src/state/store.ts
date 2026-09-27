@@ -1,6 +1,5 @@
 import type { InventoryItem, GenericLoan } from "@/types/inventory";
 import type { MedLog } from "@/types/medication";
-import type { TransLog } from "@/types/transmission";
 import type { FrigoData, FrigoLog } from "@/types/frigo";
 import type { PainLog } from "@/types/pain";
 import type { MecsJeune, MecsSession } from "@/types/mecs";
@@ -39,15 +38,13 @@ function frigosDataParDefaut(): FrigoData[] {
   }));
 }
 
+/**
+ * 🛡️ Aucun numéro en dur : le dépôt et le bundle sont publics. Les vrais
+ * numéros vivent uniquement dans le coffre chiffré (saisis via un appui
+ * long de 5s sur chaque contact de l'annuaire).
+ */
 function annuaireDataParDefaut(): AnnuaireData {
-  return {
-    tech: "06 14 12 28 98",
-    coordF: "06 19 44 39 36",
-    coordM: "06 11 28 61 07",
-    chef: "06 10 85 97 04",
-    astreinte1: "06 00 00 00 00",
-    astreinte2: "06 00 00 00 00"
-  };
+  return { tech: "", coordF: "", coordM: "", chef: "", astreinte1: "", astreinte2: "" };
 }
 
 function mediaDataParDefaut(): MediaData {
@@ -69,7 +66,6 @@ export const state = {
   inventory: inventaireParDefaut(),
   genericLoans: [] as GenericLoan[],
   medLogs: [] as MedLog[],
-  transLogs: [] as TransLog[],
   frigoLogs: [] as FrigoLog[],
   painLogs: [] as PainLog[],
   frigosData: frigosDataParDefaut(),

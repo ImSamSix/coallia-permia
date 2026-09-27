@@ -15,8 +15,17 @@ interface PersonneBrute {
   ch: string;
 }
 
+// 🛡️ Lecture avec la clé service_role (jamais exposée au client) : ces données
+// nominatives de mineurs ne doivent PAS être lisibles avec la clé anon, qui est
+// publique par conception (embarquée dans le front d'Habita). Voir
+// supabase-setup.sql pour la révocation des accès anon correspondants.
 function supabaseHeaders(env: Env): HeadersInit {
-  return { apikey: env.SUPABASE_ANON_KEY, Authorization: `Bearer ${env.SUPABASE_ANON_KEY}` };
+  return { apikey: env.SUPABASE_SERVICE_ROLE_KEY, Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}` };
+}
+
+/** "NOM  Prénom " → "NOM Prénom" : espaces en trop ignorés des deux côtés de la jointure. */
+function normaliserNomComplet(nom: string): string {
+  return nom.trim().replace(/\s+/g, " ");
 }
 
 async function chargerNomsJeunes(env: Env): Promise<NomsJeunesBrut> {
@@ -35,7 +44,7 @@ async function chargerDatesNaissance(env: Env): Promise<Map<string, string>> {
   if (!res.ok) throw new Error("Lecture dates_naissance (Supabase) impossible : " + res.status);
   const rows = (await res.json()) as DateNaissanceRow[];
   const table = new Map<string, string>();
-  rows.forEach((r) => table.set(r.nom_complet.trim(), r.date_naissance));
+  rows.forEach((r) => table.set(normaliserNomComplet(r.nom_complet), r.date_naissance));
   return table;
 }
 
@@ -64,7 +73,7 @@ function aplatirNomsJeunes(brut: NomsJeunesBrut): PersonneBrute[] {
         // Pas de niveau appartement : cle1 est directement la chambre.
         valeur1.forEach((nom) => {
           if (typeof nom === "string" && nom.trim()) {
-            personnes.push({ nomComplet: nom.trim(), bat, ch: cle1 });
+            personnes.push({ nomComplet: normaliserNomComplet(nom), bat, ch: cle1 });
           }
         });
       } else if (valeur1 && typeof valeur1 === "object") {
@@ -73,7 +82,7 @@ function aplatirNomsJeunes(brut: NomsJeunesBrut): PersonneBrute[] {
           if (Array.isArray(valeurCh)) {
             valeurCh.forEach((nom) => {
               if (typeof nom === "string" && nom.trim()) {
-                personnes.push({ nomComplet: nom.trim(), bat, apt: cle1, ch });
+                personnes.push({ nomComplet: normaliserNomComplet(nom), bat, apt: cle1, ch });
               }
             });
           }
@@ -104,8 +113,9 @@ export async function compilerCatalogueJeunes(env: Env): Promise<MecsJeuneCompil
   const [nomsJeunesBrut, datesNaissance] = await Promise.all([chargerNomsJeunes(env), chargerDatesNaissance(env)]);
   const personnes = aplatirNomsJeunes(nomsJeunesBrut);
   const aujourdhui = new Date();
+  let datesManquantes = 0;
 
-  return personnes.map((p, index) => {
+  const catalogue = personnes.map((p, index) => {
     const { nom, prenom } = splitNomPrenom(p.nomComplet);
     const dateNaissanceStr = datesNaissance.get(p.nomComplet);
 
@@ -122,7 +132,7 @@ export async function compilerCatalogueJeunes(env: Env): Promise<MecsJeuneCompil
       if (moisDiff < 0 || (moisDiff === 0 && aujourdhui.getDate() < dateNaissance.getDate())) age--;
       isMajor = age >= 18;
     } else {
-      console.warn(`⚠️ Date de naissance manquante pour "${p.nomComplet}" — traité comme mineur par défaut.`);
+      datesManquantes++;
     }
 
     const chambreLabel = p.apt ? `Apt ${p.apt} - Ch. ${p.ch}` : `Ch. ${p.ch}`;
@@ -141,4 +151,11 @@ export async function compilerCatalogueJeunes(env: Env): Promise<MecsJeuneCompil
       chambreNum: p.ch
     };
   });
+
+  // 🛡️ Jamais de nom dans les journaux (Cloudflare, Sentry) : un simple compteur suffit au suivi.
+  if (datesManquantes > 0) {
+    console.warn(`⚠️ ${datesManquantes} date(s) de naissance manquante(s) — jeune(s) traité(s) comme mineur(s) par défaut.`);
+  }
+
+  return catalogue;
 }

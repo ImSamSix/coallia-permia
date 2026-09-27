@@ -1,12 +1,27 @@
 import { state } from "@/state/store";
 import { retour } from "@/services/feedback";
+import { afficherToast } from "@/ui/toast";
 import { clicCarteUnique } from "./materiel";
 
 let html5QrCode: Html5Qrcode | null = null;
 let isScanning = false;
 let torcheActive = false;
 
+/**
+ * Coupe la caméra sans jamais lever d'erreur : Html5Qrcode.stop() lève une
+ * exception SYNCHRONE (et non une promesse rejetée) quand la caméra n'a
+ * jamais démarré, par exemple après un refus d'accès.
+ */
+function arreterCamera(instance: Html5Qrcode): Promise<void> {
+  try {
+    return instance.stop().catch(() => {});
+  } catch {
+    return Promise.resolve();
+  }
+}
+
 export function ouvrirScanner(): void {
+  if (isScanning) return; // double appui : une seule caméra à la fois
   document.getElementById("scanner-modal")?.classList.remove("hidden");
   isScanning = true;
   html5QrCode = new Html5Qrcode("reader");
@@ -28,8 +43,8 @@ export function ouvrirScanner(): void {
       setTimeout(verifierDisponibiliteTorche, 600);
     })
     .catch(() => {
-      alert("Impossible d'accéder à la caméra.");
       fermerScanner();
+      afficherToast("Impossible d'accéder à la caméra.", "erreur");
     });
 }
 
@@ -97,20 +112,23 @@ function onScanSuccess(decodedText: string): void {
   reinitialiserTorche();
   document.getElementById("scanner-modal")?.classList.add("hidden");
   if (html5QrCode) {
-    html5QrCode
-      .stop()
-      .then(() => analyserCodeProprement(decodedText))
-      .catch(() => analyserCodeProprement(decodedText));
+    const instance = html5QrCode;
+    html5QrCode = null;
+    arreterCamera(instance).then(() => analyserCodeProprement(decodedText));
   } else {
     analyserCodeProprement(decodedText);
   }
 }
 
+/** Ferme le scanner ET coupe la caméra (un simple masquage de la modale la laissait allumée). */
 export function fermerScanner(): void {
   isScanning = false;
   reinitialiserTorche();
   document.getElementById("scanner-modal")?.classList.add("hidden");
-  if (html5QrCode) html5QrCode.stop().catch((e) => console.error(e));
+  if (html5QrCode) {
+    void arreterCamera(html5QrCode);
+    html5QrCode = null;
+  }
 }
 
 function analyserCodeProprement(texte: string): void {

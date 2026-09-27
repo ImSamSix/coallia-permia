@@ -1,7 +1,7 @@
 import { state } from "@/state/store";
 import { assurerCryptoJS, definirClesSession, deriverCleAuth, derriverCleVault, effacerClesSession } from "@/services/crypto";
 import { fetchVault, login } from "@/services/permia-relay";
-import { dechiffrerCoffreLocal } from "@/services/storage";
+import { dechiffrerCoffreLocal, purgerDonneesAnciennes } from "@/services/storage";
 import { retour } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
 import { iconeAlerte } from "@/ui/icons";
@@ -138,10 +138,13 @@ export async function validerConnexionSecurisee(): Promise<void> {
       const coffreExiste = !!localStorage.getItem("coallia_secure_vault");
       if (coffreExiste && !dechiffrerCoffreLocal()) {
         effacerClesSession();
+        localStorage.removeItem("coallia_pro_prenom");
+        localStorage.removeItem("coallia_session_expire");
         echecAuth("Code incorrect (données protégées).");
         return;
       }
 
+      purgerDonneesAnciennes(); // 🛡️ Minimisation RGPD (4 jours), comme au rechargement de page
       retour("succes");
       inputPassEl.value = "";
       openMenu();
@@ -164,6 +167,7 @@ export async function validerConnexionSecurisee(): Promise<void> {
       const expirationTime = new Date().getTime() + SESSION_DUREE_MS;
       localStorage.setItem("coallia_session_expire", String(expirationTime));
 
+      purgerDonneesAnciennes(); // 🛡️ Minimisation RGPD (4 jours), comme au rechargement de page
       retour("succes");
       inputPassEl.value = "";
       openMenu();

@@ -18,12 +18,15 @@ declare let self: ServiceWorkerGlobalScope;
 self.skipWaiting();
 clientsClaim();
 
-// 📦 Pré-cache : fichiers de build (manifeste injecté par vite-plugin-pwa)
-//    + filet de secours CDN figé en version (identique à l'ancien ASSETS_TO_CACHE).
+// 📦 Pré-cache : fichiers de build (manifeste injecté par vite-plugin-pwa, qui
+//    inclut déjà la copie locale de crypto-js) + bibliothèques CDN figées en
+//    version, chargées par index.html avec leur empreinte SRI.
+// ⚠️ Toute origine récupérée ici doit figurer dans connect-src de la CSP
+//    (public/_headers) : la CSP servie avec sw.js s'applique à ses fetch(), et
+//    un seul fichier refusé fait échouer l'installation du service worker.
 precacheAndRoute([
   ...self.__WB_MANIFEST,
-  { url: "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js", revision: null },
-  { url: "https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js", revision: null },
+  { url: "https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js", revision: null },
   { url: "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js", revision: null }
 ]);
 cleanupOutdatedCaches();

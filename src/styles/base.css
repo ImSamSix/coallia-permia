@@ -195,13 +195,7 @@ button:active,
         margin: 10vh auto; 
     }
     
-    /* 7. Les boutons "Voir la Timeline" et "Copier" s'alignent avec le formulaire */
-    #trans-app .content > div:first-of-type {
-        max-width: 600px;
-        margin: 0 auto 20px auto;
-    }
-
-    /* 8. Le bouton "Traçabilité" des médicaments prend la même largeur que le formulaire */
+    /* 7. Le bouton "Traçabilité" des médicaments prend la même largeur que le formulaire */
     #med-app .content > button,
     #med-app .content > div:not(.med-form-card) {
         max-width: 600px;

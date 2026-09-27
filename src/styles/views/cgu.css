@@ -178,15 +178,3 @@ body.dark-mode #cgu-view .back-btn:active {
 }
 
 
-/* 📌 ZONE FIGÉE — utilisée uniquement par le fil des transmissions */
-.zone-figee {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: var(--bg-color);
-    padding-top: 5px;
-    padding-bottom: 10px;
-}
-
-.zone-figee ~ * { position: relative; z-index: 1; }
-

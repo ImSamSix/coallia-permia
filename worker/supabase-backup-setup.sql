@@ -20,6 +20,7 @@ create table if not exists public.permia_materiel (
   updated_at timestamptz not null default now()
 );
 alter table public.permia_materiel enable row level security;
+revoke all on public.permia_materiel from anon, authenticated;
 
 create table if not exists public.permia_frigos (
   id integer primary key,
@@ -33,6 +34,7 @@ create table if not exists public.permia_frigos (
   updated_at timestamptz not null default now()
 );
 alter table public.permia_frigos enable row level security;
+revoke all on public.permia_frigos from anon, authenticated;
 
 -- Migration additive pour une table permia_frigos déjà créée avant l'ajout
 -- de la colonne "residents" (le create table if not exists ci-dessus ne
@@ -51,3 +53,4 @@ create table if not exists public.permia_media (
   updated_at timestamptz not null default now()
 );
 alter table public.permia_media enable row level security;
+revoke all on public.permia_media from anon, authenticated;

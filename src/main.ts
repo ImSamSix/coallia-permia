@@ -9,8 +9,8 @@ import { synchroniserDonnees } from "@/services/sync";
 import { fetchVault, verifierSanteWorker } from "@/services/permia-relay";
 import { retour } from "@/services/feedback";
 import { initTheme } from "@/features/theme/theme";
-import { openMenu } from "@/features/navigation/navigation";
-import { initialiserAutosave, purgerToutAutosave, signalerActivite, verifierSession } from "@/features/session/session";
+import { afficherPage404, openMenu } from "@/features/navigation/navigation";
+import { signalerActivite, verifierSession } from "@/features/session/session";
 import { startClock } from "@/features/medicaments/medicaments";
 import { rafraichirBadgeAttente } from "@/ui/pending-badge";
 import { initApp } from "@/app-init";
@@ -22,6 +22,10 @@ const INTERVALLE_VERIF_SANTE_MS = 3 * 60 * 1000;
 
 // 🚧 Bascule manuelle d'intervention : coupe l'app entière sur l'écran de maintenance.
 const MODE_MAINTENANCE = false;
+
+// 🔍 Lien erroné (ex. /planning) : Cloudflare Pages sert quand même index.html,
+// on affiche alors l'écran 404 plutôt que l'accueil sous une URL fausse.
+const CHEMIN_INCONNU = !["/", "/index.html"].includes(location.pathname);
 
 // Avant tout le reste : capte aussi les erreurs qui pourraient survenir
 // pendant l'initialisation elle-même.
@@ -59,7 +63,6 @@ window.onload = async () => {
   }
 
   startClock();
-  initialiserAutosave();
 
   // 🛡️ VÉRIFICATION DE LA SÉCURITÉ AU DÉMARRAGE
   const prenom = localStorage.getItem("coallia_pro_prenom");
@@ -115,7 +118,6 @@ window.onload = async () => {
     localStorage.removeItem("coallia_session_expire");
     sessionStorage.removeItem("permia_session_key");
     sessionStorage.removeItem("permia_auth_key");
-    purgerToutAutosave(); // 🛡️ Brouillons en clair effacés
   }
 
   // 🔒 SURVEILLANCE DU VERROUILLAGE — hors du if/else, donc active
@@ -233,6 +235,11 @@ window.onload = async () => {
   setTimeout(() => {
     const splash = document.getElementById("splash-screen");
     if (splash) splash.classList.add("hidden-splash"); // Lancement du fondu de sortie
+
+    if (CHEMIN_INCONNU) {
+      afficherPage404();
+      return;
+    }
 
     // 2. Simultanément, si la session est à initialiser, on prépare la carte en arrière-plan
     if (!sessionValide) {

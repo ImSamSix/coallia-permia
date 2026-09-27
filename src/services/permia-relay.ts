@@ -26,6 +26,7 @@ export async function fetchVault(cleAuth: string): Promise<GetVaultResponse> {
     method: "GET",
     headers: { "X-Permia-Key": cleAuth }
   });
+  if (!reponse.ok) throw new Error("Coffre distant indisponible (HTTP " + reponse.status + ")");
   return (await reponse.json()) as GetVaultResponse;
 }
 

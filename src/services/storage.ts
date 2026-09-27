@@ -21,6 +21,8 @@ localStorage.removeItem("coallia_inventory");
 localStorage.removeItem("coallia_generic_loans");
 localStorage.removeItem("coallia_med_logs");
 localStorage.removeItem("coallia_trans_logs");
+// Anciens brouillons en clair du formulaire "Transmissions" (fonctionnalité retirée).
+["trans-type", "trans-titre", "trans-desc"].forEach((id) => localStorage.removeItem("autosave_" + id));
 
 /**
  * Callback exécuté après chaque sauvegarde (rafraîchit le badge "en attente").
@@ -37,7 +39,6 @@ export function sauvegarderToutesLesDonnees(): void {
     inventory: state.inventory,
     genericLoans: state.genericLoans,
     medLogs: state.medLogs,
-    transLogs: state.transLogs,
     frigoLogs: state.frigoLogs,
     painLogs: state.painLogs,
     frigosData: state.frigosData,
@@ -164,7 +165,6 @@ export function dechiffrerCoffreLocal(): boolean {
   }
   state.genericLoans = donnees.genericLoans || [];
   state.medLogs = donnees.medLogs || [];
-  state.transLogs = donnees.transLogs || [];
   state.frigoLogs = donnees.frigoLogs || [];
   state.painLogs = donnees.painLogs || [];
   state.mediaLogs = donnees.mediaLogs || [];
@@ -208,15 +208,11 @@ export function purgerDonneesAnciennes(): void {
   const QUATRE_JOURS_MS = 4 * 24 * 60 * 60 * 1000;
   const now = Date.now();
 
-  // 1. On garde uniquement les transmissions des 4 derniers jours
-  const transAvant = state.transLogs.length;
-  state.transLogs = state.transLogs.filter((log) => log.synced === false || now - log.timestamp <= QUATRE_JOURS_MS);
-
-  // 2. On garde les médicaments 4 jours (largement suffisant pour le Doliprane)
+  // 1. On garde les médicaments 4 jours (largement suffisant pour le Doliprane)
   const medAvant = state.medLogs.length;
   state.medLogs = state.medLogs.filter((log) => log.synced === false || now - log.timestamp <= QUATRE_JOURS_MS);
 
-  // 3. 🛡️ MINIMISATION RGPD : les autres journaux nominatifs suivent la même règle.
+  // 2. 🛡️ MINIMISATION RGPD : les autres journaux nominatifs suivent la même règle.
   //    ⚠️ Chaque journal a son propre champ de date : timestamp / idLog / timestampDebut.
   //    En l'absence de date exploitable, on CONSERVE l'entrée (jamais de suppression à l'aveugle).
   const frigoAvant = state.frigoLogs.length;
@@ -232,9 +228,8 @@ export function purgerDonneesAnciennes(): void {
   state.mecsComptageLogs = state.mecsComptageLogs.filter((log) => estRecent(log, now, QUATRE_JOURS_MS));
 
   // Si le nettoyeur a effacé des choses, on met la sauvegarde secrète à jour
-  const totalAvant = transAvant + medAvant + frigoAvant + painAvant + mediaAvant + mecsAvant;
+  const totalAvant = medAvant + frigoAvant + painAvant + mediaAvant + mecsAvant;
   const totalApres =
-    state.transLogs.length +
     state.medLogs.length +
     state.frigoLogs.length +
     state.painLogs.length +
@@ -253,7 +248,7 @@ interface SyncedLike {
 
 /** Compteur d'éléments en attente : rend visible ce qui n'a pas encore atteint les registres institutionnels. */
 export function compterEnAttente(): number {
-  const journaux: SyncedLike[][] = [state.medLogs, state.transLogs, state.frigoLogs, state.painLogs, state.mediaLogs, state.mecsComptageLogs];
+  const journaux: SyncedLike[][] = [state.medLogs, state.frigoLogs, state.painLogs, state.mediaLogs, state.mecsComptageLogs];
   let total = 0;
   journaux.forEach((j) => {
     if (Array.isArray(j)) total += j.filter((l) => l && l.synced === false).length;

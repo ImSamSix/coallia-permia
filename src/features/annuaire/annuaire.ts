@@ -36,8 +36,8 @@ export function appelerContact(role: AnnuaireRole): void {
     afficherToast("Aucun numéro n'est enregistré pour ce contact. Restez appuyé 5s pour l'ajouter.", "erreur");
     return;
   }
-  // Lance l'appel téléphonique nativement
-  window.location.href = "tel:" + numero;
+  // Lance l'appel téléphonique nativement (chiffres et "+" uniquement dans l'URI)
+  window.location.href = "tel:" + numero.replace(/[^\d+]/g, "");
 }
 
 function ouvrirEditContact(role: AnnuaireRole): void {

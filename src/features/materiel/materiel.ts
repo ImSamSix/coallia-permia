@@ -2,10 +2,10 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { securiserTexte } from "@/ui/dom-utils";
 import { fermerModals } from "@/ui/modals";
-import { renderFrigos, startResetFrigoEvalTimer, stopResetFrigoEvalTimer, ouvrirHistoriqueFrigos } from "@/features/frigos/frigos";
+import { renderFrigos, startResetFrigoEvalTimer, stopResetFrigoEvalTimer } from "@/features/frigos/frigos";
 import { declencherCamera } from "@/features/frigos/signalement";
 import { openMenu } from "@/features/navigation/navigation";
-import { ouvrirScanner, basculerTorche } from "./scanner";
+import { ouvrirScanner, fermerScanner, basculerTorche } from "./scanner";
 import { genererRecap } from "./recap";
 import { telechargerPDF } from "@/features/pdf/pdf";
 import { catNames, genericCatalog, catIcons, genericIcons } from "./catalog";
@@ -541,7 +541,7 @@ function renderGenericGrid(): void {
                 </div>
             `;
     }
-    card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${genericIcons[gen.id]}${gen.name}</h3></div>${actionHTML}</div>`;
+    card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${genericIcons[gen.id]}${securiserTexte(gen.name)}</h3></div>${actionHTML}</div>`;
 
     if (isSel) {
       card.querySelector(".qty-controls")?.addEventListener("click", (e) => e.stopPropagation());
@@ -589,7 +589,7 @@ export function renderItems(): void {
       card.className = `item-card available ${isSel ? "selected-panier" : ""}`;
       card.dataset.id = String(item.id);
       card.onclick = () => clicCarteUnique(item.id);
-      card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${catIcons[catKey]}${item.name}</h3></div><div class="dot-indicator"></div></div>`;
+      card.innerHTML = `<div class="status-line"></div><div class="card-body"><div class="info"><h3 style="display:flex; align-items:center; gap:8px;">${catIcons[catKey]}${securiserTexte(item.name)}</h3></div><div class="dot-indicator"></div></div>`;
       accContent.appendChild(card);
     });
     if (dispos.length === 0) accContent.innerHTML = `<p style="color:var(--text-gray); font-size:13px; margin:5px 0;">Tout est emprunté.</p>`;
@@ -622,7 +622,7 @@ export function renderItems(): void {
             <div class="status-line"></div>
             <div class="card-body">
                 <div class="info">
-                    <h3>${name}</h3>
+                    <h3>${securiserTexte(name)}</h3>
                     <p class="status-text" style="display:inline-flex; align-items:center; gap:5px;">${isOverdue ? `${iconeAlerte(13)}RETARD (+24h)` : "En cours de prêt"}</p>
                 </div>
                 <div class="dot-indicator"></div>
@@ -745,6 +745,7 @@ export function initMaterielListeners(): void {
   document.getElementById("main-scan-btn")?.addEventListener("click", ouvrirScanner);
   document.getElementById("main-photo-btn")?.addEventListener("click", declencherCamera);
   document.getElementById("btn-torche")?.addEventListener("click", basculerTorche);
+  document.getElementById("btn-scanner-annuler")?.addEventListener("click", fermerScanner);
 
   document.getElementById("btn-mode-panier")?.addEventListener("click", toggleModePanier);
   document.getElementById("btn-bilan")?.addEventListener("click", genererRecap);
@@ -773,11 +774,6 @@ export function initMaterielListeners(): void {
   document.getElementById("badge-etat-frigos")?.addEventListener("mouseleave", stopResetFrigoEvalTimer);
   document.getElementById("badge-etat-frigos")?.addEventListener("touchstart", startResetFrigoEvalTimer, { passive: true });
   document.getElementById("badge-etat-frigos")?.addEventListener("touchend", stopResetFrigoEvalTimer);
-
-  document.getElementById("lien-historique-frigos")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    ouvrirHistoriqueFrigos();
-  });
 
   document.getElementById("btn-qty-moins")?.addEventListener("click", () => changeModalQty(-1));
   document.getElementById("btn-qty-plus")?.addEventListener("click", () => changeModalQty(1));

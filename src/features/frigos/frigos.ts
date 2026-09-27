@@ -9,11 +9,6 @@ import { iconeCheckSucces } from "@/ui/icons";
 import { securiserTexte } from "@/ui/dom-utils";
 import type { CadenasState, ContenuState, FrigoEvalTemp, FrigoLog, HygieneState } from "@/types/frigo";
 
-/** Lien "Consulter l'historique des frigos" (SharePoint) — URL encodée en base64 dans l'ancien code, conservée à l'identique. */
-export function ouvrirHistoriqueFrigos(): void {
-  window.open(atob("aHR0cHM6Ly9jb2FsbGlhb3JnLnNoYXJlcG9pbnQuY29tLzp4Oi9zL0NvYWxsaWFfUGVybWlhL0lRQ2FJNHZ4V21oeFJMMlEwcGZTRklqNUFVM0NfSDBQYXZEU2xEdWZuWnowVVhvP2U9MTVXcmlT"), "_blank");
-}
-
 // 🎨 Icônes SVG des cartes frigo — même tracé que les boutons d'évaluation
 // correspondants, coloré selon l'état (vert/orange/rouge/gris) pour rester
 // intuitif d'un coup d'œil, sans avoir à lire le libellé sous l'icône.

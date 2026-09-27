@@ -8,6 +8,21 @@ import { iconeAlerte, iconeCheckSucces } from "@/ui/icons";
 import { securiserTexte } from "@/ui/dom-utils";
 import type { MedLog } from "@/types/medication";
 
+/** "  Élodie   MARTIN " → "elodie martin" : un même jeune saisi avec une casse, des accents ou des espaces différents reste reconnu. */
+function normaliserNom(nom: string): string {
+  return nom
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function estParacetamol(medicament: string): boolean {
+  const m = normaliserNom(medicament);
+  return m.includes("doliprane") || m.includes("paracetamol");
+}
+
 export function openMedicaments(): void {
   document.getElementById("home-menu")?.classList.add("hidden");
   document.getElementById("med-app")?.classList.remove("hidden");
@@ -104,23 +119,18 @@ export function validerMedicament(): void {
     return;
   }
 
-  const typeMedClean = typeMed.toLowerCase();
-  const nomJeuneClean = nomJeune.toLowerCase();
+  const nomJeuneClean = normaliserNom(nomJeune);
 
   // 🧹 Nettoyage des logs
   state.medLogs = state.medLogs.filter((log) => log.resident && log.resident.trim() !== "");
 
   // --- 🛡️ VÉRIFICATION DOLIPRANE (6H) ---
-  if (typeMedClean.includes("doliprane") || typeMedClean.includes("paracétamol") || typeMedClean.includes("paracetamol")) {
-    const prisesJeune = state.medLogs.filter(
-      (log) =>
-        log.resident.toLowerCase() === nomJeuneClean &&
-        (log.medicament.toLowerCase().includes("doliprane") || log.medicament.toLowerCase().includes("paracétamol") || log.medicament.toLowerCase().includes("paracetamol"))
-    );
+  if (estParacetamol(typeMed)) {
+    const prisesJeune = state.medLogs.filter((log) => normaliserNom(log.resident) === nomJeuneClean && estParacetamol(log.medicament));
 
     if (prisesJeune.length > 0) {
-      const dernierePrise = prisesJeune[prisesJeune.length - 1];
-      const timeDernierePrise = new Date(dernierePrise.timestamp);
+      // La plus récente par horodatage (l'ordre du tableau n'est pas une garantie après fusion du coffre)
+      const timeDernierePrise = new Date(Math.max(...prisesJeune.map((log) => log.timestamp)));
       const diffHeures = (new Date().getTime() - timeDernierePrise.getTime()) / (1000 * 60 * 60);
 
       if (diffHeures < 6) {

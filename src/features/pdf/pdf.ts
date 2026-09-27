@@ -1,6 +1,7 @@
 import { state } from "@/state/store";
 import { retour } from "@/services/feedback";
 import { securiserTexte } from "@/ui/dom-utils";
+import { afficherToast } from "@/ui/toast";
 
 export type RapportType = "materiel" | "comptage";
 
@@ -50,7 +51,7 @@ function itinerairePdf(chambreTexte: string): string {
 
   const couleur = "#8a93a5";
   const segment = (icone: string, texte: string): string =>
-    `<span style="display:inline-flex; align-items:center; gap:5px;">${icone}${texte}</span>`;
+    `<span style="display:inline-flex; align-items:center; gap:5px;">${icone}${securiserTexte(texte)}</span>`;
   const separateur = `<span style="opacity:0.5;">›</span>`;
 
   const morceaux = [segment(svgBatiment(11, couleur), batimentBrut)];
@@ -132,7 +133,13 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
     contenuHTML = document.getElementById("recap-content")?.innerHTML ?? "";
     titreDoc = "Bilan_Materiel_" + dateAujourdhui.replace(/\//g, "-");
   } else if (type === "comptage") {
-    if (!state.mecsComptageLogs || state.mecsComptageLogs.length === 0) return undefined;
+    if (!state.mecsComptageLogs || state.mecsComptageLogs.length === 0) {
+      if (btn && !silencieux) {
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+      return undefined;
+    }
     const dernierLog = state.mecsComptageLogs[state.mecsComptageLogs.length - 1];
 
     let absentsHTML = "";
@@ -173,15 +180,15 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
                     <tr style="background:#f2f7fd;">
                         <td style="padding:12px 14px; width:24%; border-right:1px solid #d8e4f3; vertical-align:top; border-radius:0 0 0 11px;">
                             <div style="font-size:8.5px; color:#6b7f9c; font-weight:800; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:4px;">Date</div>
-                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${dernierLog.date}</div>
+                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${securiserTexte(dernierLog.date)}</div>
                         </td>
                         <td style="padding:12px 14px; width:24%; border-right:1px solid #d8e4f3; vertical-align:top;">
                             <div style="font-size:8.5px; color:#6b7f9c; font-weight:800; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:4px;">Créneau</div>
-                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${dernierLog.heureDebut} — ${dernierLog.heureFin || "--:--"}</div>
+                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${securiserTexte(dernierLog.heureDebut)} — ${securiserTexte(dernierLog.heureFin || "--:--")}</div>
                         </td>
                         <td style="padding:12px 14px; width:26%; border-right:1px solid #d8e4f3; vertical-align:top;">
                             <div style="font-size:8.5px; color:#6b7f9c; font-weight:800; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:4px;">Session</div>
-                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${dernierLog.type}</div>
+                            <div style="font-size:12px; color:#0d1b2f; font-weight:700;">${securiserTexte(dernierLog.type)}</div>
                         </td>
                         <td style="padding:12px 14px; width:26%; vertical-align:top; border-radius:0 0 11px 0;">
                             <div style="font-size:8.5px; color:#6b7f9c; font-weight:800; letter-spacing:0.8px; text-transform:uppercase; margin-bottom:4px;">Contrôle effectué par</div>
@@ -328,28 +335,39 @@ export async function telechargerPDF(type: RapportType, options?: TelechargerPdf
     return tache.outputPdf("datauristring");
   }
 
-  const resultat: Promise<void> = tache.save().then(() => {
-    // Succès !
-    if (btn) {
-      btn.innerHTML = `
-        <span style="display:inline-flex; align-items:center; justify-content:center; gap:8px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
-          PDF Téléchargé
-        </span>`;
-      btn.style.backgroundColor = "var(--success)";
-    }
-    retour("succes");
+  const resultat: Promise<void> = tache
+    .save()
+    .then(() => {
+      // Succès !
+      if (btn) {
+        btn.innerHTML = `
+          <span style="display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+            PDF Téléchargé
+          </span>`;
+        btn.style.backgroundColor = "var(--success)";
+      }
+      retour("succes");
 
-    setTimeout(() => {
+      setTimeout(() => {
+        if (btn) {
+          btn.innerText = originalText;
+
+          // 🎨 Tous les boutons d'export reviennent au bleu Coallia
+          btn.style.backgroundColor = "var(--coallia-blue)";
+
+          btn.disabled = false;
+        }
+      }, 3000);
+    })
+    .catch((err: unknown) => {
+      // 🛟 Échec de génération : le bouton ne doit jamais rester bloqué sur "Création du document..."
+      console.error("📄 Génération du PDF impossible :", err);
       if (btn) {
         btn.innerText = originalText;
-
-        // 🎨 Tous les boutons d'export reviennent au bleu Coallia
-        btn.style.backgroundColor = "var(--coallia-blue)";
-
         btn.disabled = false;
       }
-    }, 3000);
-  });
+      afficherToast("Impossible de générer le PDF. Réessayez.", "erreur");
+    });
   return resultat;
 }

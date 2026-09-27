@@ -12,8 +12,8 @@ compatibility_flags = ["nodejs_compat"]
 binding = "PERMIA_DB"
 id = "de37fd13b37c4ee7a097cbc21b4a1eca"
 
-# Non sensibles : l'URL du projet Supabase ne donne accès à rien sans la clé
-# anon, et un DSN Sentry n'autorise que l'ENVOI d'événements (pas la lecture).
+# Non sensibles : l'URL du projet Supabase ne donne accès à rien sans clé, et
+# un DSN Sentry n'autorise que l'ENVOI d'événements (pas la lecture).
 [vars]
 SUPABASE_URL = "https://jgfwnatspdjvnxmbsgls.supabase.co"
 SENTRY_DSN = "https://3559cde2453da83b94c0b9bb765230d9@o4512080131784704.ingest.de.sentry.io/4512108352110672"
@@ -21,5 +21,4 @@ SENTRY_DSN = "https://3559cde2453da83b94c0b9bb765230d9@o4512080131784704.ingest.
 # Secrets (NE JAMAIS les mettre ici en clair) — à définir via :
 #   wrangler secret put MOT_DE_PASSE_PERMIA
 #   wrangler secret put URL_POWER_AUTOMATE
-#   wrangler secret put SUPABASE_ANON_KEY
 #   wrangler secret put SUPABASE_SERVICE_ROLE_KEY

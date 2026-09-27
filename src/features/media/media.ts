@@ -12,6 +12,12 @@ let activeMediaKey: MediaKey | null = null;
 let isDrawing = false;
 let sigCanvas: HTMLCanvasElement | null = null;
 let sigCtx: CanvasRenderingContext2D | null = null;
+let ecouteursSignatureCables = false;
+
+/** Seule une image encodée localement (data:image/…) est acceptée comme signature. */
+function signatureSure(signature: string): string {
+  return /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(signature) ? signature : "";
+}
 
 export function openMediaApp(): void {
   document.getElementById("home-menu")?.classList.add("hidden");
@@ -38,7 +44,7 @@ export function renderMediaItems(): void {
     const footerHTML = isAvail
       ? `<div class="media-pied">
                    <span class="media-pied-lbl">Dernier emprunt</span>
-                   <span class="media-pied-val">${securiserTexte(item.lastJeune)} · ${item.lastTime}</span>
+                   <span class="media-pied-val">${securiserTexte(item.lastJeune)} · ${securiserTexte(item.lastTime)}</span>
                </div>`
       : `<div class="media-pied media-pied-actif">
                    <div class="media-pied-ligne">
@@ -51,7 +57,7 @@ export function renderMediaItems(): void {
                    </div>
                    <div class="media-signature">
                        <span class="media-pied-lbl">Signature</span>
-                       <img src="${item.signature}" alt="Signature de l'emprunteur">
+                       <img src="${signatureSure(item.signature)}" alt="Signature de l'emprunteur">
                    </div>
                    ${actionButtonHTML}
                </div>`;
@@ -61,7 +67,7 @@ export function renderMediaItems(): void {
     card.innerHTML = `
             <div class="media-corps">
                 <div class="media-entete">
-                    <h3 class="media-nom">${item.name}</h3>
+                    <h3 class="media-nom">${securiserTexte(item.name)}</h3>
                     <span class="media-etat">
                         <span class="media-point"></span>${isAvail ? "Disponible" : "En prêt"}
                     </span>
@@ -118,24 +124,31 @@ function initSignatureCanvas(): void {
 
   clearSignatureCanvas();
 
+  // ⚠️ Écouteurs câblés UNE seule fois : cette fonction est rappelée à chaque
+  // ouverture de la modale, et les ré-attacher à chaque fois multipliait les
+  // tracés (un trait dessiné N fois après N ouvertures).
+  if (ecouteursSignatureCables) return;
+  ecouteursSignatureCables = true;
+  const canvas = sigCanvas;
+
   // Événements tactiles Android
-  sigCanvas.addEventListener(
+  canvas.addEventListener(
     "touchstart",
     (e) => {
       isDrawing = true;
-      const pos = getCanvasTouchPos(e);
+      const pos = positionDansCanvas(e.touches[0].clientX, e.touches[0].clientY);
       sigCtx?.beginPath();
       sigCtx?.moveTo(pos.x, pos.y);
     },
     { passive: false }
   );
 
-  sigCanvas.addEventListener(
+  canvas.addEventListener(
     "touchmove",
     (e) => {
       if (!isDrawing) return;
       e.preventDefault();
-      const pos = getCanvasTouchPos(e);
+      const pos = positionDansCanvas(e.touches[0].clientX, e.touches[0].clientY);
       sigCtx?.lineTo(pos.x, pos.y);
       sigCtx?.stroke();
     },
@@ -147,14 +160,16 @@ function initSignatureCanvas(): void {
   });
 
   // Événements souris (PC)
-  sigCanvas.addEventListener("mousedown", (e) => {
+  canvas.addEventListener("mousedown", (e) => {
     isDrawing = true;
+    const pos = positionDansCanvas(e.clientX, e.clientY);
     sigCtx?.beginPath();
-    sigCtx?.moveTo(e.offsetX, e.clientY - (sigCanvas as HTMLCanvasElement).getBoundingClientRect().top);
+    sigCtx?.moveTo(pos.x, pos.y);
   });
-  sigCanvas.addEventListener("mousemove", (e) => {
+  canvas.addEventListener("mousemove", (e) => {
     if (!isDrawing) return;
-    sigCtx?.lineTo(e.offsetX, e.clientY - (sigCanvas as HTMLCanvasElement).getBoundingClientRect().top);
+    const pos = positionDansCanvas(e.clientX, e.clientY);
+    sigCtx?.lineTo(pos.x, pos.y);
     sigCtx?.stroke();
   });
   window.addEventListener("mouseup", () => {
@@ -162,11 +177,20 @@ function initSignatureCanvas(): void {
   });
 }
 
-function getCanvasTouchPos(touchEvent: TouchEvent): { x: number; y: number } {
-  const rect = (sigCanvas as HTMLCanvasElement).getBoundingClientRect();
+/**
+ * Coordonnées écran → coordonnées du dessin. Le canvas a une résolution fixe
+ * (340×150, attributs HTML) mais s'affiche étiré à 100% de sa zone : sans
+ * cette mise à l'échelle, le trait apparaissait décalé par rapport au doigt.
+ */
+function positionDansCanvas(clientX: number, clientY: number): { x: number; y: number } {
+  const canvas = sigCanvas as HTMLCanvasElement;
+  const rect = canvas.getBoundingClientRect();
+  // clientLeft/clientTop/clientWidth : on exclut la bordure pointillée du calcul.
+  const echelleX = canvas.clientWidth ? canvas.width / canvas.clientWidth : 1;
+  const echelleY = canvas.clientHeight ? canvas.height / canvas.clientHeight : 1;
   return {
-    x: touchEvent.touches[0].clientX - rect.left,
-    y: touchEvent.touches[0].clientY - rect.top
+    x: (clientX - rect.left - canvas.clientLeft) * echelleX,
+    y: (clientY - rect.top - canvas.clientTop) * echelleY
   };
 }
 

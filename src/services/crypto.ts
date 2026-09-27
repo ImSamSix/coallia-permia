@@ -70,8 +70,11 @@ export function assurerCryptoJS(): Promise<boolean> {
 
   chargementCrypto = new Promise<boolean>((resolve) => {
     const sources = [
-      "/vendor/crypto-js.min.js", // copie locale (prioritaire, marche hors-ligne)
-      "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"
+      { src: "/vendor/crypto-js.min.js" }, // copie locale (prioritaire, marche hors-ligne)
+      {
+        src: "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js",
+        integrity: "sha512-a+SUDuwNzXDvz4XrIcXHuCf089/iJAoN4lmrXJg18XnduKK6YlDHNRalv4yd1N40OKI80tFidF+rqTFKGPoWFQ=="
+      }
     ];
     let i = 0;
     const essayer = () => {
@@ -80,8 +83,14 @@ export function assurerCryptoJS(): Promise<boolean> {
         resolve(false);
         return;
       }
+      const source = sources[i++];
       const s = document.createElement("script");
-      s.src = sources[i++];
+      s.src = source.src;
+      // 🔒 Copie CDN : empreinte SRI obligatoire, un fichier altéré est refusé.
+      if (source.integrity) {
+        s.integrity = source.integrity;
+        s.crossOrigin = "anonymous";
+      }
       s.onload = () => resolve(typeof CryptoJS !== "undefined");
       s.onerror = essayer;
       document.head.appendChild(s);

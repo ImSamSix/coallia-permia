@@ -31,6 +31,9 @@ function isEtatOperationnel(body: PermiaRequestBody): body is EtatOperationnelRe
   return body.type === "etat_operationnel";
 }
 
+/** Seuls les journaux métier réellement émis par l'app sont relayés à Power Automate. */
+const TYPES_RELAYES = new Set(["medicament", "frigo_eval", "pain", "comptage_mecs", "multimedia_log", "frigo_signalement"]);
+
 const handler = {
   async fetch(request: Request, env: Env): Promise<Response> {
     // 🔒 1. PARAMÈTRES DE SÉCURITÉ
@@ -59,7 +62,8 @@ const handler = {
           headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" }
         });
       } catch (err) {
-        return new Response(JSON.stringify({ status: "down", erreur: err instanceof Error ? err.message : String(err) }), {
+        Sentry.captureException(err);
+        return new Response(JSON.stringify({ status: "down" }), {
           status: 503,
           headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-store" }
         });
@@ -130,7 +134,7 @@ const handler = {
 
         // 🔒 INTERCEPTION DE LA CONNEXION (LOGIN)
         if (body.type === "login") {
-          // 👑 INJECTION DU CATALOGUE DÈS LE LOGIN (source : KV)
+          // 👑 INJECTION DU CATALOGUE DÈS LE LOGIN (source : Supabase)
           const catalogueAnonyme = await compilerCatalogueJeunes(env);
 
           return new Response(JSON.stringify({ success: true, mecsCatalog: catalogueAnonyme }), {
@@ -179,11 +183,14 @@ const handler = {
             });
           } catch (err) {
             Sentry.captureException(err);
-            return new Response("Erreur miroir Supabase : " + (err instanceof Error ? err.message : String(err)), { status: 500, headers: corsHeaders });
+            return new Response("Erreur miroir Supabase", { status: 500, headers: corsHeaders });
           }
         }
 
         // Relais Power Automate
+        if (typeof body.type !== "string" || !TYPES_RELAYES.has(body.type)) {
+          return new Response("Type de requête inconnu", { status: 400, headers: corsHeaders });
+        }
         if (!env.URL_POWER_AUTOMATE) {
           return new Response("Erreur : Variable introuvable", { status: 500, headers: corsHeaders });
         }
@@ -196,14 +203,14 @@ const handler = {
 
         if (!paResponse.ok) {
           const paError = await paResponse.text();
-          Sentry.captureMessage("Blocage Power Automate : " + paError, "error");
-          return new Response("Blocage Power Automate : " + paError, { status: paResponse.status, headers: corsHeaders });
+          Sentry.captureMessage("Blocage Power Automate (" + paResponse.status + ") : " + paError, "error");
+          return new Response("Blocage Power Automate", { status: paResponse.status, headers: corsHeaders });
         }
 
         return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
       } catch (err) {
         Sentry.captureException(err);
-        return new Response("Erreur interne du Worker : " + (err instanceof Error ? err.message : String(err)), { status: 500, headers: corsHeaders });
+        return new Response("Erreur interne du Worker", { status: 500, headers: corsHeaders });
       }
     }
 

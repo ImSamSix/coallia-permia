@@ -5,6 +5,7 @@ import { fermerModals } from "@/ui/modals";
 import type { PainLog } from "@/types/pain";
 
 let painQty = 0;
+const PAIN_QTY_MAX = 50;
 
 export function ouvrirPainModal(): void {
   painQty = 0;
@@ -19,7 +20,8 @@ export function ouvrirPainModal(): void {
 }
 
 function changePainQty(delta: number): void {
-  if (painQty + delta >= 0) {
+  const nouvelleQty = painQty + delta;
+  if (nouvelleQty >= 0 && nouvelleQty <= PAIN_QTY_MAX) {
     painQty += delta;
     updatePainDisplay();
   }
@@ -89,8 +91,8 @@ export function startPainInterval(delta: number): void {
 
   // 2. On lance la boucle automatique tant que le doigt reste posé (toutes les 150 millisecondes)
   painIntervalId = setInterval(() => {
-    // Sécurité : On bloque l'augmentation automatique si on dépasse 50 pains
-    if (delta === 1 && painQty >= 50) {
+    // Sécurité : on arrête la répétition automatique une fois la borne atteinte
+    if ((delta > 0 && painQty >= PAIN_QTY_MAX) || (delta < 0 && painQty <= 0)) {
       stopPainInterval();
       return;
     }
