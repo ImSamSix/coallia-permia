@@ -290,6 +290,33 @@ body.dark-mode .champ-auth input:focus {
 }
 
 
+/* ⏳ Chargement : spinner devant le texte ("Vérification sécurisée...") */
+#btn-login.btn-chargement {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0.85;
+    cursor: default;
+}
+.btn-spinner {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: btnSpinner 0.75s linear infinite;
+    will-change: transform;
+}
+@keyframes btnSpinner {
+    to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .btn-spinner { animation-duration: 1.8s; }
+}
+
+
 /* ==========================================
    🔴 SIGNAL D'ERREUR — ÉCRAN DE CONNEXION
    ========================================== */

@@ -51,6 +51,28 @@ export function echecAuth(message: string, idsChamps: string[] = ["pass-pro"]): 
   retour("erreur");
 }
 
+/** Bouton en cours de chargement : spinner devant le texte, clics bloqués.
+ *  Le spinner tourne en `transform` (animé hors du fil principal) : il
+ *  continue de tourner pendant le gel du calcul PBKDF2. */
+function afficherChargementBouton(btn: HTMLButtonElement, texte: string): void {
+  const spinner = document.createElement("span");
+  spinner.className = "btn-spinner";
+  spinner.setAttribute("aria-hidden", "true");
+  const libelle = document.createElement("span");
+  libelle.textContent = texte;
+  btn.replaceChildren(spinner, libelle);
+  btn.classList.add("btn-chargement");
+  btn.setAttribute("aria-busy", "true");
+  btn.disabled = true;
+}
+
+function retirerChargementBouton(btn: HTMLButtonElement, texte: string): void {
+  btn.textContent = texte;
+  btn.classList.remove("btn-chargement");
+  btn.removeAttribute("aria-busy");
+  btn.disabled = false;
+}
+
 export async function validerConnexionSecurisee(): Promise<void> {
   const inputPrenomEl = document.getElementById("prenom-pro") as HTMLInputElement;
   const inputPassEl = document.getElementById("pass-pro") as HTMLInputElement;
@@ -69,17 +91,13 @@ export async function validerConnexionSecurisee(): Promise<void> {
   }
 
   const originalText = btn.innerText;
-  btn.innerText = "Vérification sécurisée...";
-  btn.disabled = true;
-  btn.style.opacity = "0.8";
+  afficherChargementBouton(btn, "Vérification sécurisée...");
 
   // 🧩 GARDE : sans module de chiffrement, on sort proprement (bouton rendu)
   const cryptoPret = await assurerCryptoJS();
   if (!cryptoPret) {
     echecAuth("Module de sécurité non chargé. Vérifiez la connexion, puis réessayez.");
-    btn.innerText = originalText;
-    btn.disabled = false;
-    btn.style.opacity = "1";
+    retirerChargementBouton(btn, originalText);
     return;
   }
 
@@ -176,9 +194,7 @@ export async function validerConnexionSecurisee(): Promise<void> {
       echecAuth("Code incorrect ou connexion requise pour initialiser l'appareil.");
     }
   } finally {
-    btn.innerText = originalText;
-    btn.disabled = false;
-    btn.style.opacity = "1";
+    retirerChargementBouton(btn, originalText);
   }
 }
 
