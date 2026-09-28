@@ -1,7 +1,7 @@
 import { state } from "@/state/store";
-import { assurerCryptoJS, definirClesSession, deriverCleAuth, derriverCleVault, effacerClesSession } from "@/services/crypto";
+import { assurerCryptoJS, definirClesSession, deriverCleAuth, derriverCleVault, effacerClesSession, memoriserCleLegacy } from "@/services/crypto";
 import { fetchVault, login } from "@/services/permia-relay";
-import { dechiffrerCoffreLocal, purgerDonneesAnciennes } from "@/services/storage";
+import { adopterCoffreDistant, dechiffrerCoffreLocal, purgerDonneesAnciennes } from "@/services/storage";
 import { retour } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
 import { iconeAlerte } from "@/ui/icons";
@@ -77,6 +77,9 @@ export async function validerConnexionSecurisee(): Promise<void> {
   const inputPrenomEl = document.getElementById("prenom-pro") as HTMLInputElement;
   const inputPassEl = document.getElementById("pass-pro") as HTMLInputElement;
   const btn = document.getElementById("btn-login") as HTMLButtonElement;
+  // Déjà en cours (touche Entrée pendant le chargement) : sinon double calcul
+  // PBKDF2 et double requête, qui compte deux fois dans l'anti-force brute.
+  if (btn.disabled) return;
 
   const inputPrenom = inputPrenomEl.value.trim();
   const inputPass = inputPassEl.value;
@@ -105,10 +108,12 @@ export async function validerConnexionSecurisee(): Promise<void> {
   // avant le calcul PBKDF2 (120 000 itérations = 1 à 2 s de gel sur mobile)
   await new Promise((r) => setTimeout(r, 50));
 
-  // 🔑 Badge serveur : formule historique (le Worker reste inchangé)
-  const cleAuth = deriverCleAuth(inputPass);
   // 🛡️ Clé du coffre : dérivation lente PBKDF2
   const cleVault = derriverCleVault(inputPass);
+  // 🔑 Badge serveur : dérivé de la clé lente (voir deriverCleAuth)
+  const cleAuth = deriverCleAuth(cleVault);
+  // Ancienne clé faible, en mémoire seulement : ouvre un coffre jamais migré
+  memoriserCleLegacy(inputPass);
 
   try {
     const response = await login(cleAuth);
@@ -130,31 +135,21 @@ export async function validerConnexionSecurisee(): Promise<void> {
       // ☁️ RÉCUPÉRATION DU COFFRE DISTANT DÈS LA CONNEXION
       // Sans ça, un appareil fraîchement installé s'ouvre vide et peut
       // écraser le coffre de l'équipe à la première saisie.
+      // 🔀 Fusion avec le coffre local : une saisie faite hors-ligne avant un
+      //    verrouillage n'est plus écrasée par la version cloud.
+      let coffreOuvert: boolean;
       try {
         const dataVault = await fetchVault(cleAuth);
-
-        if (dataVault.vault && dataVault.vault !== "null") {
-          const sauvegardeLocale = localStorage.getItem("coallia_secure_vault");
-          localStorage.setItem("coallia_secure_vault", dataVault.vault);
-
-          // dechiffrerCoffreLocal gère la clé forte ET la migration legacy
-          if (!dechiffrerCoffreLocal()) {
-            if (sauvegardeLocale) {
-              localStorage.setItem("coallia_secure_vault", sauvegardeLocale);
-            } else {
-              localStorage.removeItem("coallia_secure_vault");
-            }
-            console.warn("⚠️ Coffre distant illisible : mémoire locale conservée.");
-          }
-        }
+        coffreOuvert = adopterCoffreDistant(dataVault.vault);
       } catch {
         console.log("📡 Coffre distant non récupéré, la mémoire locale est conservée.");
+        coffreOuvert = dechiffrerCoffreLocal();
       }
 
       // 🛡️ GARDE ANTI-ÉCRASEMENT : si un coffre existe mais refuse de s'ouvrir,
       // c'est que la clé est mauvaise. On refuse l'accès plutôt que d'écraser les données.
       const coffreExiste = !!localStorage.getItem("coallia_secure_vault");
-      if (coffreExiste && !dechiffrerCoffreLocal()) {
+      if (coffreExiste && !coffreOuvert) {
         effacerClesSession();
         localStorage.removeItem("coallia_pro_prenom");
         localStorage.removeItem("coallia_session_expire");

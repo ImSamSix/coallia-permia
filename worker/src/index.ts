@@ -4,12 +4,26 @@ import { compilerCatalogueJeunes } from "./mecs-catalog";
 import { sauvegarderEtatOperationnel } from "./supabase-backup";
 import type { CloudSyncRequestBody, Env, EtatOperationnelRequestBody, PermiaRequestBody } from "./types";
 
-// Fonction cryptographique pour générer la clé côté serveur
-async function genererCleServeur(motDePasse: string): Promise<string> {
-  const msgBuffer = new TextEncoder().encode("Permia_Secret_" + motDePasse);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+async function sha256Hex(texte: string): Promise<string> {
+  const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(texte));
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+/**
+ * Clé de limitation d'une adresse : IPv4 entière, IPv6 ramenée à son bloc
+ * /64. Un abonnement (box, 4G) reçoit en général tout un /64 : sans ce
+ * regroupement, un attaquant changeait d'adresse à volonté pour repartir
+ * de zéro à chaque tentative.
+ */
+function cleLimitation(ip: string): string {
+  if (!ip.includes(":")) return ip;
+  const [gauche, droite = ""] = ip.split("::");
+  const g = gauche ? gauche.split(":") : [];
+  const d = droite ? droite.split(":") : [];
+  const complet = [...g, ...Array(Math.max(0, 8 - g.length - d.length)).fill("0"), ...d];
+  return complet.slice(0, 4).map((h) => h.toLowerCase().padStart(4, "0")).join(":") + "::/64";
 }
 
 /** Comparaison à temps constant : évite qu'un écart de latence réseau (même
@@ -29,6 +43,33 @@ function isCloudSync(body: PermiaRequestBody): body is CloudSyncRequestBody {
 
 function isEtatOperationnel(body: PermiaRequestBody): body is EtatOperationnelRequestBody {
   return body.type === "etat_operationnel";
+}
+
+/**
+ * Miroir Supabase (clé service_role) : on ne transmet QUE les colonnes
+ * attendues, et un nombre de lignes borné. Sans ce filtre, un appelant muni
+ * de la clé pouvait écrire des colonnes arbitraires dans ces tables.
+ */
+const COLONNES_MIROIR = {
+  materiel: ["id", "category", "name", "status", "jeune", "pro", "time"],
+  frigos: ["id", "name", "cadenas", "hygiene", "contenu", "time", "pro", "residents"],
+  media: ["id", "name", "status", "jeune", "pro", "time", "last_jeune", "last_time"]
+} as const;
+const MAX_LIGNES_MIROIR = 500;
+
+function filtrerLignes(valeur: unknown, colonnes: readonly string[]): Record<string, unknown>[] | null {
+  if (!Array.isArray(valeur) || valeur.length > MAX_LIGNES_MIROIR) return null;
+  const lignes: Record<string, unknown>[] = [];
+  for (const brute of valeur) {
+    if (!brute || typeof brute !== "object" || Array.isArray(brute)) return null;
+    const ligne: Record<string, unknown> = {};
+    for (const col of colonnes) {
+      if (col in brute) ligne[col] = (brute as Record<string, unknown>)[col];
+    }
+    if (ligne.id === undefined || ligne.id === null) return null;
+    lignes.push(ligne);
+  }
+  return lignes;
 }
 
 /** Seuls les journaux métier réellement émis par l'app sont relayés à Power Automate. */
@@ -70,36 +111,59 @@ const handler = {
       }
     }
 
-    // 🛡️ 3. LE SECRET VIENT DU COFFRE CLOUDFLARE (jamais dans le code source)
-    if (!env.MOT_DE_PASSE_PERMIA) {
+    // 🛡️ 3. LE SERVEUR NE CONNAÎT PAS LE MOT DE PASSE : seulement l'empreinte
+    //    SHA-256 du badge attendu (secret Cloudflare EMPREINTE_BADGE, générée
+    //    par scripts/generer-empreinte-badge.mjs). Une fuite de ce secret ne
+    //    donne ni le mot de passe, ni un badge utilisable.
+    if (!env.EMPREINTE_BADGE) {
       return new Response("Configuration serveur incomplète.", { status: 500, headers: corsHeaders });
     }
-    const CLE_API_ATTENDUE = await genererCleServeur(env.MOT_DE_PASSE_PERMIA);
 
-    // 🛡️ 3bis. ANTI-FORCE BRUTE : compteur d'échecs par IP, expirant tout seul
+    // 🛡️ 3bis. ANTI-FORCE BRUTE, deux étages (compteurs expirant tout seuls) :
+    //   - par adresse (bloc /64 en IPv6) : 10 échecs → blocage 15 min ;
+    //   - global : au-delà de 30 échecs toutes adresses confondues (attaque
+    //     distribuée probable), le seuil par adresse tombe à 3 et une alerte
+    //     part sur Sentry. Le téléphone légitime, qui n'échoue pas, n'est
+    //     jamais bloqué par ce second étage.
     const ip = request.headers.get("CF-Connecting-IP") || "inconnu";
-    const cleThrottle = "throttle:" + ip;
-    const MAX_ECHECS = 10;
+    const cleThrottle = "throttle:" + cleLimitation(ip);
+    const CLE_ECHECS_GLOBAUX = "throttle:global";
     const FENETRE_SECONDES = 900; // 15 minutes
+    const SEUIL_ATTAQUE_GLOBALE = 30;
 
-    const echecs = parseInt((await env.PERMIA_DB.get(cleThrottle)) || "0", 10);
+    const [echecsBrut, echecsGlobauxBrut] = await Promise.all([env.PERMIA_DB.get(cleThrottle), env.PERMIA_DB.get(CLE_ECHECS_GLOBAUX)]);
+    const echecs = parseInt(echecsBrut || "0", 10);
+    const echecsGlobaux = parseInt(echecsGlobauxBrut || "0", 10);
+    const maxEchecs = echecsGlobaux >= SEUIL_ATTAQUE_GLOBALE ? 3 : 10;
 
-    if (echecs >= MAX_ECHECS) {
+    if (echecs >= maxEchecs) {
       return new Response("Trop de tentatives. Réessayez dans 15 minutes.", {
         status: 429,
         headers: { ...corsHeaders, "Retry-After": String(FENETRE_SECONDES) }
       });
     }
 
-    // 🛡️ 4. VÉRIFICATION DYNAMIQUE DU BADGE
+    // 🛡️ 4. VÉRIFICATION DU BADGE (empreinte comparée à temps constant)
     const apiKey = request.headers.get("X-Permia-Key") || "";
-    if (!comparerEnTempsConstant(apiKey, CLE_API_ATTENDUE)) {
-      // On incrémente le compteur, qui s'effacera seul au bout de 15 minutes
-      await env.PERMIA_DB.put(cleThrottle, String(echecs + 1), { expirationTtl: FENETRE_SECONDES });
+    const empreinteRecue = apiKey ? await sha256Hex(apiKey) : "";
+    if (!comparerEnTempsConstant(empreinteRecue, env.EMPREINTE_BADGE.trim().toLowerCase())) {
+      // Compteurs incrémentés ; une écriture KV refusée (quota, rafale) ne
+      // doit jamais transformer un refus propre en erreur 500.
+      try {
+        await Promise.all([
+          env.PERMIA_DB.put(cleThrottle, String(echecs + 1), { expirationTtl: FENETRE_SECONDES }),
+          env.PERMIA_DB.put(CLE_ECHECS_GLOBAUX, String(echecsGlobaux + 1), { expirationTtl: FENETRE_SECONDES })
+        ]);
+      } catch (err) {
+        console.log("Compteur anti-force brute non mis à jour :", err instanceof Error ? err.message : err);
+      }
+      if (echecsGlobaux + 1 === SEUIL_ATTAQUE_GLOBALE) {
+        Sentry.captureMessage(`Permia : ${SEUIL_ATTAQUE_GLOBALE} échecs de connexion en 15 min (attaque distribuée probable) — seuil par adresse abaissé à 3.`, "warning");
+      }
       return new Response("Accès refusé : Connexion non autorisée.", { status: 403, headers: corsHeaders });
     }
 
-    // ✅ Code correct : on efface l'ardoise
+    // ✅ Code correct : on efface l'ardoise de cette adresse
     if (echecs > 0) {
       await env.PERMIA_DB.delete(cleThrottle);
     }
@@ -130,7 +194,15 @@ const handler = {
 
     if (request.method === "POST") {
       try {
-        const body = (await request.json()) as PermiaRequestBody;
+        let body: PermiaRequestBody;
+        try {
+          body = (await request.json()) as PermiaRequestBody;
+        } catch {
+          return new Response("Requête illisible", { status: 400, headers: corsHeaders });
+        }
+        if (!body || typeof body !== "object") {
+          return new Response("Requête illisible", { status: 400, headers: corsHeaders });
+        }
 
         // 🔒 INTERCEPTION DE LA CONNEXION (LOGIN)
         if (body.type === "login") {
@@ -176,7 +248,13 @@ const handler = {
         // perdre le suivi opérationnel en cas de souci avec le téléphone unique.
         if (isEtatOperationnel(body)) {
           try {
-            await sauvegarderEtatOperationnel(env, body.materiel, body.frigos, body.media);
+            const materiel = filtrerLignes(body.materiel, COLONNES_MIROIR.materiel);
+            const frigos = filtrerLignes(body.frigos, COLONNES_MIROIR.frigos);
+            const media = filtrerLignes(body.media, COLONNES_MIROIR.media);
+            if (!materiel || !frigos || !media) {
+              return new Response("Miroir : données invalides", { status: 400, headers: corsHeaders });
+            }
+            await sauvegarderEtatOperationnel(env, materiel, frigos, media);
             return new Response(JSON.stringify({ success: true }), {
               status: 200,
               headers: { ...corsHeaders, "Content-Type": "application/json" }

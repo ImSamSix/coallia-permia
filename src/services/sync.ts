@@ -125,7 +125,8 @@ async function executerSynchronisation(cleAuth: string): Promise<void> {
     () =>
       envoyerCategorie(
         cleAuth,
-        state.mecsComptageLogs,
+        // Un relevé dont le PDF est encore en génération attend sa pièce jointe.
+        state.mecsComptageLogs.filter((log) => !log.pdfEnAttente),
         (log) => ({ ...log, type: "comptage_mecs" }),
         (log) => {
           // 🧹 Le PDF a été transmis : on le retire du coffre pour ne pas saturer l'appareil

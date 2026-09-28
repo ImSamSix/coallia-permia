@@ -136,16 +136,6 @@ select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='h
     color: var(--text-gray);
 }
 
-/* Animation de pulsation pour la synchro */
-.pulse-orange {
-    animation: pulseSync 1.5s infinite;
-}
-
-@keyframes pulseSync {
-    0% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.2); }
-    100% { opacity: 1; transform: scale(1); }
-}
 
 
 

@@ -77,9 +77,4 @@
     50%      { opacity: 0.35; transform: scale(0.8); }
 }
 
-/* Retour tactile sur l'appui long (reset) */
-#real-time-clock:active {
-    transform: scale(0.96);
-    transition: transform 0.15s ease;
-}
 

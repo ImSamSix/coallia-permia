@@ -1,12 +1,11 @@
 /* ========================================== */
-/* BULLES D'ALERTE / SUCCÈS — style unifié     */
+/* BULLES D'ALERTE — style unifié             */
 /* Remplace les anciens blocs pleins rouges +  */
 /* emojis par un ton discret (fond teinté,     */
 /* bordure fine) + icône SVG, dans toute       */
 /* l'app (connexion, comptage, frigos, prêts…) */
 /* ========================================== */
-.bulle-erreur,
-.bulle-succes {
+.bulle-erreur {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,8 +18,7 @@
     text-align: center;
     line-height: 1.35;
 }
-.bulle-erreur svg,
-.bulle-succes svg {
+.bulle-erreur svg {
     flex-shrink: 0;
 }
 
@@ -31,13 +29,4 @@
 }
 body.dark-mode .bulle-erreur {
     color: #ff8a80;
-}
-
-.bulle-succes {
-    background: rgba(52, 199, 89, 0.10);
-    border: 1.5px solid var(--success);
-    color: #1f8a44;
-}
-body.dark-mode .bulle-succes {
-    color: #6fe39a;
 }

@@ -124,6 +124,7 @@ export function initPainListeners(): void {
   btnMoins?.addEventListener("mouseleave", stopPainInterval);
   btnMoins?.addEventListener("touchstart", (e) => { e.preventDefault(); startPainInterval(-1); });
   btnMoins?.addEventListener("touchend", stopPainInterval);
+  btnMoins?.addEventListener("touchcancel", stopPainInterval);
 
   const btnPlus = document.getElementById("btn-pain-plus");
   btnPlus?.addEventListener("mousedown", () => startPainInterval(1));
@@ -131,6 +132,7 @@ export function initPainListeners(): void {
   btnPlus?.addEventListener("mouseleave", stopPainInterval);
   btnPlus?.addEventListener("touchstart", (e) => { e.preventDefault(); startPainInterval(1); });
   btnPlus?.addEventListener("touchend", stopPainInterval);
+  btnPlus?.addEventListener("touchcancel", stopPainInterval);
 
   document.getElementById("pain-obs-effacer")?.addEventListener("click", effacerObsPain);
   document.getElementById("btn-valider-pain")?.addEventListener("click", validerPain);

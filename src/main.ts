@@ -3,8 +3,8 @@ import "@/styles/main.css";
 import { initMonitoring } from "@/services/monitoring";
 import { initMiseAJour } from "@/services/mise-a-jour";
 import { state } from "@/state/store";
-import { getCleAuth, getCleMaitresse } from "@/services/crypto";
-import { dechiffrerCoffreLocal, purgerDonneesAnciennes, definirCallbackApresSauvegarde } from "@/services/storage";
+import { effacerClesSession, getCleAuth, getCleMaitresse, sessionAJour } from "@/services/crypto";
+import { adopterCoffreDistant, dechiffrerCoffreLocal, purgerDonneesAnciennes, definirCallbackApresSauvegarde } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { fetchVault, verifierSanteWorker } from "@/services/permia-relay";
 import { retour } from "@/services/feedback";
@@ -63,13 +63,14 @@ window.onload = async () => {
   const cleSession = getCleMaitresse();
   const now = new Date().getTime();
 
-  const sessionValide = !!(prenom && expire && now < parseInt(expire) && cleSession);
+  // sessionAJour : une session ouverte avant le nouveau calcul du badge
+  // serait refusée par le serveur à chaque synchro → reconnexion demandée.
+  const sessionValide = !!(prenom && expire && now < parseInt(expire) && cleSession && sessionAJour());
 
   // Si la session est valide ET que la clé temporaire est toujours en mémoire (rafraîchissement de page)
   if (sessionValide) {
     // 1. Déchiffrement local
     dechiffrerCoffreLocal();
-    purgerDonneesAnciennes();
 
     // 2. Synchronisation Cloud (Sécurisée)
     if (navigator.onLine) {
@@ -82,35 +83,26 @@ window.onload = async () => {
             state.mecsJeunesCatalog = data.mecsCatalog;
           }
 
-          if (data.vault && data.vault !== "null") {
-            // On garde une copie de secours avant d'adopter le coffre distant
-            const sauvegardeLocale = localStorage.getItem("coallia_secure_vault");
-            localStorage.setItem("coallia_secure_vault", data.vault);
-
-            // dechiffrerCoffreLocal gère la clé forte ET la migration automatique
-            if (!dechiffrerCoffreLocal()) {
-              if (sauvegardeLocale) {
-                localStorage.setItem("coallia_secure_vault", sauvegardeLocale);
-              } else {
-                localStorage.removeItem("coallia_secure_vault");
-              }
-              console.warn("⚠️ Coffre distant illisible : mémoire locale conservée.");
-            }
-          }
+          // 🔀 Fusion (et non remplacement) : les saisies locales pas encore
+          // parvenues au cloud sont conservées.
+          adopterCoffreDistant(data.vault);
         } catch {
           console.log("📡 Mode Hors-ligne : Utilisation de la mémoire locale.");
         }
       }
-      synchroniserDonnees();
     }
+
+    // 🛡️ Minimisation RGPD (4 jours) APRÈS la fusion avec le cloud : purger
+    // avant daterait le coffre local comme "plus récent" à tort.
+    purgerDonneesAnciennes();
+    if (navigator.onLine) synchroniserDonnees();
 
     openMenu();
   } else {
     // 🛑 L'utilisateur a fermé l'onglet ou la session a expiré : Verrouillage total
     localStorage.removeItem("coallia_pro_prenom");
     localStorage.removeItem("coallia_session_expire");
-    sessionStorage.removeItem("permia_session_key");
-    sessionStorage.removeItem("permia_auth_key");
+    effacerClesSession();
   }
 
   // 🔒 SURVEILLANCE DU VERROUILLAGE — hors du if/else, donc active
@@ -224,7 +216,7 @@ window.onload = async () => {
   // 👑 CHORÉGRAPHIE LUXE : Écran Splash & Transition Enchaînée Premium
   // ==========================================================================
 
-  // 1. À 2200ms : Le logo a été bien visible. On lance le fondu du Splash ET l'émergence de la carte en même temps !
+  // 1. À 1700ms : Le logo a été bien visible. On lance le fondu du Splash ET l'émergence de la carte en même temps !
   setTimeout(() => {
     const splash = document.getElementById("splash-screen");
     if (splash) splash.classList.add("hidden-splash"); // Lancement du fondu de sortie

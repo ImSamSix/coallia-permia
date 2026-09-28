@@ -18,4 +18,7 @@ export interface VaultData {
   mediaData: MediaData;
   annuaireData: AnnuaireData;
   mediaLogs: MediaLog[];
+  /** Horodatage de la sauvegarde : départage coffre local et coffre distant
+   *  (absent des coffres écrits avant son introduction → traité comme 0). */
+  majLe?: number;
 }

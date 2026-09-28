@@ -605,7 +605,13 @@ export function cloreComptageMecs(): void {
 
   // Ajoute la session actuelle à l'historique global
   const session = mecsSessionEnCours;
+  // 🛡️ Sauvegardé TOUT DE SUITE (sans attendre le PDF, qui prend plusieurs
+  // secondes) : une app fermée, verrouillée ou mise à jour pendant la
+  // génération ne doit jamais faire perdre un relevé réglementaire.
+  // pdfEnAttente retient seulement l'envoi au registre jusqu'au PDF.
+  session.pdfEnAttente = true;
   state.mecsComptageLogs.push(session);
+  sauvegarderToutesLesDonnees();
   // La tournée est close : plus rien ne doit pouvoir la ré-enregistrer.
   mecsSessionEnCours = null;
   historiqueMecs = [];
@@ -651,6 +657,7 @@ async function finaliserComptageEnArrierePlan(session: MecsSession): Promise<voi
     console.warn("📄 Génération du PDF impossible, envoi des données seules :", e);
   }
 
+  delete session.pdfEnAttente;
   sauvegarderToutesLesDonnees();
   synchroniserDonnees();
 }

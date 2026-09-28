@@ -1,4 +1,4 @@
-import type { Env, EtatFrigoLigne, EtatMaterielLigne, EtatMediaLigne } from "./types";
+import type { Env } from "./types";
 
 /**
  * Miroir lisible (hors coffre chiffré) de l'état opérationnel courant :
@@ -29,9 +29,9 @@ async function upsert(env: Env, table: string, lignes: unknown[]): Promise<void>
 
 export async function sauvegarderEtatOperationnel(
   env: Env,
-  materiel: EtatMaterielLigne[],
-  frigos: EtatFrigoLigne[],
-  media: EtatMediaLigne[]
+  materiel: Record<string, unknown>[],
+  frigos: Record<string, unknown>[],
+  media: Record<string, unknown>[]
 ): Promise<void> {
   await Promise.all([upsert(env, "permia_materiel", materiel), upsert(env, "permia_frigos", frigos), upsert(env, "permia_media", media)]);
 }

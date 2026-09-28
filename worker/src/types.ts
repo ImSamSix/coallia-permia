@@ -1,6 +1,7 @@
 export interface Env {
   PERMIA_DB: KVNamespace;
-  MOT_DE_PASSE_PERMIA: string;
+  /** Empreinte SHA-256 (hex) du badge attendu — `node scripts/generer-empreinte-badge.mjs` (depuis le dossier worker). */
+  EMPREINTE_BADGE: string;
   URL_POWER_AUTOMATE: string;
   /** URL du projet Supabase partagé avec Habita (non sensible, en clair dans wrangler.toml [vars]). */
   SUPABASE_URL: string;

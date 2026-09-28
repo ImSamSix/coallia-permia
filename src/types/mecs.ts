@@ -51,4 +51,7 @@ export interface MecsSession extends SyncedRecord {
   duree?: string;
   pdfBase64?: string;
   nomFichier?: string;
+  /** Relevé clos dont le PDF est encore en génération : la synchro l'ignore
+   *  jusque-là, pour que le registre le reçoive avec sa pièce jointe. */
+  pdfEnAttente?: boolean;
 }

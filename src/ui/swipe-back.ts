@@ -47,7 +47,7 @@ function uneModaleEstOuverte(): boolean {
  *  latéral…) : on laisse le geste leur appartenir plutôt que de le capter. */
 function zoneExclueDuRetour(cible: HTMLElement): boolean {
   if (cible.closest("canvas, input[type='range'], [data-no-swipe-back]")) return true;
-  const scrollableHorizontal = cible.closest<HTMLElement>("[style*='overflow-x'], .filter-scroll-container");
+  const scrollableHorizontal = cible.closest<HTMLElement>("[style*='overflow-x']");
   if (scrollableHorizontal && scrollableHorizontal.scrollWidth > scrollableHorizontal.clientWidth) return true;
   return false;
 }

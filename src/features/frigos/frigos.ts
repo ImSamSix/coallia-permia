@@ -415,7 +415,10 @@ function executerPurgeFrigos(): void {
   // définitivement après le premier passage.
   const badge = document.getElementById("badge-etat-frigos");
   if (badge) {
-    const contenuOriginal = badge.innerHTML;
+    // Mémorisé une seule fois : une seconde purge dans les 3 s aurait sinon
+    // capturé le message "purgées" comme contenu d'origine, pour toujours.
+    badge.dataset.contenuOriginal ??= badge.innerHTML;
+    const contenuOriginal = badge.dataset.contenuOriginal;
     badge.innerHTML = `
       <div style="width: 56px; height: 56px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; background: rgba(52, 199, 89, 0.14); border-radius: 18px; color: var(--success);">${iconeCheckSucces(26)}</div>
       <h2 class="section-title" style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.3px; color: var(--success);">Évaluations purgées !</h2>

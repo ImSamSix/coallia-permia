@@ -1,10 +1,9 @@
 import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
-import { demanderConfirmation } from "@/ui/confirm-modal";
 import { retour } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
-import { iconeAlerte, iconeCheckSucces } from "@/ui/icons";
+import { iconeAlerte } from "@/ui/icons";
 import { securiserTexte } from "@/ui/dom-utils";
 import type { MedLog } from "@/types/medication";
 
@@ -107,7 +106,6 @@ export function validerMedicament(): void {
   if (error) {
     const errorBubble = document.getElementById("med-error-bubble");
     if (errorBubble) {
-      errorBubble.classList.remove("bulle-succes");
       errorBubble.classList.add("bulle-erreur");
       errorBubble.innerHTML = `${iconeAlerte(16)}<span>Veuillez remplir tous les champs obligatoires</span>`;
       errorBubble.classList.remove("hidden");
@@ -194,7 +192,7 @@ export function validerMedicament(): void {
 }
 
 // ==========================================
-// 🕒 HORLOGE TEMPS RÉEL + COMMANDE SECRÈTE : PURGE DU REGISTRE (5s)
+// 🕒 HORLOGE TEMPS RÉEL
 // ==========================================
 export function startClock(): void {
   setInterval(() => {
@@ -206,67 +204,9 @@ export function startClock(): void {
   }, 1000);
 }
 
-let resetTimer: ReturnType<typeof setTimeout>;
-
-export function startResetTimer(): void {
-  resetTimer = setTimeout(() => {
-    purgerDonneesSecretement();
-  }, 5000);
-}
-
-export function stopResetTimer(): void {
-  clearTimeout(resetTimer);
-}
-
-function purgerDonneesSecretement(): void {
-  // 🛡️ GARDE : cette purge est irréversible et se propage au cloud.
-  //    Sur un téléphone partagé, un appui long involontaire ne doit jamais
-  //    pouvoir effacer un registre réglementaire sans confirmation.
-  if (state.medLogs.length === 0) {
-    console.log("🤫 Purge demandée mais le registre est déjà vide.");
-    return;
-  }
-
-  demanderConfirmation(
-    "Effacer le registre médicaments ?",
-    state.medLogs.length + " entrée(s) seront supprimées définitivement.\n" + "Cette action est irréversible et sera propagée au cloud.",
-    executerPurgeMedicaments
-  );
-}
-
-function executerPurgeMedicaments(): void {
-  state.medLogs = [];
-
-  sauvegarderToutesLesDonnees();
-
-  const errorBubble = document.getElementById("med-error-bubble");
-  if (errorBubble) {
-    errorBubble.classList.remove("bulle-erreur");
-    errorBubble.classList.add("bulle-succes");
-    errorBubble.innerHTML = `${iconeCheckSucces(16)}<span>Historique médicaments purgé</span>`;
-    errorBubble.classList.remove("hidden");
-
-    retour("succes");
-
-    setTimeout(() => {
-      errorBubble.classList.add("hidden");
-      setTimeout(() => errorBubble.classList.remove("bulle-succes"), 300);
-    }, 3000);
-  }
-
-  console.log("🤫 Nettoyage des logs médicaments effectué. Inventaire préservé.");
-}
-
-/** Câble l'écran médicaments (retour, horloge secrète, formulaire). */
+/** Câble l'écran médicaments (retour, formulaire). */
 export function initMedicamentsListeners(): void {
   document.getElementById("btn-medicaments-retour")?.addEventListener("click", openMenu);
-
-  const horloge = document.getElementById("real-time-clock");
-  horloge?.addEventListener("mousedown", startResetTimer);
-  horloge?.addEventListener("mouseup", stopResetTimer);
-  horloge?.addEventListener("mouseleave", stopResetTimer);
-  horloge?.addEventListener("touchstart", startResetTimer, { passive: true });
-  horloge?.addEventListener("touchend", stopResetTimer);
 
   document.getElementById("med-type")?.addEventListener("change", checkMedAutre);
   document.getElementById("btn-effacer-med-autre")?.addEventListener("click", effacerMedAutre);

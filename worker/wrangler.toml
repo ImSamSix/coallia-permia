@@ -19,6 +19,8 @@ SUPABASE_URL = "https://jgfwnatspdjvnxmbsgls.supabase.co"
 SENTRY_DSN = "https://3559cde2453da83b94c0b9bb765230d9@o4512080131784704.ingest.de.sentry.io/4512108352110672"
 
 # Secrets (NE JAMAIS les mettre ici en clair) — à définir via :
-#   wrangler secret put MOT_DE_PASSE_PERMIA
+#   node scripts/generer-empreinte-badge.mjs   (saisie masquée du code, puis envoi du secret EMPREINTE_BADGE)
+#     (le mot de passe est tapé en local, masqué ; seule son empreinte part chez
+#      Cloudflare — à relancer si le code de service change)
 #   wrangler secret put URL_POWER_AUTOMATE
 #   wrangler secret put SUPABASE_SERVICE_ROLE_KEY

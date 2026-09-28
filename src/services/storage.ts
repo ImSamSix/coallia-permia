@@ -1,5 +1,5 @@
 import { state } from "@/state/store";
-import { chiffrer, getCleAuth, getCleMaitresse, tenterDechiffrement } from "./crypto";
+import { chiffrer, getCleAuth, getCleLegacy, getCleMaitresse, tenterDechiffrement } from "./crypto";
 import { pushCloudSync, pushEtatOperationnel } from "./permia-relay";
 import { retour } from "./feedback";
 import { iconeAlerte } from "@/ui/icons";
@@ -13,6 +13,18 @@ function versIso(valeur: string | number | Date | null): string | null {
 }
 
 const VAULT_STORAGE_KEY = "coallia_secure_vault";
+
+/**
+ * "Karim BEN ALI" → "K. B. A." : minimisation RGPD pour le miroir Supabase,
+ * stocké hors coffre chiffré. Les noms complets des jeunes (en majorité
+ * mineurs) ne quittent plus l'appareil que chiffrés ; les initiales
+ * suffisent à retrouver un prêt en cas de perte du téléphone.
+ */
+export function initiales(nom: string | null | undefined): string {
+  const mots = (nom || "").trim().split(/\s+/).filter((m) => /\p{L}/u.test(m));
+  if (mots.length === 0) return (nom || "").trim() === "-" ? "-" : "";
+  return mots.map((m) => (m.match(/\p{L}/u)?.[0] ?? "").toUpperCase() + ".").join(" ");
+}
 
 // 🛡️ Nettoyage de sécurité : anciennes clés localStorage en clair, remplacées
 // par le coffre unique chiffré. Exécuté une fois, au chargement du module
@@ -45,7 +57,8 @@ export function sauvegarderToutesLesDonnees(): void {
     mecsComptageLogs: state.mecsComptageLogs,
     mediaData: state.mediaData,
     annuaireData: state.annuaireData,
-    mediaLogs: state.mediaLogs
+    mediaLogs: state.mediaLogs,
+    majLe: Date.now()
   };
 
   const jsonString = JSON.stringify(dataToSave);
@@ -83,13 +96,14 @@ export function sauvegarderToutesLesDonnees(): void {
 
       // 📋 Miroir lisible (hors coffre) : matériel/frigos/média, pour ne pas
       // perdre le suivi opérationnel en cas de souci avec le téléphone unique.
+      // Jeunes réduits à leurs initiales (voir initiales()).
       pushEtatOperationnel(cleAuth, {
         materiel: state.inventory.map((i) => ({
           id: i.id,
           category: i.category,
           name: i.name,
           status: i.status,
-          jeune: i.jeune,
+          jeune: initiales(i.jeune),
           pro: i.pro,
           time: versIso(i.time)
         })),
@@ -101,7 +115,7 @@ export function sauvegarderToutesLesDonnees(): void {
           contenu: f.cont,
           time: versIso(f.time),
           pro: f.pro,
-          residents: f.residents || []
+          residents: (f.residents || []).map(initiales)
         })),
         media: (Object.keys(state.mediaData) as MediaKey[]).map((key) => {
           const m = state.mediaData[key];
@@ -109,10 +123,10 @@ export function sauvegarderToutesLesDonnees(): void {
             id: key,
             name: m.name,
             status: m.status,
-            jeune: m.jeune,
+            jeune: initiales(m.jeune),
             pro: m.pro,
             time: versIso(m.time),
-            last_jeune: m.lastJeune,
+            last_jeune: initiales(m.lastJeune),
             last_time: m.lastTime
           };
         })
@@ -123,32 +137,31 @@ export function sauvegarderToutesLesDonnees(): void {
   apresSauvegarde?.();
 }
 
-export function dechiffrerCoffreLocal(): boolean {
-  const coffreFort = localStorage.getItem(VAULT_STORAGE_KEY);
-  if (!coffreFort) return false;
+interface CoffreLu {
+  donnees: VaultData;
+  /** Chiffré avec l'ancienne clé faible : à réécrire avec la clé forte. */
+  legacy: boolean;
+}
 
+/** Déchiffre un coffre avec la clé forte, ou à défaut l'ancienne clé faible (SHA-256). */
+function lireCoffre(coffre: string): CoffreLu | null {
   const cleVault = getCleMaitresse();
-  if (!cleVault) return false;
+  if (!cleVault) return null;
 
-  // 1. Tentative avec la clé forte
-  let donnees = tenterDechiffrement<VaultData>(coffreFort, cleVault);
-  let migrationNecessaire = false;
+  const donnees = tenterDechiffrement<VaultData>(coffre, cleVault);
+  if (donnees) return { donnees, legacy: false };
 
-  // 2. Repli : ancien coffre chiffré avec la clé faible (SHA-256)
-  if (!donnees) {
-    const cleLegacy = getCleAuth();
-    if (cleLegacy) {
-      donnees = tenterDechiffrement<VaultData>(coffreFort, cleLegacy);
-      if (donnees) migrationNecessaire = true;
-    }
-  }
+  const cleLegacy = getCleLegacy();
+  const donneesLegacy = cleLegacy ? tenterDechiffrement<VaultData>(coffre, cleLegacy) : null;
+  return donneesLegacy ? { donnees: donneesLegacy, legacy: true } : null;
+}
 
-  if (!donnees) {
-    console.error("🛑 Erreur : Clé invalide ou coffre corrompu.");
-    return false;
-  }
-
+function appliquerCoffre(donnees: VaultData): void {
   state.mecsComptageLogs = donnees.mecsComptageLogs || [];
+  // Un relevé resté "PDF en attente" vient d'une génération interrompue
+  // (app fermée pendant le rendu) : on l'envoie sans pièce jointe plutôt
+  // que de le bloquer indéfiniment.
+  state.mecsComptageLogs.forEach((log) => delete log.pdfEnAttente);
   if (donnees.inventory && donnees.inventory.length >= 32) {
     // 32 = ancien socle, à ne pas relever
     const inventaireActuel = state.inventory;
@@ -171,13 +184,113 @@ export function dechiffrerCoffreLocal(): boolean {
   state.frigosData = donnees.frigosData || state.frigosData;
   state.mediaData = donnees.mediaData || state.mediaData;
   state.annuaireData = donnees.annuaireData || state.annuaireData;
+}
+
+export function dechiffrerCoffreLocal(): boolean {
+  const coffreFort = localStorage.getItem(VAULT_STORAGE_KEY);
+  if (!coffreFort) return false;
+
+  const lu = lireCoffre(coffreFort);
+  if (!lu) {
+    console.error("🛑 Erreur : Clé invalide ou coffre corrompu.");
+    return false;
+  }
+
+  appliquerCoffre(lu.donnees);
 
   // 🔄 Migration transparente vers le chiffrement renforcé
-  if (migrationNecessaire) {
+  if (lu.legacy) {
     console.log("🔄 Migration du coffre vers le chiffrement renforcé (PBKDF2)...");
     sauvegarderToutesLesDonnees();
   }
 
+  return true;
+}
+
+type JournalCle = "medLogs" | "frigoLogs" | "painLogs" | "mediaLogs" | "mecsComptageLogs";
+const JOURNAUX: JournalCle[] = ["medLogs", "frigoLogs", "painLogs", "mediaLogs", "mecsComptageLogs"];
+
+/**
+ * Réinjecte dans `cible` les saisies de `source` qu'elle ne connaît pas
+ * encore (faites hors-ligne, jamais parvenues au cloud), et reporte les
+ * envois déjà confirmés par `source` (évite un double envoi au registre).
+ * Renvoie true si `cible` a changé.
+ */
+function reporterJournaux(cible: VaultData, source: VaultData): boolean {
+  let change = false;
+  JOURNAUX.forEach((cle) => {
+    const journalCible = (cible[cle] || []) as LogAvecDate[];
+    const parDate = new Map<number, LogAvecDate>();
+    journalCible.forEach((log) => {
+      const d = dateDuLog(log);
+      if (d !== null) parDate.set(d, log);
+    });
+
+    ((source[cle] || []) as LogAvecDate[]).forEach((log) => {
+      const d = dateDuLog(log);
+      if (d === null) return;
+      const connu = parDate.get(d);
+      if (!connu) {
+        if (log.synced === false) {
+          journalCible.push(log);
+          change = true;
+        }
+      } else if (log.synced === true && connu.synced === false) {
+        connu.synced = true;
+        change = true;
+      }
+    });
+
+    journalCible.sort((a, b) => (dateDuLog(a) ?? 0) - (dateDuLog(b) ?? 0));
+    (cible as unknown as Record<JournalCle, LogAvecDate[]>)[cle] = journalCible;
+  });
+  return change;
+}
+
+/**
+ * Adopte le coffre distant (connexion, rechargement) SANS écraser le travail
+ * local : le coffre le plus récent sert de base (matériel, frigos,
+ * annuaire…), puis les saisies locales jamais parvenues au cloud y sont
+ * réinjectées. Avant, le coffre distant remplaçait tout : une saisie faite
+ * hors-ligne puis suivie d'un verrouillage était perdue à la reconnexion.
+ * Renvoie true si un coffre (local ou distant) a pu être ouvert.
+ */
+export function adopterCoffreDistant(coffreDistant: string | null | undefined): boolean {
+  const distantExiste = !!coffreDistant && coffreDistant !== "null";
+  const distant = distantExiste ? lireCoffre(coffreDistant as string) : null;
+  if (!distant) {
+    if (distantExiste) console.warn("⚠️ Coffre distant illisible : mémoire locale conservée.");
+    return dechiffrerCoffreLocal();
+  }
+
+  const coffreLocal = localStorage.getItem(VAULT_STORAGE_KEY);
+  const local = coffreLocal ? lireCoffre(coffreLocal) : null;
+
+  let retenu: VaultData;
+  let aReecrire: boolean;
+  if (local && (local.donnees.majLe ?? 0) > (distant.donnees.majLe ?? 0)) {
+    // Le téléphone a travaillé depuis la dernière sauvegarde cloud : sa
+    // version sert de base, complétée par ce que le cloud a de plus.
+    retenu = local.donnees;
+    reporterJournaux(retenu, distant.donnees);
+    aReecrire = true;
+  } else {
+    retenu = distant.donnees;
+    aReecrire = distant.legacy;
+    if (local && reporterJournaux(retenu, local.donnees)) aReecrire = true;
+  }
+
+  appliquerCoffre(retenu);
+
+  if (aReecrire) {
+    sauvegarderToutesLesDonnees(); // chiffre l'état fusionné, localement et vers le cloud
+  } else {
+    try {
+      localStorage.setItem(VAULT_STORAGE_KEY, coffreDistant as string);
+    } catch (err) {
+      console.error("🛑 Mémoire locale saturée :", err);
+    }
+  }
   return true;
 }
 

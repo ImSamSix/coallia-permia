@@ -43,7 +43,7 @@ body.dark-mode {
 /* ========================================== */
 /* ANTI-SÉLECTION DE TEXTE (Effet App Native) */
 /* ========================================== */
-button, .btn, a, img, h1, h2, h3, span, .hub-btn, .pro-badge, .back-btn, .logout-link, .resident-title, .timeline-time, .timeline-tag {
+button, .btn, a, img, h1, h2, h3, span, .hub-btn, .pro-badge, .back-btn, .logout-link, .resident-title {
     -webkit-touch-callout: none; /* Désactive le menu contextuel sur iOS */
     -webkit-user-select: none;   /* Safari & iOS */
     -moz-user-select: none;      /* Firefox */
@@ -76,7 +76,6 @@ button,
 .logout-link,
 .pro-badge,
 .options-badge,
-.filter-btn,
 .btn-eval,
 .scan-main-btn,
 .qty-btn,
@@ -93,7 +92,6 @@ button:active,
 .logout-link:active,
 .pro-badge:active,
 .options-badge:active,
-.filter-btn:active,
 .btn-eval:active,
 .scan-main-btn:active,
 .qty-btn:active,
@@ -173,19 +171,12 @@ button:active,
         align-items: start;
     }
 
-    /* 4. Les formulaires (Médicaments et Transmissions) sont centrés */
+    /* 4. Les formulaires (Médicaments) sont centrés */
     .med-form-card {
         max-width: 600px;
         margin: 0 auto 30px auto;
         padding: 40px; 
         overflow: visible;
-    }
-
-    /* 5. La Timeline est centrée et bien large pour le confort de lecture */
-    .timeline {
-        max-width: 700px;
-        margin: 0 auto;
-        padding-bottom: 60px;
     }
 
     /* 6. L'écran de connexion est centré élégamment */
