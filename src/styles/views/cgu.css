@@ -136,45 +136,78 @@ body.dark-mode #cgu-view .back-btn:active {
 }
 
 /* --- Articles ------------------------------------------------------------ */
-/* Les styles en ligne des <h3> et <p> sont neutralisés ici :
-   aucune modification du contenu des articles n'est nécessaire. */
-#cgu-main h3 {
+.cgu-article {
+    margin-bottom: 34px;
+}
+.cgu-article:last-of-type {
+    margin-bottom: 10px;
+}
+
+.cgu-article h3 {
     display: block;
-    color: var(--text-dark) !important;
-    font-size: 14px !important;
-    font-weight: 800 !important;
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 800;
     line-height: 1.4;
-    margin: 0 0 12px 0 !important;
-    padding: 11px 14px 11px 15px !important;
+    margin: 0 0 16px 0;
+    padding: 11px 14px 11px 15px;
     background: var(--card-color);
     border: 1px solid var(--border-color);
     border-left: 3px solid var(--coallia-blue);
     border-radius: 0 12px 12px 0;
 }
 
-#cgu-main h3 + p {
-    margin: 0 0 26px 0 !important;
-    padding: 0 4px 0 15px !important;
-    font-size: 13.5px !important;
-    line-height: 1.7 !important;
-    color: var(--text-dark) !important;
+/* Paragraphes aérés : une ligne sautée entre chacun (1 interligne = 1.7em) */
+.cgu-article p,
+.cgu-article ul {
+    margin: 0 0 1.7em 0;
+    padding: 0 4px 0 15px;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text-dark);
     text-align: justify;
     hyphens: auto;
     -webkit-hyphens: auto;
 }
+.cgu-article > :last-child {
+    margin-bottom: 0;
+}
 
-#cgu-main h3 + p b,
-#cgu-main h3 + p strong {
+/* Une phrase qui annonce une liste reste collée à cette liste */
+.cgu-article p.cgu-intro-liste {
+    margin-bottom: 0.6em;
+}
+
+.cgu-article ul {
+    list-style: none;
+    padding-left: 15px;
+}
+.cgu-article li {
+    position: relative;
+    padding-left: 16px;
+    margin-bottom: 0.45em;
+}
+.cgu-article li:last-child {
+    margin-bottom: 0;
+}
+.cgu-article li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 0.72em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--coallia-blue);
+}
+
+.cgu-article b,
+.cgu-article strong {
     color: var(--coallia-blue);
     font-weight: 700;
 }
 
-#cgu-main h3:last-of-type + p {
-    margin-bottom: 10px !important;
-}
-
 @media (max-width: 420px) {
-    #cgu-main h3 + p { text-align: left; }
+    .cgu-article p,
+    .cgu-article ul { text-align: left; }
 }
-
-
