@@ -26,9 +26,9 @@ body.dark-mode #splash-screen {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Remonté de 1,5 cm (~57px) par rapport au centre géométrique
-       (0,5 cm + 1 cm supplémentaire). */
-    transform: translateY(-57px);
+    /* Remonté de 2 cm (~76px) par rapport au centre géométrique
+       (0,5 cm + 1 cm + 0,5 cm supplémentaires). */
+    transform: translateY(-76px);
     transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -106,7 +106,7 @@ body.dark-mode #splash-screen {
     visibility: hidden;
 }
 #splash-screen.hidden-splash .splash-content {
-    transform: translateY(-57px) scale(1.05);
+    transform: translateY(-76px) scale(1.05);
 }
 
 @media (prefers-reduced-motion: reduce) {

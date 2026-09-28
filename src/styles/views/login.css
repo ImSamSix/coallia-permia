@@ -19,6 +19,13 @@ input:focus, select:focus, textarea:focus {
     border-color: var(--coallia-blue) !important;
     box-shadow: 0 0 0 3.5px rgba(0, 85, 164, 0.10) !important;
 }
+/* ✍️ SAISIE EN GRAS : tout ce qui est tapé ou sélectionné ressort en gras
+   dans toute l'app ; seuls les placeholders (texte d'aide et option vide
+   "Sélectionner…" des menus déroulants) restent en graisse normale.
+   !important pour passer devant les styles en ligne. */
+input, textarea, select, option { font-weight: 700 !important; }
+input::placeholder, textarea::placeholder { font-weight: 400 !important; }
+select:has(option[value=""]:checked), option[value=""] { font-weight: 400 !important; }
 input.input-error, select.input-error, textarea.input-error, .input-error { border-color: var(--danger) !important; background-color: rgba(255,59,48,0.1) !important; }
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear { display: none; }
@@ -175,8 +182,8 @@ select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='h
 /* 🚀 L'ENVOLÉE CINÉTIQUE : Transition active vers l'état parfait */
 .auth-card.auth-card-entrance {
     opacity: 1 !important;
-    /* Remonté de 0,5 cm (~19px) par rapport au centre géométrique. */
-    transform: translateY(-19px) scale(1) !important;
+    /* Remonté de 1 cm (~38px) par rapport au centre géométrique. */
+    transform: translateY(-38px) scale(1) !important;
     filter: blur(0) !important;
 }
 

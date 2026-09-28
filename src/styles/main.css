@@ -32,6 +32,7 @@
 @import "./components/annuaire.css";
 @import "./components/clear-field-btn.css";
 @import "./components/toast.css";
+@import "./components/maj-bandeau.css";
 
 @import "./views/login.css";
 @import "./views/splash.css";

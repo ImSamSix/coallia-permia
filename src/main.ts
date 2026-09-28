@@ -1,7 +1,7 @@
 import "@/styles/main.css";
-import { registerSW } from "virtual:pwa-register";
 
 import { initMonitoring } from "@/services/monitoring";
+import { initMiseAJour } from "@/services/mise-a-jour";
 import { state } from "@/state/store";
 import { getCleAuth, getCleMaitresse } from "@/services/crypto";
 import { dechiffrerCoffreLocal, purgerDonneesAnciennes, definirCallbackApresSauvegarde } from "@/services/storage";
@@ -31,22 +31,15 @@ const CHEMIN_INCONNU = !["/", "/index.html"].includes(location.pathname);
 // pendant l'initialisation elle-même.
 initMonitoring();
 
+// 👑 SERVICE WORKER (hors-ligne) + détection des nouvelles versions : au plus
+// tôt, pour qu'une version en attente soit repérée dès l'ouverture.
+initMiseAJour();
+
 initApp();
 definirCallbackApresSauvegarde(rafraichirBadgeAttente);
 
 window.onload = async () => {
   initTheme();
-
-  // 👑 ENREGISTREMENT DU SERVICE WORKER (PWA autonome pour le hors-ligne total)
-  registerSW({
-    immediate: true,
-    onRegisteredSW() {
-      console.log("🛡️ Permia : Service Worker actif (Mode hors-ligne sécurisé)");
-    },
-    onRegisterError(err) {
-      console.error("🛑 Permia : Échec SW", err);
-    }
-  });
 
   if (MODE_MAINTENANCE) {
     document.querySelectorAll(".view").forEach((el) => el.classList.add("hidden"));

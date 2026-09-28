@@ -1,0 +1,71 @@
+/* ========================================== */
+/* BANDEAU « NOUVELLE VERSION DISPONIBLE »     */
+/* (créé en JS par services/mise-a-jour.ts)    */
+/* z-index sous les modales (2000) : il ne     */
+/* doit jamais masquer leurs boutons.          */
+/* ========================================== */
+.maj-bandeau {
+    position: fixed;
+    left: 50%;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(12px);
+    width: calc(100% - 32px);
+    max-width: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 10px 10px 16px;
+    border-radius: 16px;
+    background: var(--card-color);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 12px 30px rgba(10, 22, 44, 0.18);
+    font-size: 13.5px;
+    font-weight: 600;
+    z-index: 1500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.22, 0.9, 0.26, 1);
+}
+.maj-bandeau.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+
+.maj-bandeau-bouton {
+    flex-shrink: 0;
+    min-width: 118px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 11px;
+    background: var(--coallia-blue);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.maj-bandeau-bouton:disabled { cursor: default; opacity: 0.85; }
+
+.maj-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: majSpin 0.8s linear infinite;
+}
+@keyframes majSpin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .maj-bandeau { transition: none; }
+    .maj-spinner { animation-duration: 2s; }
+}

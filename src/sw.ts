@@ -8,15 +8,19 @@
    hashée automatiquement à chaque build, au lieu d'un ASSETS_TO_CACHE
    maintenu à la main).
    ========================================================================== */
-import { clientsClaim } from "workbox-core";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
 import { CacheFirst, NetworkFirst } from "workbox-strategies";
 
 declare let self: ServiceWorkerGlobalScope;
 
-self.skipWaiting();
-clientsClaim();
+// ⏸️ PAS de skipWaiting()/clientsClaim() automatiques : une nouvelle version
+//    attend ("waiting") que l'app décide du bon moment pour l'activer
+//    (src/services/mise-a-jour.ts : arrière-plan sans saisie en cours, ou
+//    bouton « Mettre à jour »), sinon la page se rechargerait en pleine saisie.
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
+});
 
 // 📦 Pré-cache : fichiers de build (manifeste injecté par vite-plugin-pwa, qui
 //    inclut déjà la copie locale de crypto-js) + bibliothèques CDN figées en

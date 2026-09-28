@@ -15,8 +15,14 @@ export default defineConfig({
       strategies: "injectManifest",
       srcDir: "src",
       filename: "sw.ts",
+      // Enregistrement fait à la main par src/services/mise-a-jour.ts.
       injectRegister: false,
-      registerType: "autoUpdate",
+      // "prompt" + aucun skipWaiting/clientsClaim automatique (en mode
+      // injectManifest ils se décident dans src/sw.ts, les options
+      // workbox.skipWaiting/clientsClaim ne s'appliquent pas) : c'est le
+      // module de mise à jour qui choisit QUAND activer une nouvelle version,
+      // pour ne jamais recharger la page en pleine saisie.
+      registerType: "prompt",
       manifest: {
         short_name: "Permia",
         name: "Permia",
