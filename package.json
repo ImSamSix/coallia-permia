@@ -21,6 +21,7 @@
     "workbox-strategies": "^7.1.0"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
     "@sentry/browser": "^10.75.0"
   }
 }

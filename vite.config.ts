@@ -43,7 +43,7 @@ export default defineConfig({
       injectManifest: {
         // Les CDN figés (versions épinglées) restent pré-cachés au même titre
         // que les fichiers locaux, comme dans l'ancien ASSETS_TO_CACHE.
-        globPatterns: ["**/*.{js,css,html,png,ico,svg}"],
+        globPatterns: ["**/*.{js,css,html,png,ico,svg,woff2}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024
       },
       devOptions: {

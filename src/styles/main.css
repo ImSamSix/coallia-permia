@@ -7,6 +7,15 @@
    reproduire exactement la cascade de l'ancien style.css monolithique.
    ========================================================================== */
 
+/* 🔤 Police Inter hébergée par l'app (plus de Google Fonts : aucune IP
+   d'utilisateur envoyée à Google, une origine tierce de moins dans la CSP,
+   et disponible hors-ligne via le pré-cache du SW). Sous-ensemble latin
+   (accents français et Œ/œ compris). */
+@import "@fontsource/inter/latin-400.css";
+@import "@fontsource/inter/latin-600.css";
+@import "@fontsource/inter/latin-700.css";
+@import "@fontsource/inter/latin-800.css";
+
 @import "./base.css";
 
 @import "./components/menu-hub.css";
