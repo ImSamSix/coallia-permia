@@ -7,6 +7,7 @@ import { openMenu } from "@/features/navigation/navigation";
 import { iconeAlerte } from "@/ui/icons";
 import { securiserTexte } from "@/ui/dom-utils";
 import type { LoginResponse } from "@/types/relay";
+import { afficherChargementBouton, retirerChargementBouton } from "@/ui/bouton-chargement";
 
 const SESSION_DUREE_MS = 8 * 60 * 60 * 1000;
 
@@ -49,28 +50,6 @@ export function echecAuth(message: string, idsChamps: string[] = ["pass-pro"]): 
   });
 
   retour("erreur");
-}
-
-/** Bouton en cours de chargement : spinner devant le texte, clics bloqués.
- *  Le spinner tourne en `transform` (animé hors du fil principal) : il
- *  continue de tourner pendant le gel du calcul PBKDF2. */
-function afficherChargementBouton(btn: HTMLButtonElement, texte: string): void {
-  const spinner = document.createElement("span");
-  spinner.className = "btn-spinner";
-  spinner.setAttribute("aria-hidden", "true");
-  const libelle = document.createElement("span");
-  libelle.textContent = texte;
-  btn.replaceChildren(spinner, libelle);
-  btn.classList.add("btn-chargement");
-  btn.setAttribute("aria-busy", "true");
-  btn.disabled = true;
-}
-
-function retirerChargementBouton(btn: HTMLButtonElement, texte: string): void {
-  btn.textContent = texte;
-  btn.classList.remove("btn-chargement");
-  btn.removeAttribute("aria-busy");
-  btn.disabled = false;
 }
 
 export async function validerConnexionSecurisee(): Promise<void> {

@@ -78,3 +78,12 @@
 }
 
 
+
+/* 🕒 Horloge : même espace au-dessus (10px de marge du titre + 15px) qu'en
+   dessous, jusqu'à la carte du formulaire (25px). Sélecteur aussi précis
+   que la règle tablette/ordinateur de base.css (margin: 0 auto) pour ne pas
+   être écrasé par elle. */
+#med-app .content > div.med-horloge {
+    text-align: center;
+    margin: 15px auto 25px auto;
+}

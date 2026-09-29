@@ -8,6 +8,7 @@ import { openMenu } from "@/features/navigation/navigation";
 import { telechargerPDF } from "@/features/pdf/pdf";
 import { attacherEffetAppui } from "@/ui/press-effect";
 import { afficherToast } from "@/ui/toast";
+import { afficherChargementBouton, retirerChargementBouton } from "@/ui/bouton-chargement";
 import { getCleAuth } from "@/services/crypto";
 import { fetchVault } from "@/services/permia-relay";
 import type { ComptageType, MecsSession } from "@/types/mecs";
@@ -600,7 +601,9 @@ function afficherRapportFinalMecs(): void {
 }
 
 // 👑 LOGIQUE DE CLÔTURE : Sauvegarde le rapport de tournée dans le coffre crypté et synchronise le Cloud
-export function cloreComptageMecs(): void {
+const LIBELLE_BTN_CLOTURER = "Enregistrer le relevé de présence";
+
+export async function cloreComptageMecs(): Promise<void> {
   if (!mecsSessionEnCours) return;
 
   // Ajoute la session actuelle à l'historique global
@@ -612,34 +615,36 @@ export function cloreComptageMecs(): void {
   session.pdfEnAttente = true;
   state.mecsComptageLogs.push(session);
   sauvegarderToutesLesDonnees();
-  // La tournée est close : plus rien ne doit pouvoir la ré-enregistrer.
+  // La tournée est close : plus rien ne doit pouvoir la ré-enregistrer
+  // (le null bloque aussi un double appui pendant l'enregistrement).
   mecsSessionEnCours = null;
   historiqueMecs = [];
 
-  // 👑 RETOUR IMMÉDIAT : la génération du PDF (d'autant plus longue qu'il y a
-  // de jeunes signalés absents) et la sauvegarde continuent en tâche de fond
-  // — le professionnel n'a pas à attendre pour retrouver la main.
-  retour("succes");
-  retourSaisieComptage();
+  // ⏳ On RESTE sur le rapport, bouton en chargement, le temps de générer le
+  // PDF : ce rendu est synchrone et gèle le thread principal. Lancé après le
+  // retour à l'accueil, il laissait un menu affiché mais figé (clics ignorés,
+  // animation d'entrée bloquée à mi-fondu). Ici le gel est invisible : l'écran
+  // est statique et le spinner tourne en `transform` (hors fil principal).
+  // Le retour à l'accueil n'a lieu qu'une fois l'app de nouveau réactive.
+  const btn = document.getElementById("btn-cloturer-comptage") as HTMLButtonElement | null;
+  if (btn) afficherChargementBouton(btn, "Enregistrement du relevé...");
 
-  // ⚠️ Le retour à l'accueil déclenche l'animation d'entrée du menu (fondu
-  // du contenu : 0.36s au total, cf. .view:not(.hidden) > .content dans
-  // base.css). Le rendu du PDF qui suit est synchrone et bloque le thread
-  // principal — s'il démarre avant la fin de cette animation, elle reste
-  // figée à mi-fondu (écran "blanc") jusqu'à la fin de toute la génération.
-  // Double rAF pour garantir qu'un premier repaint a bien eu lieu, puis un
-  // délai couvrant la durée de l'animation avant de lancer le travail lourd.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      setTimeout(() => finaliserComptageEnArrierePlan(session), 400);
-    });
-  });
+  // Double rAF : le spinner doit être peint (et son animation lancée) avant
+  // que le rendu du PDF ne bloque le thread.
+  await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+
+  await finaliserComptage(session);
+
+  retourSaisieComptage();
+  afficherToast("Relevé de présence enregistré", "succes"); // + retour sonore/haptique de succès
+
+  // Bouton remis à neuf pour la prochaine tournée (écran déjà masqué)
+  if (btn) retirerChargementBouton(btn, LIBELLE_BTN_CLOTURER);
 }
 
-// Génération du PDF (joint au log pour l'envoi automatique) puis sauvegarde
-// et synchronisation cloud : tout ce qui peut être lent tourne après coup,
-// sans bloquer le retour à l'écran d'accueil.
-async function finaliserComptageEnArrierePlan(session: MecsSession): Promise<void> {
+// Génération du PDF (joint au log pour l'envoi automatique) puis sauvegarde.
+// La synchronisation cloud (réseau, non bloquante) part ensuite en tâche de fond.
+async function finaliserComptage(session: MecsSession): Promise<void> {
   try {
     const dataUri = await telechargerPDF("comptage", { silencieux: true });
     const base64 = (dataUri || "").split(",")[1];

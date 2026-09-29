@@ -238,3 +238,13 @@
 }
 .cpt-scroll-top svg { width: 18px; height: 18px; }
 
+
+/* ⏳ Enregistrement du relevé : spinner (.btn-spinner, cf. login.css) devant le texte */
+#btn-cloturer-comptage.btn-chargement {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    opacity: 0.85;
+    cursor: default;
+}

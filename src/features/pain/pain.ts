@@ -2,6 +2,7 @@ import { state } from "@/state/store";
 import { sauvegarderToutesLesDonnees } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
 import { fermerModals } from "@/ui/modals";
+import { retour } from "@/services/feedback";
 import type { PainLog } from "@/types/pain";
 
 let painQty = 0;
@@ -32,18 +33,21 @@ function updatePainDisplay(): void {
   if (!displayEl) return;
 
   displayEl.innerText = String(painQty);
+  appliquerCouleurQty(displayEl, painQty);
+}
 
-  // Application stricte de tes règles de couleur, en tons pastel (fond
-  // teinté + texte dans la couleur pleine) plutôt qu'un aplat saturé.
-  if (painQty === 0) {
-    displayEl.style.backgroundColor = "rgba(52, 199, 89, 0.14)"; // Vert
-    displayEl.style.color = "var(--success)";
-  } else if (painQty >= 1 && painQty <= 5) {
-    displayEl.style.backgroundColor = "rgba(255, 149, 0, 0.14)"; // Orange
-    displayEl.style.color = "var(--warning)";
+// Application stricte de tes règles de couleur, en tons pastel (fond
+// teinté + texte dans la couleur pleine) plutôt qu'un aplat saturé.
+function appliquerCouleurQty(el: HTMLElement, qty: number): void {
+  if (qty === 0) {
+    el.style.backgroundColor = "rgba(52, 199, 89, 0.14)"; // Vert
+    el.style.color = "var(--success)";
+  } else if (qty >= 1 && qty <= 5) {
+    el.style.backgroundColor = "rgba(255, 149, 0, 0.14)"; // Orange
+    el.style.color = "var(--warning)";
   } else {
-    displayEl.style.backgroundColor = "rgba(255, 59, 48, 0.14)"; // Rouge
-    displayEl.style.color = "var(--danger)";
+    el.style.backgroundColor = "rgba(255, 59, 48, 0.14)"; // Rouge
+    el.style.color = "var(--danger)";
   }
 }
 
@@ -70,14 +74,21 @@ export function validerPain(): void {
   synchroniserDonnees();
 
   fermerModals(); // La pop-up se referme immédiatement
+  retour("succes");
 
-  // Déclenchement de la notification verte de confirmation
-  const recordedTime = document.getElementById("modal-recorded-time");
-  if (recordedTime) recordedTime.innerText = "à " + heureExacte;
-  document.getElementById("med-success-modal")?.classList.remove("hidden");
+  // Confirmation dédiée : rappelle la quantité saisie (même code couleur
+  // que le compteur) et l'heure d'enregistrement.
+  const qtyEl = document.getElementById("pain-success-qty");
+  if (qtyEl) {
+    qtyEl.innerText = painQty === 0 ? "Aucun pain restant" : `${painQty} pain${painQty > 1 ? "s" : ""} restant${painQty > 1 ? "s" : ""}`;
+    appliquerCouleurQty(qtyEl, painQty);
+  }
+  const timeEl = document.getElementById("pain-success-time");
+  if (timeEl) timeEl.innerText = `Relevé de ${heureExacte} sécurisé dans le registre.`;
+  document.getElementById("pain-success-modal")?.classList.remove("hidden");
 
   setTimeout(() => {
-    document.getElementById("med-success-modal")?.classList.add("hidden");
+    document.getElementById("pain-success-modal")?.classList.add("hidden");
   }, 2200);
 }
 
