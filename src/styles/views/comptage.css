@@ -73,19 +73,11 @@
     margin-bottom: 5px;
 }
 
-.cpt-statut {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: var(--input-bg);
-    padding: 8px 16px; border-radius: 999px;
-    font-size: 12px; font-weight: 700; color: var(--text-gray);
-    margin-bottom: 22px;
+/* Espacements symétriques : titre → carte = carte → bulle d'aide (22px).
+   margin: 0 neutralise la marge basse de .med-form-card sur grand écran. */
+.med-form-card.cpt-carte {
+    margin: 0;
 }
-.cpt-point {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--success); flex-shrink: 0;
-    animation: pulseVertLive 1.8s ease-in-out infinite;
-}
-
 .cpt-carte {
     width: 100%; max-width: 360px;
     text-align: center;

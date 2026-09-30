@@ -1,4 +1,3 @@
-import { state } from "@/state/store";
 import { assurerCryptoJS, definirClesSession, deriverCleAuth, derriverCleVault, effacerClesSession, memoriserCleLegacy } from "@/services/crypto";
 import { fetchVault, login } from "@/services/permia-relay";
 import { adopterCoffreDistant, dechiffrerCoffreLocal, purgerDonneesAnciennes } from "@/services/storage";
@@ -8,6 +7,7 @@ import { iconeAlerte } from "@/ui/icons";
 import { securiserTexte } from "@/ui/dom-utils";
 import type { LoginResponse } from "@/types/relay";
 import { afficherChargementBouton, retirerChargementBouton } from "@/ui/bouton-chargement";
+import { assurerCatalogueJeunes, definirCatalogueJeunes } from "@/services/catalogue-jeunes";
 
 const SESSION_DUREE_MS = 8 * 60 * 60 * 1000;
 
@@ -107,9 +107,7 @@ export async function validerConnexionSecurisee(): Promise<void> {
       localStorage.setItem("coallia_session_expire", String(expirationTime));
 
       // 👑 Injection immédiate du trajet réel dans l'application
-      if (data.mecsCatalog) {
-        state.mecsJeunesCatalog = data.mecsCatalog;
-      }
+      definirCatalogueJeunes(data.mecsCatalog);
 
       // ☁️ RÉCUPÉRATION DU COFFRE DISTANT DÈS LA CONNEXION
       // Sans ça, un appareil fraîchement installé s'ouvre vide et peut
@@ -119,6 +117,8 @@ export async function validerConnexionSecurisee(): Promise<void> {
       let coffreOuvert: boolean;
       try {
         const dataVault = await fetchVault(cleAuth);
+        // Seconde chance si la réponse du login n'avait pas de catalogue
+        definirCatalogueJeunes(dataVault.mecsCatalog);
         coffreOuvert = adopterCoffreDistant(dataVault.vault);
       } catch {
         console.log("📡 Coffre distant non récupéré, la mémoire locale est conservée.");
@@ -140,6 +140,7 @@ export async function validerConnexionSecurisee(): Promise<void> {
       retour("succes");
       inputPassEl.value = "";
       openMenu();
+      void assurerCatalogueJeunes();
     } else if (response.status === 401 || response.status === 403 || response.status === 429) {
       // 🛑 REFUS FERME DU SERVEUR : code faux, accès révoqué, ou trop de tentatives.
       // On NE tente PAS le déverrouillage local : c'est une décision du serveur, pas une panne.
@@ -163,6 +164,8 @@ export async function validerConnexionSecurisee(): Promise<void> {
       retour("succes");
       inputPassEl.value = "";
       openMenu();
+      // Mode dégradé : le catalogue sera récupéré dès que le serveur répond.
+      void assurerCatalogueJeunes();
     } else {
       effacerClesSession();
       echecAuth("Code incorrect ou connexion requise pour initialiser l'appareil.");

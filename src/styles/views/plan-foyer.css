@@ -230,3 +230,39 @@ body.dark-mode .plan-apt-tete:active { background: rgba(85, 144, 204, 0.08); }
 .plan-ch-nom { font-size: 13.5px; font-weight: 700; color: var(--text-dark); overflow-wrap: anywhere; }
 .plan-ch-vide { font-size: 12.5px; font-style: italic; color: var(--text-gray); }
 
+
+/* ⏳ Catalogue des résidents en cours de chargement / indisponible */
+.plan-chargement {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text-gray);
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 20px;
+}
+.plan-spinner {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid var(--input-bg);
+    border-top-color: var(--coallia-blue);
+    border-radius: 50%;
+    animation: btnSpinner 0.75s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+    .plan-spinner { animation-duration: 1.8s; }
+}
+.plan-vide p { margin: 0 0 12px; }
+.plan-reessayer {
+    border: none;
+    border-radius: 12px;
+    background: var(--coallia-blue);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px 20px;
+    cursor: pointer;
+}

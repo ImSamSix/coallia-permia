@@ -9,8 +9,7 @@ import { telechargerPDF } from "@/features/pdf/pdf";
 import { attacherEffetAppui } from "@/ui/press-effect";
 import { afficherToast } from "@/ui/toast";
 import { afficherChargementBouton, retirerChargementBouton } from "@/ui/bouton-chargement";
-import { getCleAuth } from "@/services/crypto";
-import { fetchVault } from "@/services/permia-relay";
+import { assurerCatalogueJeunes } from "@/services/catalogue-jeunes";
 import type { ComptageType, MecsSession } from "@/types/mecs";
 
 // Variables d'état volatiles pour la session de comptage en cours
@@ -171,24 +170,6 @@ export function retourSaisieComptage(): void {
   // mêmes traitements qu'un retour normal à l'accueil (remise à zéro du
   // défilement, message de bienvenue, pastilles du tableau de bord...).
   openMenu();
-}
-
-/**
- * Le catalogue des jeunes n'est jamais persisté localement (données de
- * mineurs) : après un rechargement de page hors-ligne, il est vide. On tente
- * de le récupérer à la demande avant de lancer une tournée.
- */
-async function assurerCatalogueJeunes(): Promise<boolean> {
-  if (state.mecsJeunesCatalog.length > 0) return true;
-  const cleAuth = getCleAuth();
-  if (!cleAuth || !navigator.onLine) return false;
-  try {
-    const data = await fetchVault(cleAuth);
-    if (data.mecsCatalog) state.mecsJeunesCatalog = data.mecsCatalog;
-  } catch {
-    // Serveur injoignable : le relevé reste bloqué, voir l'appelant.
-  }
-  return state.mecsJeunesCatalog.length > 0;
 }
 
 // Lancement d'une session de pointage

@@ -2,7 +2,6 @@ import "@/styles/main.css";
 
 import { initMonitoring } from "@/services/monitoring";
 import { initMiseAJour } from "@/services/mise-a-jour";
-import { state } from "@/state/store";
 import { effacerClesSession, getCleAuth, getCleMaitresse, sessionAJour } from "@/services/crypto";
 import { adopterCoffreDistant, dechiffrerCoffreLocal, purgerDonneesAnciennes, definirCallbackApresSauvegarde } from "@/services/storage";
 import { synchroniserDonnees } from "@/services/sync";
@@ -14,6 +13,7 @@ import { signalerActivite, verifierSession } from "@/features/session/session";
 import { startClock } from "@/features/medicaments/medicaments";
 import { rafraichirBadgeAttente } from "@/ui/pending-badge";
 import { initApp } from "@/app-init";
+import { assurerCatalogueJeunes, definirCatalogueJeunes, initCatalogueJeunes } from "@/services/catalogue-jeunes";
 import { iconeCheckSucces, iconeNuageBarre, iconeServeur } from "@/ui/icons";
 
 // Espacé volontairement (3 min, pas 45s) : marge large sur le quota gratuit
@@ -79,9 +79,7 @@ window.onload = async () => {
         try {
           const data = await fetchVault(cleAuth);
 
-          if (data.mecsCatalog) {
-            state.mecsJeunesCatalog = data.mecsCatalog;
-          }
+          definirCatalogueJeunes(data.mecsCatalog);
 
           // 🔀 Fusion (et non remplacement) : les saisies locales pas encore
           // parvenues au cloud sont conservées.
@@ -98,6 +96,8 @@ window.onload = async () => {
     if (navigator.onLine) synchroniserDonnees();
 
     openMenu();
+    // Catalogue manquant (réseau/serveur défaillant ci-dessus) : nouvelles tentatives en arrière-plan.
+    void assurerCatalogueJeunes();
   } else {
     // 🛑 L'utilisateur a fermé l'onglet ou la session a expiré : Verrouillage total
     localStorage.removeItem("coallia_pro_prenom");
@@ -109,6 +109,9 @@ window.onload = async () => {
   // aussi bien après une connexion manuelle qu'après un rechargement de page.
   signalerActivite();
   setInterval(verifierSession, 30000);
+
+  // 📇 Relance du chargement du catalogue des jeunes au retour du réseau / de l'app
+  initCatalogueJeunes();
 
   // 📤 Compteur d'éléments en attente (hors du if/else : actif après connexion manuelle aussi)
   rafraichirBadgeAttente();

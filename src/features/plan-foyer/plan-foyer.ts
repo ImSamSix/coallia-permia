@@ -15,6 +15,12 @@ import { state } from "@/state/store";
 import { securiserTexte as echapper } from "@/ui/dom-utils";
 import { retour } from "@/services/feedback";
 import { openMenu } from "@/features/navigation/navigation";
+import {
+  assurerCatalogueJeunes,
+  catalogueJeunesDisponible,
+  catalogueJeunesEnChargement,
+  surCatalogueJeunes
+} from "@/services/catalogue-jeunes";
 
 let batPlan = "Capitainerie";
 let aptOuvert: string | null = null;
@@ -131,9 +137,30 @@ export function dessinerPlan(): void {
       .join("");
   }
 
-  conteneur.innerHTML = corps
-    ? `<div class="plan-etage-corps">${corps}</div>`
-    : `<p class="plan-vide">Aucun résident recensé pour le moment</p>`;
+  if (corps) {
+    conteneur.innerHTML = `<div class="plan-etage-corps">${corps}</div>`;
+  } else if (catalogueJeunesDisponible()) {
+    // Catalogue chargé, mais aucun jeune dans ce bâtiment.
+    conteneur.innerHTML = `<p class="plan-vide">Aucun résident recensé pour le moment</p>`;
+  } else if (catalogueJeunesEnChargement()) {
+    conteneur.innerHTML = `
+        <div class="plan-chargement">
+            <span class="plan-spinner" aria-hidden="true"></span>
+            <span>Chargement des résidents…</span>
+        </div>`;
+  } else {
+    // Liste jamais reçue (hors-ligne, serveur injoignable) : on ne prétend
+    // pas qu'il n'y a personne, on propose de réessayer.
+    conteneur.innerHTML = `
+        <div class="plan-vide">
+            <p>${navigator.onLine ? "Liste des résidents indisponible pour le moment." : "Pas de connexion : la liste des résidents n'a pas pu être chargée."}</p>
+            <button class="plan-reessayer" id="plan-reessayer">Réessayer</button>
+        </div>`;
+    document.getElementById("plan-reessayer")?.addEventListener("click", () => {
+      retour("appui");
+      void assurerCatalogueJeunes();
+    });
+  }
 
   conteneur.querySelectorAll<HTMLButtonElement>(".plan-apt-tete").forEach((btn) => {
     btn.addEventListener("click", () => basculerApt(btn.dataset.apt as string));
@@ -286,6 +313,13 @@ export function ouvrirPlanFoyer(): void {
   if (champRech) champRech.value = "";
   chercherResident("");
   dessinerPlan();
+  // Catalogue absent (échec au démarrage) : on le (re)demande, l'écran se
+  // redessine tout seul à son arrivée (voir initPlanFoyerListeners).
+  void assurerCatalogueJeunes();
+}
+
+function planVisible(): boolean {
+  return !document.getElementById("plan-foyer-view")?.classList.contains("hidden");
 }
 
 export function initPlanFoyerListeners(): void {
@@ -299,4 +333,13 @@ export function initPlanFoyerListeners(): void {
   const champRech = document.getElementById("plan-rech-champ") as HTMLInputElement | null;
   champRech?.addEventListener("input", () => chercherResident(champRech.value));
   document.getElementById("plan-rech-vider")?.addEventListener("click", viderRecherche);
+
+  // Arrivée (ou échec) du catalogue pendant que le plan est affiché : on
+  // redessine sans toucher à l'onglet ni à la recherche en cours.
+  surCatalogueJeunes(() => {
+    if (!planVisible()) return;
+    aptOuvert = null;
+    dessinerPlan();
+    if (champRech && champRech.value) chercherResident(champRech.value);
+  });
 }
